@@ -10,7 +10,6 @@ library(sf)
 library(terra)
 library(dplyr)
 library(spData)
-#> Warning: multiple methods tables found for 'approxNA'
 ```
 
 ## Introduction
@@ -20,11 +19,12 @@ library(spData)
 
 This chapter is about reading and writing geographic data.
 Geographic data *import* is essential for geocomputation\index{geocomputation}: real-world applications are impossible without data.
-For others to benefit from the results of your work, data *output* is also vital.
-Taken together, we refer to these processes as I/O, short for input/output.
+Data *output* is also vital, enabling others to use valuable new or improved datasets resulting from your work.
+Taken together, these processes of import/output can be referred to as data I/O.
 
-Geographic data I/O is almost always part of a wider process.
-It depends on knowing which datasets are *available*, where they can be *found* and how to *retrieve* them.
+Geographic data I/O is often done with few lines of code at the beginning and end of projects.
+It is often overlooked as a simple one step process.
+However, mistakes made at the outset of projects (e.g. using an out-of-date or in some way faulty dataset) can lead to large problems later down the line, so it is worth putting considerable time into identifying which datasets are *available*, where they can be *found* and how to *retrieve* them.
 These topics are covered in Section \@ref(retrieving-data), which describes various *geoportals*, which collectively contain many terabytes of data, and how to use them.
 To further ease data access, a number of packages for downloading geographic data have been developed.
 These are described in Section \@ref(geographic-data-packages).
@@ -118,11 +118,12 @@ These provide interfaces to one or more spatial libraries or geoportals and aim 
 <!-- maybe: -->
 <!-- - https://github.com/ErikKusch/KrigR -->
 <!-- https://cran.r-project.org/web/packages/FedData/index.html -->
+<!-- https://github.com/VeruGHub/easyclimate -->
 <!-- mention: -->
 <!-- - https://github.com/ropensci/MODIStsp -->
 
 It should be emphasized that Table \@ref(tab:datapackages) represents only a small number of available geographic data packages.
-For example, a large number of R packages exist to obtain various socio-demographic data, such as **tidycensus** and **tigris** (USA),  **cancensus** (Canada), **eurostat** and **giscoR** (European Union), or **idbr** (international databases) -- read [Analyzing US Census Data](https://walker-data.com/census-r) to find some examples of how to analyse such data.
+For example, a large number of R packages exist to obtain various socio-demographic data, such as **tidycensus** and **tigris** (USA),  **cancensus** (Canada), **eurostat** and **giscoR** (European Union), or **idbr** (international databases) -- read [Analyzing US Census Data](https://walker-data.com/census-r) [@walker_analyzing_2022] to find some examples of how to analyse such data.
 Similarly, several R packages exist giving access to spatial data for various regions and countries, such as **bcdata** (Province of British Columbia), **geobr** (Brazil), **RCzechia** (Czechia), or **rgugik** (Poland).
 Other notable package is **GSODR**, which provides Global Summary Daily Weather Data in R (see the package's [README](https://github.com/ropensci/GSODR) for an overview of weather data sources).
 <!--toDo:JN-->
@@ -168,9 +169,6 @@ The result is a multilayer object of class `SpatRaster`.
 library(geodata)
 worldclim_prec = worldclim_global("prec", res = 10, path = tempdir())
 class(worldclim_prec)
-#> [1] "SpatRaster"
-#> attr(,"package")
-#> [1] "terra"
 ```
 
 A third example uses the **osmdata** package [@R-osmdata] to find parks from the OpenStreetMap (OSM) database\index{OpenStreetMap}.
@@ -209,11 +207,41 @@ world3 = read_sf(system.file("shapes/world.gpkg", package = "spData"))
 
 The last example, `system.file("shapes/world.gpkg", package = "spData")`, returns a path to the `world.gpkg` file, which is stored inside of the `"shapes/"` folder of the **spData** package.
 
+\index{geocoding}
+Another way to obtain spatial information is to perform geocoding -- transform a description of a location, usually an address, into its coordinates.
+This is usually done by sending a query to an online service and getting the location as a result.
+Many such services exist that differ in the used method of geocoding, usage limitations, costs, or API key requirements. 
+R has several packages for geocoding; however, **tidygeocoder** seems to allow to connect to [the largest number of geocoding services](https://jessecambon.github.io/tidygeocoder/articles/geocoder_services.html) with a consistent interface.
+The **tidygeocoder** main function is `geocode`, which takes a data frame with addresses and adds coordinates as `"lat"` and `"long"`.
+This function also allows to select a geocoding service with the `method` argument and has many additional parameters.
+
+The example below searches for John Snow blue plaque coordinates located on a building in the Soho district of London.
+
+
+```r
+library(tidygeocoder)
+geo_df = data.frame(address = "54 Frith St, London W1D 4SJ, UK")
+geo_df = geocode(df, address, method = "osm")
+geo_df
+```
+
+The resulting data frame can be converted into an `sf` object with `st_as_sf()`.
+
+
+```r
+geo_sf = st_as_sf(geo_df, coords = c("lat", "long"), crs = "EPSG:4326")
+```
+
+This package also allows performing the opposite process called reverse geocoding used to get a set of information (name, address, etc.) based on a pair of coordinates.
+<!-- https://github.com/jessecambon/tidygeocoder -->
+
 <!--toDo:jn-->
+<!-- we should add a rgee section in the bridges chapter and add a reference here -->
 <!-- consider data from rgee -->
 <!-- rgee - see https://github.com/loreabad6/30DayMapChallenge/blob/main/scripts/day08_blue.R -->
-<!-- geocoding -- tidygeocoder,  -->
-<!-- rstac - https://gist.github.com/h-a-graham/420434c158c139180f5eb82859099082, -->
+<!-- Finally, there are some packages that allows to download spatial data among many other functions.  -->
+<!-- Prominent example here is the **rgee** package  -->
+<!-- ee_imagecollection_to_local -->
 
 ## Geographic web services
 
@@ -221,6 +249,7 @@ The last example, `system.file("shapes/world.gpkg", package = "spData")`, return
 <!--revise and update the following section-->
 <!--jn: Robin, I am leaving this section entirely to you -- I have zero knowledge about OWS-->
 <!-- potentially useful package - https://github.com/eblondel/geosapi -->
+<!-- rstac - https://gist.github.com/h-a-graham/420434c158c139180f5eb82859099082, -->
 
 \index{geographic web services}
 In an effort to standardize web APIs for accessing spatial data, the Open Geospatial Consortium (OGC) has created a number of specifications for web services (collectively known as OWS, which is short for OGC Web Services).
@@ -229,15 +258,16 @@ Map servers such as PostGIS have adopted these protocols, leading to standardiza
 Like other web APIs, OWS APIs use a 'base URL', an 'endpoint' and 'URL query arguments' following a `?` to request data (see the [`best-practices-api-packages`](https://httr.r-lib.org/articles/api-packages.html) vignette in the **httr** package).
 
 There are many requests that can be made to a OWS service.
-One of the most fundamental is `getCapabilities`, demonstrated with **httr** below.
+One of the most fundamental is `getCapabilities`, demonstrated with **httr** functions `GET()` and `modify_url()` below.
 The code chunk demonstrates how API\index{API} queries can be constructed and dispatched, in this case to discover the capabilities of a service run by the Food and Agriculture Organization of the United Nations (FAO):
 
 
 ```r
+library(httr)
 base_url = "http://www.fao.org"
 endpoint = "/figis/geoserver/wfs"
 q = list(request = "GetCapabilities")
-res = httr::GET(url = httr::modify_url(base_url, path = endpoint), query = q)
+res = GET(url = modify_url(base_url, path = endpoint), query = q)
 res$url
 #> [1] "https://www.fao.org/figis/geoserver/wfs?request=GetCapabilities"
 ```
@@ -249,7 +279,7 @@ One way of extracting the contents of the request is as follows:
 
 
 ```r
-txt = httr::content(res, "text")
+txt = content(res, "text")
 xml = xml2::read_xml(txt)
 ```
 
@@ -273,7 +303,7 @@ One can extract them programmatically using web technologies [@nolan_xml_2014] o
 ```r
 qf = list(request = "GetFeature", typeName = "area:FAO_AREAS")
 file = tempfile(fileext = ".gml")
-httr::GET(url = base_url, path = endpoint, query = qf, httr::write_disk(file))
+GET(url = base_url, path = endpoint, query = qf, write_disk(file))
 fao_areas = read_sf(file)
 ```
 
@@ -524,8 +554,8 @@ In most cases, as with the ESRI Shapefile\index{Shapefile} (`.shp`) or the `GeoP
 
 
 ```r
-vector_filepath = system.file("shapes/world.gpkg", package = "spData")
-world = read_sf(vector_filepath, quiet = TRUE)
+f = system.file("shapes/world.gpkg", package = "spData")
+world = read_sf(f, quiet = TRUE)
 ```
 
 For some drivers, `dsn` could be provided as a folder name, access credentials for a database, or a GeoJSON string representation (see the examples of the `read_sf()` help page for more details).
@@ -541,9 +571,14 @@ It is done by specifying that we want to get all columns (`SELECT *`) from the `
 
 
 ```r
-tanzania = read_sf(vector_filepath,
-                   query = 'SELECT * FROM "world" WHERE name_long = "Tanzania"')
+tanzania = read_sf(f, query = 'SELECT * FROM world WHERE name_long = "Tanzania"')
 ```
+
+If you do not know the names of the available columns, a good approach is to just read one row of the data with `'SELECT * FROM world WHERE FID = 1'`.
+`FID` represents a *feature ID* -- most often, it is a row number; however, its values depend on the used file format. 
+For example, `FID` starts from 0 in ESRI Shapefile, from 1 in some other file formats, or can be even arbitrary.
+
+
 
 The second mechanism uses the `wkt_filter` argument.
 This argument expects a well-known text representing study area for which we want to extract the data.
@@ -561,14 +596,13 @@ Now, we can apply this "filter" using the `wkt_filter` argument.
 
 
 ```r
-tanzania_neigh = read_sf(vector_filepath,
-                         wkt_filter = tanzania_buf_wkt)
+tanzania_neigh = read_sf(f, wkt_filter = tanzania_buf_wkt)
 ```
 
 Our result, shown in Figure \@ref(fig:readsfquery):B, contains Tanzania and every country within its 50 km buffer.
 
 <div class="figure" style="text-align: center">
-<img src="07-read-write-plot_files/figure-html/readsfquery-1.png" alt="Reading a subset of the vector data using a query (A) and a wkt filter (B)." width="100%" />
+<img src="08-read-write-plot_files/figure-html/readsfquery-1.png" alt="Reading a subset of the vector data using a query (A) and a wkt filter (B)." width="100%" />
 <p class="caption">(\#fig:readsfquery)Reading a subset of the vector data using a query (A) and a wkt filter (B).</p>
 </div>
 
@@ -584,11 +618,11 @@ For the comma-separated value (csv) format, visit http://www.gdal.org/drv_csv.ht
 
 ```r
 cycle_hire_txt = system.file("misc/cycle_hire_xy.csv", package = "spData")
-cycle_hire_xy = read_sf(cycle_hire_txt, options = c("X_POSSIBLE_NAMES=X",
-                                                    "Y_POSSIBLE_NAMES=Y"))
+cycle_hire_xy = read_sf(cycle_hire_txt,
+  options = c("X_POSSIBLE_NAMES=X", "Y_POSSIBLE_NAMES=Y"))
 ```
 
-Instead of columns describing xy-coordinates, a single column can also contain the geometry information.
+Instead of columns describing 'XY' coordinates, a single column can also contain the geometry information.
 Well-known text (WKT)\index{well-known text}, well-known binary (WKB)\index{well-known binary}, and the GeoJSON formats are examples of this.
 For instance, the `world_wkt.csv` file has a column named `WKT` representing polygons of the world's countries.
 We will again use the `options` parameter to indicate this.

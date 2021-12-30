@@ -16,7 +16,6 @@ library(dplyr)   # tidyverse package for data frame manipulation
 
 ```r
 library(spData)  # spatial data package introduced in Chapter 2
-#> Warning: multiple methods tables found for 'approxNA'
 ```
 
 ## Introduction
@@ -632,7 +631,7 @@ elev = rast(nrows = 6, ncols = 6, resolution = 0.5,
 The result is a raster object with 6 rows and 6 columns (specified by the `nrow` and `ncol` arguments), and a minimum and maximum spatial extent in x and y direction (`xmin`, `xmax`, `ymin`, `ymax`).
 The `vals` argument sets the values that each cell contains: numeric data ranging from 1 to 36 in this case.
 Raster objects can also contain categorical values of class `logical` or `factor` variables in R.
-The following code creates a raster representing grain sizes (Figure \@ref(fig:cont-raster)):
+The following code creates the raster datasets shown in Figure \@ref(fig:cont-raster):
 
 
 ```r
