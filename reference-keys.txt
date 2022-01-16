@@ -65,7 +65,9 @@ fig:06-raster-vector-40
 fig:crs-buf
 tab:catraster
 tab:rastercrs
+fig:mollproj
 fig:wintriproj
+fig:laeaproj2
 tab:datapackages
 tab:formats
 tab:drivers
