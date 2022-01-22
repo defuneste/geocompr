@@ -43,7 +43,7 @@ The following code chunk therefore not only reads the datasets from the **spData
 
 ```r
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
-zion = st_read(system.file("vector/zion.gpkg", package = "spDataLarge"))
+zion = read_sf(system.file("vector/zion.gpkg", package = "spDataLarge"))
 zion = st_transform(zion, crs(srtm))
 ```
 
@@ -239,6 +239,9 @@ This could be useful to calculate a weighted mean for continuous rasters or more
 By default, it is `FALSE` as this operation requires more computations.</div>\EndKnitrBlock{rmdnote}
 
 
+
+<!--toDo:JN-->
+<!-- mention https://github.com/isciences/exactextractr -->
 
 ## Rasterization {#rasterization}
 

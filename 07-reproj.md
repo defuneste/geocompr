@@ -4,24 +4,25 @@
 
 - This chapter requires the following packages (**lwgeom** is also used, but does not need to be attached):
 
+<!-- TODO: remove warning=FALSE in next chunk to suppress the following message: -->
+<!-- #> Warning: multiple methods tables found for 'gridDistance' -->
 
 ```r
 library(sf)
 library(terra)
 library(dplyr)
 library(spData)
-#> Warning: multiple methods tables found for 'direction'
-#> Warning: multiple methods tables found for 'gridDistance'
 library(spDataLarge)
 ```
 
 ## Introduction {#reproj-intro}
 
-Section \@ref(crs-intro) introduced coordinate reference systems (CRSs) and demonstrated their importance.
-This chapter goes further, highlighting specific issues that can arise due to ignoring CRSs, and demonstrating how to **set** coordinate systems and *transform* geographic data from one CRS to another.
+Section \@ref(crs-intro) introduced coordinate reference systems (CRSs), with a focus on the two major types of CRS: *geographic* ('lon/lat', with units in degrees longitude and latitude) and *projected* (typically with units of meters from a datum).
+This chapter builds on that knowledge and goes further.
+It demonstrates how to set and *transform* geographic data from one CRS to another and, furthermore, highlights specific issues that can arise due to ignoring CRSs that you should be aware of, especially if your data is stored with lon/lat coordinates.
 \index{CRS!geographic} 
 \index{CRS!projected} 
-As illustrated in Figure \@ref(fig:vectorplots) from that earlier chapter, there are two types of CRSs: *geographic* ('lon/lat', with units in degrees longitude and latitude) and *projected* (typically with units of meters from a datum).
+
 In many projects there is no need to worry about, let alone convert between, different CRSs.
 It is important to know if your data is in a projected or geographic coordinate system, and the consequences of this for geometry operations.
 However, if you know the CRS of your data and the consequences for geometry operations (covered in the next section), CRS should *just work*: knowledge of CRSs is often most important when things go wrong.
@@ -415,7 +416,7 @@ Many thanks to an anonymous reviewer whose comments formed the basis of this adv
 
 One possible approach to automatically select a projected CRS specific to a local dataset is to create an azimuthal equidistant ([AEQD](https://en.wikipedia.org/wiki/Azimuthal_equidistant_projection)) projection for the center-point of the study area.
 This involves creating a custom CRS (with no EPSG code) with units of meters based on the center point of a dataset.
-This approach should be used with caution: no other datasets will be compatible with the custom CRS created and results may not be accurate when used on extensive datasets covering hundreds of kilometers.
+Note that this approach should be used with caution: no other datasets will be compatible with the custom CRS created and results may not be accurate when used on extensive datasets covering hundreds of kilometers.
 
 The principles outlined in this section apply equally to vector and raster datasets.
 Some features of CRS transformation however are unique to each geographic data model.
@@ -435,7 +436,6 @@ Chapter \@ref(spatial-class) demonstrated how vector geometries are made-up of p
 Reprojecting vectors thus consists of transforming the coordinates of these points, which form the vertices of lines and polygons.
 
 Section \@ref(whenproject) contains an example in which at least one `sf` object must be transformed into an equivalent object with a different CRS to calculate the distance between two objects.
-
 
 
 ```r
@@ -657,18 +657,58 @@ However, it is desirable to create a new, custom CRS in some cases.
 Section \@ref(which-crs) mentioned reasons for using custom CRSs, and provided several possible approaches.
 Here, we show how to apply these ideas in R.
 
-<!--toDo:jn-->
-<!-- show example of azimuthal equidistant in the center-point of the study area -->
-<!--     Custom CRSs are also ideally specified as WKT2 -->
-<!--     https://epsg.io/ -->
-<!-- the two below websites are not up-to-date -->
-<!--     https://spatialreference.org/ref/epsg/ -->
-<!--     https://epsg.org/home.html -->
-<!-- https://projectionwizard.org/ -->
+One possible approach to creating a custom CRS is to take an existing WKT2 definition of a CRS, modify some of its elements, and then use the new definition for reprojecting.
+This can be done for spatial vectors with `st_crs()$wkt` and `st_transform()`, and for spatial rasters with `crs()` and `project()`.
+
+Let's try it by transforming the `zion` object to a custom azimuthal equidistant (AEQD) CRS.
+
+
+```r
+zion = read_sf(system.file("vector/zion.gpkg", package = "spDataLarge"))
+```
+
+Using a custom AEQD CRS requires knowing the coordinates of the center point of a dataset in degrees (geographic CRS).
+In our case, this information can be extracted by calculating a centroid of the `zion` area and transforming it into WGS84.
+
+
+```r
+zion_centr = st_centroid(zion)
+zion_centr_wgs84 = st_transform(zion_centr, "EPSG:4326")
+st_as_text(st_geometry(zion_centr_wgs84))
+#> [1] "POINT (-113 37.3)"
+```
+
+Next, we can use the newly obtained values to update the WKT2 definition of the azimuthal equidistant (AEQD) CRS seen below.
+Notice that we modified just two values below -- `"Central_Meridian"` to the longitude and `"Latitude_Of_Origin"` to the latitude of our centroid.
+
+
+```r
+my_wkt = 'PROJCS["Custom_AEQD",
+ GEOGCS["GCS_WGS_1984",
+  DATUM["WGS_1984",
+   SPHEROID["WGS_1984",6378137.0,298.257223563]],
+  PRIMEM["Greenwich",0.0],
+  UNIT["Degree",0.0174532925199433]],
+ PROJECTION["Azimuthal_Equidistant"],
+ PARAMETER["Central_Meridian",-113.0263],
+ PARAMETER["Latitude_Of_Origin",37.29818],
+ UNIT["Meter",1.0]]'
+```
+
+This approach's last step is to transform our original object (`zion`) to our new custom CRS (`zion_aeqd`).
+
+
+```r
+zion_aeqd = st_transform(zion, my_wkt)
+```
+
+Custom projections can also be made interactively, for example, using the [Projection Wizard](https://projectionwizard.org/#) web application [@savric_projection_2016].
+This website allows you to select a spatial extent of your data and a distortion property, and returns a list of possible projections.
+The list also contains WKT2 definitions of the projections that you can copy and use for reprojections.
 
 \index{CRS!proj4string}
-A `proj4string` definition can also be used to create custom projections, as long we accept its limitations mentioned in Section \@ref(crs-in-r). 
-Many projections have been developed and can be set with the `+proj=` element of `proj4string`s.^[
+A `proj4string` definition can also be used to create custom projections, as long we accept its limitations mentioned in Section \@ref(crs-in-r).
+For example, many projections have been developed and can be set with the `+proj=` element of `proj4string`s.^[
 The Wikipedia page 'List of map projections' has 70+ projections and illustrations.
 ]
 

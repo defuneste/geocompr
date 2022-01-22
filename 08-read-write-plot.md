@@ -435,9 +435,20 @@ Table \@ref(tab:formats) presents some basic information about selected and ofte
   </tr>
 </tbody>
 </table>
+
+<!--toDo: JN -->
+<!-- additional suggestions from our readers: -->
+<!-- - Spreadsheets, CSV files, CSV/TSV and other tabular friends/ convenient for exchanging data with systems not supporting spatial data, badly or using less common tools -->
+<!-- - KEA - https://gdal.org/drivers/raster/kea.html -->
+<!-- - TopoJSON - https://github.com/topojson/topojson -->
+<!-- - .geojson (usually) limited to longlat -->
+<!-- - NetCDF - https://en.wikipedia.org/wiki/NetCDF -->
+<!-- - @flatgeobuf also supports indexing -->
+<!-- - .hdf5 (hyperspec) and .las/.laz (lidar) -->
+<!-- - sfarrow & geoparquet/pandas/GeoFeather -->
+
 \index{Shapefile}
 \index{GeoPackage}
-
 An important development ensuring the standardization and open-sourcing of file formats was the founding of the Open Geospatial Consortium ([OGC](http://www.opengeospatial.org/)) in 1994.
 Beyond defining the simple features data model (see Section \@ref(intro-sf)), the OGC also coordinates the development of open standards, for example as used in file formats such as KML\index{KML} and GeoPackage\index{GeoPackage}.
 Open file formats of the kind endorsed by the OGC have several advantages over proprietary formats: the standards are published, ensure transparency and open up the possibility for users to further develop and adjust the file formats to their specific needs.
@@ -462,6 +473,14 @@ Similar to ESRI Shapefile, this format was firstly developed in the 1990s, but a
 Additionally, GeoTIFF is still being expanded and improved.
 One of the most significant recent addition to the GeoTIFF format is its variant called COG (*Cloud Optimized GeoTIFF*).
 Raster objects saved as COGs can be hosted on HTTP servers, so other people can read only parts of the file without downloading the whole file (see Sections \@ref(raster-data-read) and \@ref(raster-data-write)).
+
+
+<!--toDo: JN -->
+<!-- tabular formats -->
+
+<!--toDo: JN -->
+<!-- other formats (netcdf, las) -->
+
 
 ## Data input (I) {#data-input}
 
