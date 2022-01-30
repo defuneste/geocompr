@@ -10,8 +10,6 @@ library(sf)
 library(terra)
 library(dplyr)
 library(spData)
-#> Warning: multiple methods tables found for 'direction'
-#> Warning: multiple methods tables found for 'gridDistance'
 ```
 
 - You also need to read in a couple of datasets as follows for Section \@ref(spatial-ras)
@@ -279,15 +277,6 @@ The model was originally labelled "DE + 9IM" by its inventors, referring to the 
 To demonstrate how DE-9IM strings work, let's take a look at the various ways that the first geometry pair in Figure \@ref(fig:relations) relate.
 Figure \@ref(fig:de9imgg) illustrates the 9 intersection model (9IM) which shows the intersections between every combination of each object's interior, boundary and exterior: when each component of the first object `x` is arranged as columns and each component of `y` is arranged as rows, a facetted graphic is created with the intersections between each element highlighted.
 
-
-```
-#> 
-#> Attaching package: 'ggplot2'
-#> The following object is masked from 'package:terra':
-#> 
-#>     arrow
-```
-
 <div class="figure" style="text-align: center">
 <img src="04-spatial-operations_files/figure-html/de9imgg-1.png" alt="Illustration of how the Dimensionally Extended 9 Intersection Model (DE-9IM) works. Colors not in the legend represent the overlap between different components. The thick lines highlight 2 dimensional intesections, e.g. between the boundary of object x and the interior of object y, shown in the middle top facet." width="100%" />
 <p class="caption">(\#fig:de9imgg)Illustration of how the Dimensionally Extended 9 Intersection Model (DE-9IM) works. Colors not in the legend represent the overlap between different components. The thick lines highlight 2 dimensional intesections, e.g. between the boundary of object x and the interior of object y, shown in the middle top facet.</p>
@@ -348,8 +337,6 @@ plot(grid, col = grid_sf$queens)
 grid_sf$rooks = lengths(st_rook(grid, grid[5])) > 0
 plot(grid, col = grid_sf$rooks)
 ```
-
-<img src="04-spatial-operations_files/figure-html/queenscode-1.png" width="100%" style="display: block; margin: auto;" /><img src="04-spatial-operations_files/figure-html/queenscode-2.png" width="100%" style="display: block; margin: auto;" />
 
 <div class="figure" style="text-align: center">
 <img src="04-spatial-operations_files/figure-html/queens-1.png" alt="Demonstration of custom binary spatial predicates for finding 'queen' (left) and 'rook' (right) relations to the central square in a grid with 9 geometries." width="100%" />

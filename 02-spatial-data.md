@@ -50,8 +50,6 @@ The other packages that were installed contain data that will be used in the boo
 
 ```r
 library(spData)        # load geographic data
-#> Warning: multiple methods tables found for 'direction'
-#> Warning: multiple methods tables found for 'gridDistance'
 library(spDataLarge)   # load larger geographic data
 ```
 
@@ -216,9 +214,8 @@ Other geometry types are described in Section \@ref(geometry).</div>\EndKnitrBlo
 
 It is worth taking a deeper look at the basic behavior and contents of this simple feature object, which can usefully be thought of as a '**s**patial data **f**rame'.
 
-`sf` objects are easy to subset.
-The code below shows its first two rows and three columns.
-The output shows two major differences compared with a regular `data.frame`: the inclusion of additional geographic data (`geometry type`, `dimension`, `bbox` and CRS information - `epsg (SRID)`, `proj4string`), and the presence of a `geometry` column, here named `geom`:
+`sf` objects are easy to subset: the code below shows how to return an object containing only the first two rows and the first three columns of the `world` object.
+The output shows two major differences compared with a regular `data.frame`: the inclusion of additional geographic metadata (`Geometry type`, `Dimension`, `Bounding box` and coordinate reference system information on the line beginning `Geodetic CRS` CRS information), and the presence of a 'geometry column', here named `geom`:
 
 
 ```r
@@ -236,8 +233,8 @@ world_mini
 #> 2 TZ     Tanzania  Africa    (((33.9 -0.95, 31.9 -1.03, 30.8 -1.01, 30.4 -1.13,…
 ```
 
-All this may seem rather complex, especially for a class system that is supposed to be simple.
-However, there are good reasons for organizing things this way and using **sf**.
+All this may seem rather complex, especially for a class system that is supposed to be 'simple'!
+However, there are good reasons for organizing things this way and using **sf** to work with vector geographic datasets.
 
 Before describing each geometry type that the **sf** package supports, it is worth taking a step back to understand the building blocks of `sf` objects. 
 Section \@ref(sf) shows how simple features objects are data frames, with special geometry columns.
@@ -248,7 +245,7 @@ In turn, `sfc` objects are composed of one or more objects of class `sfg`: simpl
 \index{simple feature columns|see {sf!sfc}}
 
 To understand how the spatial components of simple features work, it is vital to understand simple feature geometries.
-For this reason we cover each currently supported simple features geometry type in Section \@ref(geometry) before moving on to describe how these can be represented in R using `sfg` objects, which form the basis of `sfc` and eventually full `sf` objects.
+For this reason we cover each currently supported simple features geometry type in Section \@ref(geometry) before moving on to describe how these can be represented in R using `sf` objects, which are based on `sfg` and `sfc` objects.
 
 \BeginKnitrBlock{rmdnote}<div class="rmdnote">The preceding code chunk uses `=` to create a new object called `world_mini` in the command `world_mini = world[1:2, 1:3]`.
 This is called assignment.
@@ -271,7 +268,9 @@ There are many reasons (linked to the advantages of the simple features model):
 - **sf** function names are relatively consistent and intuitive (all begin with `st_`)
 - **sf** functions can be combined using `%>%` operator and works well with the [tidyverse](http://tidyverse.org/) collection of R packages\index{tidyverse}.
 
-**sf**'s support for **tidyverse** packages is exemplified by the provision of two functions for reading in data, `st_read()` and `read_sf()` which store attributes in base R `data.frame` and **tidyverse** `tibble` classes respectively, as demonstrated below (see Chapter \@ref(attr) for more on manipulating geographic data with **tidyverse** functions and Section \@ref(iovec) for further details on reading and writing geographic vector data with R):
+**sf**'s support for **tidyverse** packages is exemplified by the provision of the `read_sf()` function for reading geographic vector datasets.
+Unlike the function `st_read()`, which returns attributes stored in a base R `data.frame` (and which provides more verbose messages, not shown in the code chunk below), `read_sf()` returns data as a **tidyverse** `tibble`.
+This is demonstrated below (see Section \@ref(iovec)) on reading geographic vector data):
 
 
 ```r
@@ -291,12 +290,11 @@ class(nc_tbl)
 ```
 
 
-**sf** is now the go-to package for analysis of spatial vector data in R (not withstanding the **spatstat** package ecosystem which provides numerous functions for spatial statistics).
+As described in Chapter \@ref(attr), which shows how to manipulate `sf` objects with **tidyverse** functions, **sf** is now the go-to package for analysis of spatial vector data in R (not withstanding the **spatstat** package ecosystem which provides numerous functions for spatial statistics).
 Many popular packages build on **sf**, as shown by the rise in its popularity in terms of number of downloads per day, as shown in Section \@ref(r-ecosystem) in the previous chapter.
-However, it will take many years for most packages to fully transition away from older packages such as **sp**, many packages depend on both **sf** and **sp** and some will never switch [@bivand_progress_2021].
+Transitioning established packages and workflows away from legacy packages **rgeos** and **rgdal** takes time [@bivand_progress_2021], but the process was given a sense of urgency by messages printed when they were loaded, which state that they "will be retired by the end of 2023".
+This means that anyone still using these packages should "**transition to sf/stars/terra functions using GDAL and PROJ at your earliest convenience**". 
 
-In this context it is important to note that people still using **sp** (and related **rgeos** and **rgdal**) packages are advised to switch to **sf**.
-The description of [**rgeos**](https://cran.r-project.org/package=rgeos) on CRAN, for example, states that the package "will be retired by the **end of 2023**" and advises people to plan for the transition to **sf**.
 In other words, **sf** is future proof but **sp** is not.
 For workflows that depend on the legacy class system, `sf` objects can be converted from and to the `Spatial` class of the **sp** package as follows:
 
@@ -467,6 +465,66 @@ Finally, a geometry collection can contain any combination of geometries includi
 <img src="02-spatial-data_files/figure-html/geomcollection-1.png" alt="Illustration of a geometry collection." width="33%" />
 <p class="caption">(\#fig:geomcollection)Illustration of a geometry collection.</p>
 </div>
+
+### The sf class {#sf}
+
+Simple features consist of two main parts: geometries and non-geographic attributes.
+Figure \@ref(fig:02-sfdiagram) shows how an sf object is created -- geometries come from an `sfc` object, while attributes are taken from a `data.frame` or `tibble`.
+To learn more about building sf geometries from scratch read the following Sections \@ref(sfg) and \@ref(sfc).
+
+<div class="figure" style="text-align: center">
+<img src="figures/02-sfdiagram.png" alt="Building blocks of sf objects." width="100%" />
+<p class="caption">(\#fig:02-sfdiagram)Building blocks of sf objects.</p>
+</div>
+
+Non-geographic attributes represent the name of the feature or other attributes such as measured values, groups, and other things.
+\index{sf!class}
+To illustrate attributes, we will represent a temperature of 25°C in London on June 21^st^, 2017.
+This example contains a geometry (the coordinates), and three attributes with three different classes (place name, temperature and date).^[
+Other attributes might include an urbanity category (city or village), or a remark if the measurement was made using an automatic station.
+]
+Objects of class `sf` represent such data by combining the attributes (`data.frame`) with the simple feature geometry column (`sfc`).
+They are created with `st_sf()` as illustrated below, which creates the London example described above:
+
+
+```r
+lnd_point = st_point(c(0.1, 51.5))                 # sfg object
+lnd_geom = st_sfc(lnd_point, crs = 4326)           # sfc object
+lnd_attrib = data.frame(                           # data.frame object
+  name = "London",
+  temperature = 25,
+  date = as.Date("2017-06-21")
+  )
+lnd_sf = st_sf(lnd_attrib, geometry = lnd_geom)    # sf object
+```
+
+What just happened? First, the coordinates were used to create the simple feature geometry (`sfg`).
+Second, the geometry was converted into a simple feature geometry column (`sfc`), with a CRS.
+Third, attributes were stored in a `data.frame`, which was combined with the `sfc` object with `st_sf()`.
+This results in an `sf` object, as demonstrated below (some output is omitted):
+
+
+```r
+lnd_sf
+#> Simple feature collection with 1 features and 3 fields
+#> ...
+#>     name temperature       date         geometry
+#> 1 London          25 2017-06-21 POINT (0.1 51.5)
+```
+
+
+```r
+class(lnd_sf)
+#> [1] "sf"         "data.frame"
+```
+
+The result shows that `sf` objects actually have two classes, `sf` and `data.frame`.
+Simple features are simply data frames (square tables), but with spatial attributes stored in a list column, usually called `geometry`, as described in Section \@ref(intro-sf).
+This duality is central to the concept of simple features:
+most of the time a `sf` can be treated as and behaves like a `data.frame`.
+Simple features are, in essence, data frames with a spatial extension.
+
+
 
 ### Simple feature geometries (sfg) {#sfg}
 
@@ -647,92 +705,20 @@ st_crs(points_sfc)
 #> Coordinate Reference System: NA
 ```
 
-All geometries in an `sfc` object must have the same CRS.
-We can add coordinate reference system as a `crs` argument of `st_sfc()`. 
-To specify a certain CRS, we can provide Spatial Reference System Identifier (SRID, e.g., `"EPSG:4326"`), well-known text (WKT2), or proj4string representation (see Section \@ref(crs-intro)).
-If we provide SRID or proj4string, then the well-known text (WKT2) will be added automatically.
+All geometries in `sfc` objects must have the same CRS.
+A CRS can be specified with the `crs` argument of `st_sfc()` (or `st_sf()`), which takes a **CRS identifier** provided as a text string, such as `crs = "EPSG:4326"` (see Section \@ref(crs-in-r) for other CRS representations and details on what this means).
 
 
 ```r
-# EPSG definition
+# Set the CRS with an identifier referring to an 'EPSG' CRS code:
 points_sfc_wgs = st_sfc(point1, point2, crs = "EPSG:4326")
-st_crs(points_sfc_wgs)
+st_crs(points_sfc_wgs) # print CRS (only first 4 lines of output shown)
 #> Coordinate Reference System:
 #>   User input: EPSG:4326 
 #>   wkt:
 #> GEOGCRS["WGS 84",
-#>     DATUM["World Geodetic System 1984",
-#>         ELLIPSOID["WGS 84",6378137,298.257223563,
-#>             LENGTHUNIT["metre",1]]],
-#>     PRIMEM["Greenwich",0,
-#>         ANGLEUNIT["degree",0.0174532925199433]],
-#>     CS[ellipsoidal,2],
-#>         AXIS["geodetic latitude (Lat)",north,
-#>             ORDER[1],
-#>             ANGLEUNIT["degree",0.0174532925199433]],
-#>         AXIS["geodetic longitude (Lon)",east,
-#>             ORDER[2],
-#>             ANGLEUNIT["degree",0.0174532925199433]],
-#>     USAGE[
-#>         SCOPE["unknown"],
-#>         AREA["World"],
-#>         BBOX[-90,-180,90,180]],
-#>     ID["EPSG",4326]]
-```
-
-### The sf class {#sf}
-
-Sections \@ref(geometry) to \@ref(sfc) deal with purely geometric objects, 'sf geometry' and 'sf column' objects, respectively.
-These are geographic building blocks of geographic vector data represented as simple features.
-The final building block is non-geographic attributes, representing the name of the feature or other attributes such as measured values, groups, and other things.
-\index{sf!class}
-
-To illustrate attributes, we will represent a temperature of 25°C in London on June 21^st^, 2017.
-This example contains a geometry (the coordinates), and three attributes with three different classes (place name, temperature and date).^[
-Other attributes might include an urbanity category (city or village), or a remark if the measurement was made using an automatic station.
-]
-Objects of class `sf` represent such data by combining the attributes (`data.frame`) with the simple feature geometry column (`sfc`).
-They are created with `st_sf()` as illustrated below, which creates the London example described above:
-
-
-```r
-lnd_point = st_point(c(0.1, 51.5))                 # sfg object
-lnd_geom = st_sfc(lnd_point, crs = 4326)           # sfc object
-lnd_attrib = data.frame(                           # data.frame object
-  name = "London",
-  temperature = 25,
-  date = as.Date("2017-06-21")
-  )
-lnd_sf = st_sf(lnd_attrib, geometry = lnd_geom)    # sf object
-```
-
-What just happened? First, the coordinates were used to create the simple feature geometry (`sfg`).
-Second, the geometry was converted into a simple feature geometry column (`sfc`), with a CRS.
-Third, attributes were stored in a `data.frame`, which was combined with the `sfc` object with `st_sf()`.
-This results in an `sf` object, as demonstrated below (some output is omitted):
-
-
-```r
-lnd_sf
-#> Simple feature collection with 1 features and 3 fields
 #> ...
-#>     name temperature       date         geometry
-#> 1 London          25 2017-06-21 POINT (0.1 51.5)
 ```
-
-
-```r
-class(lnd_sf)
-#> [1] "sf"         "data.frame"
-```
-
-The result shows that `sf` objects actually have two classes, `sf` and `data.frame`.
-Simple features are simply data frames (square tables), but with spatial attributes stored in a list column, usually called `geometry`, as described in Section \@ref(intro-sf).
-This duality is central to the concept of simple features:
-most of the time a `sf` can be treated as and behaves like a `data.frame`.
-Simple features are, in essence, data frames with a spatial extension.
-
-
 
 ## Raster data
 
@@ -839,7 +825,7 @@ my_rast
 #> max value   : 2892
 ```
 
-Dedicated functions report each component: `dim(my_rast)` returns the number of rows, columns and layers; `ncell()` the number of cells (pixels); `res()` the spatial resolution; `ext()` its spatial extent; and `crs()` its coordinate reference system (raster reprojection is covered in Section \@ref(reprojecting-raster-geometries)).
+Dedicated functions report each component: `dim(my_rast)` returns the number of rows, columns and layers; `ncell()` the number of cells (pixels); `res()` the spatial resolution; `ext()` its spatial extent; and `crs()` its coordinate reference system (raster reprojection is covered in Section \@ref(reproj-ras)).
 `inMemory()` reports whether the raster data is stored in memory or on disk.
 
 `help("terra-package")` returns a full list of all available **terra** functions.
@@ -947,13 +933,13 @@ In these cases, there are two possible solutions: (1) use of the `wrap()` functi
 <!--consider new section with other data models-->
 <!-- e.g. point clouds, data cubes, meshes, etc. -->
 
-## Coordinate Reference Systems {#crs-intro}
+## Geographic and projected Coordinate Reference Systems {#crs-intro}
 
 \index{CRS!introduction}
 Vector and raster spatial data types share concepts intrinsic to spatial data.
 Perhaps the most fundamental of these is the Coordinate Reference System (CRS), which defines how the spatial elements of the data relate to the surface of the Earth (or other bodies).
 CRSs are either geographic or projected, as introduced at the beginning of this chapter (see Figure \@ref(fig:vectorplots)).
-This section will explain each type, laying the foundations for Section \@ref(reproj-geo-data) on CRS transformations.
+This section explains each type, laying the foundations for Chapter \@ref(reproj-geo-data), which provides a deep dive into setting, transforming and querying CRSs.
 
 ### Geographic coordinate systems
 
