@@ -1,7 +1,7 @@
 --- 
 title: 'Geocomputation with R'
 author: 'Robin Lovelace, Jakub Nowosad, Jannes Muenchow'
-date: '2022-01-30'
+date: '2022-02-13'
 site: bookdown::bookdown_site
 output: bookdown::bs4_book
 documentclass: krantz
@@ -32,13 +32,17 @@ This is the online home of *Geocomputation with R*, a book on geographic data an
 You can buy the book from [CRC Press](https://www.routledge.com/9781138304512), or [Amazon](https://www.amazon.com/Geocomputation-R-Robin-Lovelace-dp-0367670577/dp/0367670577/), and see the archived **First Edition** hosted on [bookdown.org](https://bookdown.org/robinlovelace/geocompr/). 
 
 Inspired by the Free and Open Source Software for Geospatial ([FOSS4G](https://foss4g.org/)) movement, the code and prose underlying this book are open, ensuring that the content is reproducible, transparent, and accessible.
-Hosting the source code on [GitHub](https://github.com/Robinlovelace/geocompr/) allows anyone to contribute new content and typo fixes for the benefit of everyone.
+Hosting the source code on [GitHub](https://github.com/Robinlovelace/geocompr/) allows anyone to interact with the project by opening issues or contributing new content and typo fixes for the benefit of everyone.
+
+[![](https://img.shields.io/github/stars/robinlovelace/geocompr?style=for-the-badge)](https://github.com/robinlovelace/geocompr)
+[![](https://img.shields.io/github/contributors/robinlovelace/geocompr?style=for-the-badge)](https://github.com/Robinlovelace/geocompr/graphs/contributors)
+
 The online version of the book is hosted at [geocompr.robinlovelace.net](https://geocompr.robinlovelace.net) and kept up-to-date by [GitHub Actions](https://github.com/Robinlovelace/geocompr/actions).
 Its current 'build status' as follows:
 
 [![Actions](https://github.com/Robinlovelace/geocompr/workflows/Render/badge.svg)](https://github.com/Robinlovelace/geocompr/actions)
 
-This version of the book was built on GH Actions on 2022-01-30.
+This version of the book was built on GH Actions on 2022-02-13.
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 
@@ -79,14 +83,10 @@ These can be installed using the [**remotes**](https://github.com/r-lib/remotes)
 ```r
 install.packages("remotes")
 remotes::install_github("geocompr/geocompkg")
-remotes::install_github("nowosad/spData")
-remotes::install_github("nowosad/spDataLarge")
-
-# During development work on the 2nd edition you may also need dev versions of
-# other packages to build the book, e.g.,:
-remotes::install_github("rspatial/terra")
-remotes::install_github("mtennekes/tmap")
 ```
+
+
+
 
 After installing the book's dependencies, you can rebuild the book for testing and educational purposes.
 To do this [download](https://github.com/Robinlovelace/geocompr/archive/refs/heads/main.zip) and unzip or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the book's source code.
@@ -219,7 +219,7 @@ If you are interested in the wider context and motivations behind this book, rea
 
 
 
-Many thanks to everyone who contributed directly and indirectly via the code hosting and collaboration site GitHub, including the following people who contributed direct via pull requests: prosoitos, florisvdh, katygregg, rsbivand, iod-ine, KiranmayiV, zmbc, erstearns, MikeJohnPage, eyesofbambi, nickbearman, tyluRp, marcosci, giocomai, KHwong12, LaurieLBaker, MarHer90, mdsumner, pat-s, gisma, ateucher, annakrystalli, darrellcarvalho, kant, gavinsimpson, Himanshuteli, yutannihilation, jbixon13, olyerickson, yvkschaefer, katiejolly, layik, mpaulacaldas, mtennekes, mvl22, defuneste, ganes1410, richfitz, wdearden, yihui, chihinl, cshancock, e-clin, ec-nebi, gregor-d, jasongrahn, p-kono, pokyah, schuetzingit, sdesabbata, tim-salabim, tszberkowitz.
+Many thanks to everyone who contributed directly and indirectly via the code hosting and collaboration site GitHub, including the following people who contributed direct via pull requests: prosoitos, florisvdh, katygregg, rsbivand, iod-ine, KiranmayiV, zmbc, erstearns, dcooley, MikeJohnPage, defuneste, eyesofbambi, nickbearman, tyluRp, marcosci, giocomai, KHwong12, LaurieLBaker, MarHer90, mdsumner, pat-s, darrellcarvalho, e-clin, gisma, ateucher, annakrystalli, kant, gavinsimpson, Himanshuteli, yutannihilation, jimr1603, jbixon13, olyerickson, yvkschaefer, katiejolly, layik, mpaulacaldas, mtennekes, mvl22, ganes1410, richfitz, wdearden, yihui, chihinl, cshancock, ec-nebi, gregor-d, jasongrahn, p-kono, pokyah, schuetzingit, sdesabbata, tim-salabim, tszberkowitz.
 Special thanks to Marco Sciaini, who not only created the front cover image, but also published the code that generated it (see `code/frontcover.R` in the book's GitHub repo). 
 Dozens more people contributed online, by raising and commenting on issues, and by providing feedback via social media.
 The `#geocompr` hashtag will live on!

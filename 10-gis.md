@@ -2,23 +2,28 @@
 
 ## Prerequisites {-}
 
-- This chapter requires QGIS\index{QGIS}, SAGA\index{SAGA} and GRASS\index{GRASS} to be installed and the following packages to be attached:^[
-Packages that have already been used including **spData**, **spDataLarge** and **dplyr** also need to be installed. 
-]
+- This chapter requires QGIS\index{QGIS}, SAGA\index{SAGA} and GRASS\index{GRASS} to be installed and the following packages to be attached:
 
 
 ```r
 library(sf)
-library(raster)
+library(terra)
 ```
 
 
 ```r
-#library(RQGIS)
-library(RSAGA)
+# remotes::install_github("paleolimbot/qgisprocess")
+library(qgisprocess)
+library(Rsagacmd)
 library(rgrass7)
 ```
 
+<!-- RSAGA is no longer under active development and no support is available. Try Rsagacmd. -->
+<!-- https://github.com/r-spatial/RSAGA -->
+<!-- https://github.com/stevenpawley/Rsagacmd -->
+
+<!-- issue of rgrass -->
+<!-- https://github.com/rsbivand/rgrass -->
 
 ## Introduction
 
@@ -32,7 +37,7 @@ it was only after the widespread uptake of computer mice and high-resolution scr
 GRASS, one of the longest-standing GIS\index{GIS} programs, for example, relied primarily on command-line interaction before it gained a sophisticated GUI [@landa_new_2008].
 ]
 In dedicated GIS\index{GIS} packages, by contrast, the emphasis tends to be on the graphical user interface (GUI)\index{graphical user interface}.
-You *can* interact with GRASS\index{GRASS}, QGIS\index{QGIS}, SAGA\index{SAGA} and gvSIG from system terminals and embedded CLIs\index{command-line interface} such as the [Python Console in QGIS](https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/intro.html)\index{Python}, but 'pointing and clicking' is the norm.
+You *can* interact with GRASS\index{GRASS}, QGIS\index{QGIS}, SAGA\index{SAGA} and gvSIG from system terminals and embedded CLIs\index{command-line interface}, but 'pointing and clicking' is the norm.
 This means many GIS\index{GIS} users miss out on the advantages of the command-line according to Gary Sherman, creator of QGIS\index{QGIS} [@sherman_desktop_2008]:
 
 > With the advent of 'modern' GIS software, most people want to point and
@@ -45,31 +50,30 @@ The 'CLI vs GUI'\index{graphical user interface} debate can be adversial but it 
 The advantages of a good CLI\index{command-line interface} such as that provided by R (and enhanced by IDEs\index{IDE} such as RStudio\index{RStudio}) are numerous.
 A good CLI:
 
-- Facilitates the automation of repetitive tasks; 
-- Enables transparency and reproducibility, the backbone of good scientific practice and data science;
-- Encourages software development by providing tools to modify existing functions and implement new ones;
-- Helps develop future-proof programming skills which are in high demand in many disciplines and industries; and
-- Is user-friendly and fast, allowing an efficient workflow.
+- Facilitates the automation of repetitive tasks
+- Enables transparency and reproducibility, the backbone of good scientific practice and data science
+- Encourages software development by providing tools to modify existing functions and implement new ones
+- Helps develop future-proof programming skills which are in high demand in many disciplines and industries
+- Is user-friendly and fast, allowing an efficient workflow
 
 On the other hand, GUI-based GIS\index{GIS} systems (particularly QGIS\index{QGIS}) are also advantageous.
 A good GIS GUI:
 
-- Has a 'shallow' learning curve meaning geographic data can be explored and visualized without hours of learning a new language;
-- Provides excellent support for 'digitizing' (creating new vector datasets), including trace, snap and topological tools;^[
-The **mapedit** package allows the quick editing of a few spatial features but not professional, large-scale cartographic digitizing;
+- Has a 'shallow' learning curve meaning geographic data can be explored and visualized without hours of learning a new language
+- Provides excellent support for 'digitizing' (creating new vector datasets), including trace, snap and topological tools^[
+The **mapedit** package allows the quick editing of a few spatial features but not professional, large-scale cartographic digitizing.
 ]
-- Enables georeferencing (matching raster images to existing maps) with ground control points and orthorectification;
-- Supports stereoscopic mapping (e.g., LiDAR and structure from motion); and
-- Provides access to spatial database management systems with object-oriented relational data models, topology and fast (spatial) querying.
+- Enables georeferencing (matching raster images to existing maps) with ground control points and orthorectification
+- Supports stereoscopic mapping (e.g., LiDAR and structure from motion)
+- Provides access to spatial database management systems with object-oriented relational data models, topology and fast (spatial) querying
 
 Another advantage of dedicated GISs is that they provide access to hundreds of 'geoalgorithms' (computational recipes to solve geographic problems --- see Chapter \@ref(algorithms)).
 Many of these are unavailable from the R command line, except via 'GIS bridges', the topic of (and motivation for) this chapter.^[
 An early use of the term 'bridge' referred to the coupling of R with GRASS\index{GRASS} [@neteler_open_2008].
-Roger Bivand elaborated on this in his talk, "Bridges between GIS and R", delivered at the 2016 GEOSTAT summer school (see slides at: http://spatial.nhh.no/misc/).
 ]
 
 \BeginKnitrBlock{rmdnote}<div class="rmdnote">A command-line interface is a means of interacting with computer programs in which the user issues commands via successive lines of text (command lines).
-`bash` in Linux and `PowerShell` in Windows are common examples.
+`bash` in Linux and `PowerShell` in Windows are its common examples.
 CLIs can be augmented with IDEs such as RStudio for R, which provides code auto-completion and other features to improve the user experience.</div>\EndKnitrBlock{rmdnote}
 
 R originated as an interface language.
@@ -79,10 +83,14 @@ R was not designed as a GIS.
 However, its ability to interface with dedicated GISs gives it astonishing geospatial capabilities.
 R is well known as a statistical programming language, but many people are unaware of its ability to replicate GIS workflows, with the additional benefits of a (relatively) consistent CLI.
 Furthermore, R outperforms GISs in some areas of geocomputation\index{geocomputation}, including interactive/animated map making (see Chapter \@ref(adv-map)) and spatial statistical modeling (see Chapter \@ref(spatial-cv)).
-This chapter focuses on 'bridges' to three mature open source GIS products (see Table \@ref(tab:gis-comp)): QGIS\index{QGIS} (via the package **RQGIS**\index{RQGIS (package)}; Section \@ref(rqgis)), SAGA\index{SAGA} (via **RSAGA**\index{RSAGA (package)}; Section \@ref(rsaga)) and GRASS\index{GRASS} (via **rgrass7**\index{rgrass7 (package)}; Section \@ref(rgrass)).
-Though not covered here, it is worth being aware of the interface to ArcGIS\index{ArcGIS}, a proprietary and very popular GIS software, via **RPyGeo**.^[By the way, it is also possible to use R from within Desktop GIS software packages. 
-The so-called R-ArcGIS bridge (see https://github.com/R-ArcGIS/r-bridge) allows R to be used from within ArcGIS\index{ArcGIS}. 
-One can also use R scripts from within QGIS\index{QGIS} (see https://docs.qgis.org/2.18/en/docs/training_manual/processing/r_intro.html).
+This chapter focuses on 'bridges' to three mature open source GIS products (see Table \@ref(tab:gis-comp)): QGIS\index{QGIS} (via the package **qgisprocess**\index{qgisprocess (package)}; Section \@ref(rqgis)), SAGA\index{SAGA} (via **Rsagacmd**\index{Rsagacmd (package)}; Section \@ref(rsaga)) and GRASS\index{GRASS} (via **rgrass7**\index{rgrass7 (package)}; Section \@ref(rgrass)).
+<!--toDo:jn-->
+<!-- Though not covered here, it is worth being aware of the interface to ArcGIS\index{ArcGIS}, a proprietary and very popular GIS software, via **RPyGeo**.^[By the way, it is also possible to use R from within Desktop GIS software packages.  -->
+<!-- The so-called R-ArcGIS bridge (see https://github.com/R-ArcGIS/r-bridge) allows R to be used from within ArcGIS\index{ArcGIS}.  -->
+<!--toDo:jn-->
+<!-- rgee? -->
+<!-- whitetoolbox? -->
+One can also use R scripts from within QGIS\index{QGIS} (see https://docs.qgis.org/3.16/en/docs/training_manual/processing/r_intro.html).
 Finally, it is also possible to use R from the GRASS GIS\index{GRASS} command line (see https://grasswiki.osgeo.org/wiki/R_statistics/rgrass7).
 ]
 To complement the R-GIS bridges, the chapter ends with a very brief introduction to interfaces to spatial libraries (Section \@ref(gdal)) and spatial databases\index{spatial database} (Section \@ref(postgis)).
@@ -96,39 +104,31 @@ Table: (\#tab:gis-comp)Comparison between three open-source GIS. Hybrid refers t
 |QGIS  |2002          |>1000         |hybrid  |
 |SAGA  |2004          |>600          |hybrid  |
 
-## (R)QGIS {#rqgis}
+## QGIS through **qgisprocess** {#rqgis}
 
 QGIS\index{QGIS} is one of the most popular open-source GIS [Table \@ref(tab:gis-comp); @graser_processing_2015]. 
 Its main advantage lies in the fact that it provides a unified interface to several other open-source GIS.
-This means that you have access to GDAL\index{GDAL}, GRASS\index{GRASS} and SAGA\index{SAGA} through QGIS\index{QGIS} [@graser_processing_2015]. 
-To run all these geoalgorithms (frequently more than 1000 depending on your set-up) outside of the QGIS GUI, QGIS provides a Python API\index{API}.
-**RQGIS**\index{RQGIS (package)} establishes a tunnel to this Python API\index{API} through the **reticulate** package\index{reticulate (package)}. 
-Basically, functions `set_env()` and `open_app()` are doing this. 
-Note that it is optional to run `set_env()` and `open_app()` since all functions depending on their output will run them automatically if needed.
-Before running **RQGIS**\index{RQGIS (package)}, make sure you have installed QGIS\index{QGIS} and all its (third-party) dependencies such as SAGA\index{SAGA} and GRASS\index{GRASS}.
-To install **RQGIS** a number of dependencies are required, as described in the [`install_guide`](https://cran.r-project.org/web/packages/RQGIS/vignettes/install_guide.html) vignette, which covers installation on Windows, Linux and Mac.
-At the time of writing (autumn 2018) RQGIS only supports the [Long Term Release](https://qgis.org/en/site/getinvolved/development/roadmap.html) (2.18), but support for QGIS 3 is in the pipeline (see [RQGIS3](https://github.com/jannes-m/RQGIS3)).
+This means that you have access to GDAL\index{GDAL}, GRASS\index{GRASS}, and SAGA\index{SAGA} through QGIS\index{QGIS} [@graser_processing_2015]. 
+Since version 3.14, QGIS provides a command line API\index{API} that allows to run all these geoalgorithms (frequently more than 1000, depending on your set-up) outside of the QGIS GUI.
 
-
-
-```r
-#library(RQGIS)
-set_env(dev = FALSE)
-#> $`root`
-#> [1] "C:/OSGeo4W64"
-#> ...
-```
-
-Leaving the `path`-argument of `set_env()` unspecified will search the computer for a QGIS\index{QGIS} installation.
-Hence, it is faster to specify explicitly the path to your QGIS installation.
-Subsequently, `open_app()` sets all paths necessary to run QGIS from within R, and finally creates a so-called QGIS custom application (see [http://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/intro.html#using-pyqgis-in-custom-applications](http://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/intro.html#using-pyqgis-in-custom-applications)).
+The **qgisprocess** package \index{qgisprocess (package)} wraps this QGIS command-line utility, and thus makes it possible to call QGIS, GDAL, GRASS, and SAGA algorithms from the R session.
+Before running **qgisprocess**\index{qgisprocess (package)}, make sure you have installed QGIS\index{QGIS} and all its (third-party) dependencies such as SAGA\index{SAGA} and GRASS\index{GRASS}.
+<!--toDo:jn-->
+<!-- mention automatic configuration -->
+<!-- qgis_configure() for details -->
 
 
 ```r
-open_app()
+library(qgisprocess)
 ```
 
-We are now ready for some QGIS geoprocessing from within R! 
+<!--toDo:jn-->
+<!-- next mention and explain qgis_algorithms() -->
+<!-- You can also find the algorithms\index{algorithm} in the [QGIS online documentation](https://docs.qgis.org/2.18/en/docs/user_manual/processing_algs/index.html). -->
+<!-- maybe also mention that it can be expanded based on other installed software... -->
+<!-- qgis_show_help() -->
+
+We are now ready for some QGIS geocomputation from within R! 
 The example below shows how to unite polygons, a process that unfortunately produces so-called slivers \index{sliver polygons}, tiny polygons resulting from overlaps between the inputs that frequently occur in real-world data.
 We will see how to remove them.
 
@@ -138,144 +138,89 @@ Both polygon datasets are available in the **spData** package, and for both we w
 
 ```r
 data("incongruent", "aggregating_zones", package = "spData")
-incongr_wgs = st_transform(incongruent, 4326)
-aggzone_wgs = st_transform(aggregating_zones, 4326)
+incongr_wgs = st_transform(incongruent, "EPSG:4326")
+aggzone_wgs = st_transform(aggregating_zones, "EPSG:4326")
 ```
 
-To find an algorithm to do this work, `find_algorithms()` searches all QGIS geoalgorithms\index{geoalgorithm} using regular expressions.
+To find an algorithm to do this work we can search the output of the `qgis_algorithms()` function.
 Assuming that the short description of the function contains the word "union"\index{union}, we can run:
 
 
 ```r
-find_algorithms("union", name_only = TRUE)
-#> [1] "qgis:union"        "saga:fuzzyunionor" "saga:union"
+qgis_algo = qgis_algorithms()
+grep("union", qgis_algo$algorithm, value = TRUE)
 ```
 
-Short descriptions for each geoalgorithm\index{geoalgorithm} can also be provided, by setting `name_only = FALSE`.
-If one has no clue at all what the name of a geoalgorithm might be, one can leave the `search_term`-argument empty which will return a list of all available QGIS\index{QGIS} geoalgorithms\index{geoalgorithm}.
-You can also find the algorithms\index{algorithm} in the [QGIS online documentation](https://docs.qgis.org/2.18/en/docs/user_manual/processing_algs/index.html).
-
-The next step is to find out how `qgis:union` can be used.
-`open_help()` opens the online help of the geoalgorithm in question.
-`get_usage()` returns all function parameters and default values. 
-
+<!--toDo:jn-->
+<!-- explain the above result -->
+The next step is to find out how `native:union` can be used.
+<!-- qgis_description("native:union") -->
+<!-- qgis_show_help("native:union") -->
+<!-- `get_usage()` returns all function parameters and default values.  -->
 
 
 ```r
-alg = "qgis:union"
-open_help(alg)
-get_usage(alg)
-#>ALGORITHM: Union
-#>	INPUT <ParameterVector>
-#>	INPUT2 <ParameterVector>
-#>	OUTPUT <OutputVector>
+alg = "native:union"
+# qgis_description(alg)
+qgis_show_help(alg)
 ```
 
 Finally, we can let QGIS\index{QGIS} do the work.
-Note that the workhorse function `run_qgis()` accepts R named arguments, i.e., you can specify the parameter names as returned by `get_usage()` in `run_qgis()` as you would do in any other regular R function.
-Note also that `run_qgis()` accepts spatial objects residing in R's global environment as input (here: `aggzone_wgs` and `incongr_wgs`). 
-But of course, you could also specify paths to spatial vector files stored on disk.
-Setting the `load_output` to `TRUE` automatically loads the QGIS output as an **sf**-object\index{sf} into R.
+<!-- qgis_run_algorithm -->
+<!-- Note that the workhorse function `run_qgis()` accepts R named arguments, i.e., you can specify the parameter names as returned by `get_usage()` in `run_qgis()` as you would do in any other regular R function. -->
+<!-- Note also that `run_qgis()` accepts spatial objects residing in R's global environment as input (here: `aggzone_wgs` and `incongr_wgs`).  -->
+<!-- But of course, you could also specify paths to spatial vector files stored on disk. -->
+<!-- Setting the `load_output` to `TRUE` automatically loads the QGIS output as an **sf**-object\index{sf} into R. -->
 
 
-```r
-union = run_qgis(alg, INPUT = incongr_wgs, INPUT2 = aggzone_wgs, 
-                 OUTPUT = file.path(tempdir(), "union.shp"),
-                 load_output = TRUE)
-#> $`OUTPUT`
-#> [1] "C:/Users/geocompr/AppData/Local/Temp/RtmpcJlnUx/union.shp"
-```
 
-Note that the QGIS\index{QGIS} union\index{vector!union} operation merges the two input layers into one layer by using the intersection\index{vector!intersection} and the symmetrical difference of the two input layers (which by the way is also the default when doing a union operation in GRASS\index{GRASS} and SAGA\index{SAGA}).
-This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)!
-The QGIS output contains empty geometries and multipart polygons.
-Empty geometries might lead to problems in subsequent geoprocessing tasks which is why they will be deleted.
-`st_dimension()` returns `NA` if a geometry is empty, and can therefore be used as a filter. 
+<!-- Note that the QGIS\index{QGIS} union\index{vector!union} operation merges the two input layers into one layer by using the intersection\index{vector!intersection} and the symmetrical difference of the two input layers (which by the way is also the default when doing a union operation in GRASS\index{GRASS} and SAGA\index{SAGA}). -->
+<!-- This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)! -->
+<!-- The QGIS output contains empty geometries and multipart polygons. -->
+<!-- Empty geometries might lead to problems in subsequent geoprocessing tasks which is why they will be deleted. -->
+<!-- `st_dimension()` returns `NA` if a geometry is empty, and can therefore be used as a filter.  -->
 
 
-```r
-# remove empty geometries
-union = union[!is.na(st_dimension(union)), ]
-```
 
-Next we convert multipart polygons into single-part polygons (also known as explode geometries or casting).
-This is necessary for the deletion of sliver polygons\index{sliver polygons} later on.
+<!-- Next we convert multipart polygons into single-part polygons (also known as explode geometries or casting). -->
+<!-- This is necessary for the deletion of sliver polygons\index{sliver polygons} later on. -->
 
 
-```r
-# multipart polygons to single polygons
-single = st_cast(union, "POLYGON")
-```
 
-One way to identify slivers\index{sliver polygons} is to find polygons with comparatively very small areas, here, e.g., 25000 m^2^ (see blue colored polygons in the left panel of Figure \@ref(fig:sliver-fig)). 
+<!-- One way to identify slivers\index{sliver polygons} is to find polygons with comparatively very small areas, here, e.g., 25000 m^2^ (see blue colored polygons in the left panel of Figure \@ref(fig:sliver-fig)).  -->
 
 
-```r
-# find polygons which are smaller than 25000 m^2
-x = 25000
-units(x) = "m^2"
-single$area = st_area(single)
-sub = dplyr::filter(single, area < x)
-```
 
-The next step is to find a function that makes the slivers\index{sliver polygons} disappear.
-Assuming the function or its short description contains the word "sliver", we can run:
+<!-- The next step is to find a function that makes the slivers\index{sliver polygons} disappear. -->
+<!-- Assuming the function or its short description contains the word "sliver", we can run: -->
 
 
-```r
-find_algorithms("sliver", name_only = TRUE)
-#> [1] "qgis:eliminatesliverpolygons"
-```
 
-This returns only one geoalgorithm\index{geoalgorithm} whose parameters can be accessed with the help of `get_usage()` again.
+<!-- This returns only one geoalgorithm\index{geoalgorithm} whose parameters can be accessed with the help of `get_usage()` again. -->
 
 
-```r
-alg = "qgis:eliminatesliverpolygons"
-get_usage(alg)
-#>ALGORITHM: Eliminate sliver polygons
-#>	INPUT <ParameterVector>
-#>	KEEPSELECTION <ParameterBoolean>
-#>	ATTRIBUTE <parameters from INPUT>
-#>	COMPARISON <ParameterSelection>
-#>	COMPARISONVALUE <ParameterString>
-#>	MODE <ParameterSelection>
-#>	OUTPUT <OutputVector>
-#>	...
-```
-\index{sliver polygons}
+<!-- \index{sliver polygons} -->
 
-Conveniently, the user does not need to specify each single parameter.
-In case a parameter is left unspecified, `run_qgis()` will automatically use the corresponding default value as an argument if available.
-To find out about the default values, run `get_args_man()`.  
+<!-- Conveniently, the user does not need to specify each single parameter. -->
+<!-- In case a parameter is left unspecified, `run_qgis()` will automatically use the corresponding default value as an argument if available. -->
+<!-- To find out about the default values, run `get_args_man()`.   -->
 
-To remove the slivers, we specify that all polygons with an area less or equal to 25,000 m^2^ should be joined to the neighboring polygon with the largest area (see right panel of Figure \@ref(fig:sliver-fig)).
+<!-- To remove the slivers, we specify that all polygons with an area less or equal to 25,000 m^2^ should be joined to the neighboring polygon with the largest area (see right panel of Figure \@ref(fig:sliver-fig)). -->
 
 
-```r
-clean = run_qgis("qgis:eliminatesliverpolygons",
-                 INPUT = single,
-                 ATTRIBUTE = "area",
-                 COMPARISON = "<=",
-                 COMPARISONVALUE = 25000,
-                 OUTPUT = file.path(tempdir(), "clean.shp"),
-                 load_output = TRUE)
-#> $`OUTPUT`
-#> [1] "C:/Users/geocompr/AppData/Local/Temp/RtmpcJlnUx/clean.shp"
-```
 
 <div class="figure" style="text-align: center">
 <img src="figures/09_sliver.png" alt="Sliver polygons colored in blue (left panel). Cleaned polygons (right panel)." width="100%" />
 <p class="caption">(\#fig:sliver-fig)Sliver polygons colored in blue (left panel). Cleaned polygons (right panel).</p>
 </div>
 
-In the code chunk above note that
+<!-- In the code chunk above note that -->
 
-- leaving the output parameter(s) unspecified saves the resulting QGIS output to a temporary folder created by QGIS\index{QGIS};
-`run_qgis()` prints these paths to the console after successfully running the QGIS engine; and
-- if the output consists of multiple files and you have set `load_output` to `TRUE`, `run_qgis()` will return a list with each element corresponding to one output file.
+<!-- - leaving the output parameter(s) unspecified saves the resulting QGIS output to a temporary folder created by QGIS\index{QGIS}; -->
+<!-- `run_qgis()` prints these paths to the console after successfully running the QGIS engine; and -->
+<!-- - if the output consists of multiple files and you have set `load_output` to `TRUE`, `run_qgis()` will return a list with each element corresponding to one output file. -->
 
-To learn more about **RQGIS**\index{RQGIS (package)}, see @muenchow_rqgis:_2017. 
+<!-- To learn more about **RQGIS**\index{RQGIS (package)}, see @muenchow_rqgis:_2017.  -->
 
 ## (R)SAGA {#rsaga}
 
@@ -386,7 +331,7 @@ plot(twi, col = RColorBrewer::brewer.pal(n = 9, name = "Blues"))
 You can find an extended version of this example in `vignette("RSAGA-landslides")` which includes the use of statistical geocomputing to derive terrain attributes as predictors for a non-linear Generalized Additive Model\index{generalized additive model} (GAM) to predict spatially landslide susceptibility [@muenchow_geomorphic_2012].
 The term statistical geocomputation emphasizes the strength of combining R's data science\index{data science} power with the geoprocessing power of a GIS which is at the very heart of building a bridge from R\index{R} to GIS\index{GIS}.
 
-## GRASS through **rgrass7**  {#rgrass}
+## GRASS through **rgrass7** {#rgrass}
 
 The U.S. Army - Construction Engineering Research Laboratory (USA-CERL) created the core of the Geographical Resources Analysis Support System (GRASS)\index{GRASS} [Table \@ref(tab:gis-comp); @neteler_open_2008] from 1982 to 1995. 
 Academia continued this work since 1997.

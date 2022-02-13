@@ -291,7 +291,7 @@ text(x = c(-0.5, 1.5), y = 1, labels = c("x", "y"), cex = 3) # add text
 ```
 
 <div class="figure" style="text-align: center">
-<img src="05-geometry-operations_files/figure-html/points-1.png" alt="Overlapping circles." width="50%" />
+<img src="05-geometry-operations_files/figure-html/points-1.png" alt="Overlapping circles." width="100%" />
 <p class="caption">(\#fig:points)Overlapping circles.</p>
 </div>
 
@@ -304,11 +304,11 @@ x = b[1]
 y = b[2]
 x_and_y = st_intersection(x, y)
 plot(b, border = "grey")
-plot(x_and_y, col = "lightgrey", border = "grey", add = TRUE) # color intersecting area
+plot(x_and_y, col = "lightgrey", border = "grey", add = TRUE) # intersecting area
 ```
 
 <div class="figure" style="text-align: center">
-<img src="05-geometry-operations_files/figure-html/circle-intersection-1.png" alt="Overlapping circles with a gray color indicating intersection between them." width="50%" />
+<img src="05-geometry-operations_files/figure-html/circle-intersection-1.png" alt="Overlapping circles with a gray color indicating intersection between them." width="100%" />
 <p class="caption">(\#fig:circle-intersection)Overlapping circles with a gray color indicating intersection between them.</p>
 </div>
 
@@ -790,11 +790,11 @@ Several methods for recalculating (estimating) values for a raster with differen
 It includes:
 
 - Nearest neighbor - assigns the value of the nearest cell of the original raster to the cell of the target one.
-It is fast and usually suitable for categorical rasters.
-- Bilinear interpolation - assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). The fastest method for continuous rasters.
-- Cubic interpolation - uses values of 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters. It results in a more smoothed surface than the bilinear interpolation, but is also more computationally demanding.
-- Cubic spline interpolation - also uses values of 16 nearest cells of the original raster to determine the output cell value, but applies cubic splines (piecewise third-order polynomial functions) to derive the results. Used for continuous rasters.
-- Lanczos windowed sinc resampling - uses values of 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters.^[More detailed explanation of this method can be found at https://gis.stackexchange.com/a/14361/20955.]
+It is fast and usually suitable for categorical rasters
+- Bilinear interpolation - assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). The fastest method for continuous rasters
+- Cubic interpolation - uses values of 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters. It results in a more smoothed surface than the bilinear interpolation, but is also more computationally demanding
+- Cubic spline interpolation - also uses values of 16 nearest cells of the original raster to determine the output cell value, but applies cubic splines (piecewise third-order polynomial functions) to derive the results. Used for continuous rasters
+- Lanczos windowed sinc resampling - uses values of 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters^[More detailed explanation of this method can be found at https://gis.stackexchange.com/a/14361/20955.]
 
 As you can find in the above explanation, only *nearest neighbor* is suitable for categorical rasters, while all the methods can be used (with different outcomes) for the continuous rasters.
 Additionally, each successive method requires more processing time.
@@ -886,6 +886,16 @@ E5. Subset the point in `p` that is contained within `x` *and* `y`.
 
 
 
+
+
 E6. Calculate the length of the boundary lines of US states in meters.
 Which state has the longest border and which has the shortest?
 Hint: The `st_length` function computes the length of a `LINESTRING` or `MULTILINESTRING` geometry.
+
+
+
+E7. Read the srtm.tif file into R (`srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))`).
+This raster has a resolution of 0.00083 by 0.00083 degrees. 
+Change its resolution to 0.01 by 0.01 degrees using all of the method available in the **terra** package.
+Visualize the results.
+Can you notice any differences between the results of these resampling methods?

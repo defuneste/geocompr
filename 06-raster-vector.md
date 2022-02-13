@@ -34,8 +34,8 @@ Both operations reduce object memory use and associated computational resources 
 
 We will use two objects to illustrate raster cropping:
 
-- A `SpatRaster` object `srtm` representing elevation (meters above sea level) in south-western Utah.
-- A vector (`sf`) object `zion` representing Zion National Park.
+- A `SpatRaster` object `srtm` representing elevation (meters above sea level) in south-western Utah
+- A vector (`sf`) object `zion` representing Zion National Park
 
 Both target and cropping objects must have the same projection.
 The following code chunk therefore not only reads the datasets from the **spDataLarge** package (installed in Chapter \@ref(spatial-class)), it also reprojects `zion` (see Section \@ref(reproj-geo-data) for more on reprojection):
@@ -193,7 +193,7 @@ group_by(zion_srtm_values, ID) %>%
   summarize(across(srtm, list(min = min, mean = mean, max = max)))
 #> # A tibble: 1 × 4
 #>      ID srtm_min srtm_mean srtm_max
-#>   <dbl>    <dbl>     <dbl>    <dbl>
+#>   <dbl>    <int>     <dbl>    <int>
 #> 1     1     1122     1818.     2661
 ```
 
@@ -411,7 +411,8 @@ They also use a polygonal 'convex hull' derived from the vector dataset (`ch`) t
 library(sf)
 library(terra)
 library(spData)
-zion_points = read_sf(system.file("vector/zion_points.gpkg", package = "spDataLarge"))
+zion_points_path = system.file("vector/zion_points.gpkg", package = "spDataLarge")
+zion_points = read_sf(zion_points_path)
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
 ch = st_combine(zion_points) %>%
   st_convex_hull() %>% 

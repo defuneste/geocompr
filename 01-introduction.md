@@ -146,7 +146,7 @@ leaflet() %>%
 
 It would have been difficult to produce Figure \@ref(fig:interactive) using R a few years ago, let alone as an interactive map.
 This illustrates R's flexibility and how, thanks to developments such as **knitr** and **leaflet**, it can be used as an interface to other software, a theme that will recur throughout this book.
-The use of R code, therefore, enables teaching geocomputation with reference to reproducible examples such as that provided in Figure \@ref(fig:interactive) rather than abstract concepts.
+The use of R code, therefore, enables teaching geocomputation with reference to reproducible examples representing real world phenomena, rather than just abstract concepts.
 
 ## Software for geocomputation
 <!--rl-->
@@ -340,7 +340,7 @@ Most importantly, these changes forced the replacement of `proj4string` to `WKT`
 Since 2018, the progress of spatial visualization tools in R has been related to a few factors.
 Firstly, new types of spatial plots were developed, including the **rayshader** package offering a combination of raytracing and multiple hill-shading methods to produce 2D and 3D data visualizations [@morganwall_rayshader_2021].
 \index{ggplot2 (package)}
-Secondly, **ggplot2** gained new spatial capabilities, mostly thanks to the **ggspatial** package that adds some spatial vizualization elements, including scale bars and north arrows [@dunnington_ggspatial_2021] and **gganimate** that enables smooth and customizable spatial animations [@pedersen_gganimate_2020].
+Secondly, **ggplot2** gained new spatial capabilities, mostly thanks to the **ggspatial** package that adds some spatial visualization elements, including scale bars and north arrows [@dunnington_ggspatial_2021] and **gganimate** that enables smooth and customizable spatial animations [@pedersen_gganimate_2020].
 Thirdly, performance of visualizing large spatial dataset was improved.
 This especially relates to automatic plotting of downscaled rasters in **tmap** and the possibility of using high-performance interactive rendering platforms in the **mapview** package, such as `"leafgl"` and `"mapdeck"`.
 Lastly, some of the existing mapping tools have been rewritten to minimize dependencies, improve user interface, or allow for easier creation of extensions.
@@ -367,7 +367,9 @@ E1. Think about the terms 'GIS'\index{GIS}, 'GDS' and 'geocomputation' described
 
 E2. Provide three reasons for using a scriptable language such as R for geocomputation instead of using a graphical user interface (GUI) based GIS such as QGIS\index{QGIS}.
 
-E3. Name two advantages and two disadvantages of using mature vs recent packages for geographic data analysis\index{geographic data analysis} (for example **sp** vs **sf**\index{sf}, or **raster** vs **terra**).
+E3. Think about a real world problem you would like to solve with geographic data that could help people living in your local area and sketch a map of the geographic processes involved.
+
+E4. Consider the datasets needed to represent the problem computationally and sketch a workflow for processing them, resulting in outputs that could help inform decision making related to the problem you thought of in the previous exercise. Use a pen and paper or a digital sketching tool such as Excalidraw.
 
 <!--toDo: rl -->
 <!--add solutions!-->
