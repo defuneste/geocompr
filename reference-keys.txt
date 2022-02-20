@@ -107,7 +107,7 @@ tab:map-spkg
 fig:cartomap1
 fig:cartomap2
 tab:gis-comp
-fig:sliver-fig
+fig:sliver
 fig:saga-twi
 fig:grass-mapview
 fig:postgis
@@ -328,5 +328,9 @@ introduction-10
 package-choice
 gaps
 questions
+searching-for-solutions-online
+help
+reprex
+defining-and-sketching-the-problem
 next
 benefit

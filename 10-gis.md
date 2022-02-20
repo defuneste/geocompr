@@ -109,30 +109,51 @@ Table: (\#tab:gis-comp)Comparison between three open-source GIS. Hybrid refers t
 QGIS\index{QGIS} is one of the most popular open-source GIS [Table \@ref(tab:gis-comp); @graser_processing_2015]. 
 Its main advantage lies in the fact that it provides a unified interface to several other open-source GIS.
 This means that you have access to GDAL\index{GDAL}, GRASS\index{GRASS}, and SAGA\index{SAGA} through QGIS\index{QGIS} [@graser_processing_2015]. 
-Since version 3.14, QGIS provides a command line API\index{API} that allows to run all these geoalgorithms (frequently more than 1000, depending on your set-up) outside of the QGIS GUI.
+Since version 3.14, QGIS provides a command line API\index{API}, `qgis_process`, that allows to run all these geoalgorithms (frequently more than 1000, depending on your set-up) outside of the QGIS GUI.
 
 The **qgisprocess** package \index{qgisprocess (package)} wraps this QGIS command-line utility, and thus makes it possible to call QGIS, GDAL, GRASS, and SAGA algorithms from the R session.
 Before running **qgisprocess**\index{qgisprocess (package)}, make sure you have installed QGIS\index{QGIS} and all its (third-party) dependencies such as SAGA\index{SAGA} and GRASS\index{GRASS}.
-<!--toDo:jn-->
-<!-- mention automatic configuration -->
-<!-- qgis_configure() for details -->
 
 
 ```r
 library(qgisprocess)
+#> Using 'qgis_process' at 'qgis_process'.
+#> QGIS version: 3.20.3-Odense
+#> ...
 ```
 
+This package automatically tries to detect a QGIS installation and complains if it cannot find it.^[You can see details of the detection process with `qgis_configure()`.]
+There are a few possible solutions when the configuration fails: you can set `options(qgisprocess.path = "path/to/your_qgis_process")`, or set up the `R_QGISPROCESS_PATH` environment variable.
 <!--toDo:jn-->
-<!-- next mention and explain qgis_algorithms() -->
-<!-- You can also find the algorithms\index{algorithm} in the [QGIS online documentation](https://docs.qgis.org/2.18/en/docs/user_manual/processing_algs/index.html). -->
-<!-- maybe also mention that it can be expanded based on other installed software... -->
-<!-- qgis_show_help() -->
+<!-- link to the vignette https://github.com/paleolimbot/qgisprocess/pull/31/files when it is online -->
+The above approaches can also be used when you have more than one QGIS installation and want to decide which one to use.
 
-We are now ready for some QGIS geocomputation from within R! 
-The example below shows how to unite polygons, a process that unfortunately produces so-called slivers \index{sliver polygons}, tiny polygons resulting from overlaps between the inputs that frequently occur in real-world data.
-We will see how to remove them.
+Next, we can find which providers (meaning different software) are available on our computer.
 
-For the union\index{union}, we use again the incongruent polygons we have already encountered in Section \@ref(spatial-aggr).
+
+```r
+qgis_providers()
+#> # A tibble: 6 × 2
+#>   provider provider_title   
+#>   <chr>    <chr>            
+#> 1 3d       QGIS (3D)        
+#> 2 gdal     GDAL             
+#> 3 grass7   GRASS            
+#> 4 native   QGIS (native c++)
+#> 5 qgis     QGIS             
+#> 6 saga     SAGA
+```
+
+The output table affirms that we can use QGIS geoalgorithms (`native`, `qgis`, `3d`) and external ones from the third-party providers GDAL, SAGA and GRASS through the QGIS interface.
+
+We are now ready for some QGIS geocomputation from within R!
+Let's try two example case studies.
+<!--toDo:jn-->
+<!-- add a second one later -->
+The first one shows how to unite polygons\index{union}.
+<!--toDo:jn-->
+<!-- add an extended explanation -->
+We use again the incongruent polygons we have already encountered in Section \@ref(spatial-aggr).
 Both polygon datasets are available in the **spData** package, and for both we would like to use a geographic CRS\index{CRS!geographic} (see also Chapter \@ref(reproj-geo-data)).
 
 
@@ -142,85 +163,104 @@ incongr_wgs = st_transform(incongruent, "EPSG:4326")
 aggzone_wgs = st_transform(aggregating_zones, "EPSG:4326")
 ```
 
-To find an algorithm to do this work we can search the output of the `qgis_algorithms()` function.
-Assuming that the short description of the function contains the word "union"\index{union}, we can run:
+<!--toDo:jn-->
+<!-- next mention and explain qgis_algorithms() -->
+<!-- You can also find the algorithms\index{algorithm} in the [QGIS online documentation](https://docs.qgis.org/2.18/en/docs/user_manual/processing_algs/index.html). -->
+<!-- maybe also mention that it can be expanded based on other installed software... -->
+<!-- qgis_show_help() -->
+To find an algorithm to do this work, we can search the output of the `qgis_algorithms()` function.
+This function returns a data frame containing all of the available providers and the algorithms they provide. 
 
 
 ```r
 qgis_algo = qgis_algorithms()
-grep("union", qgis_algo$algorithm, value = TRUE)
 ```
 
-<!--toDo:jn-->
-<!-- explain the above result -->
-The next step is to find out how `native:union` can be used.
-<!-- qgis_description("native:union") -->
-<!-- qgis_show_help("native:union") -->
-<!-- `get_usage()` returns all function parameters and default values.  -->
+The `qgis_algo` object has a lot of columns, but usually, we are only interested in the `algorithm` column that combines information about the provider and the algorithm name.
+Assuming that the short description of the function contains the word "union"\index{union}, we can run the following code to find the algorithm of interest:
+
+
+```r
+grep("union", qgis_algo$algorithm, value = TRUE)
+#> [1] "native:union"      "saga:fuzzyunionor" "saga:polygonunion"
+```
+
+One of the algorithms on the above list, `"native:union"`, sounds promising.
+The next step is to find out what this algorithm does and how we can use it.
+This is the role of the `qgis_show_help()`, which gives us a help information, including the description of the algorithm, its arguments, and outputs.^[We can also extract some of information independently with `qgis_description()`, `qgis_arguments()`, and `qgis_outputs()`.]
 
 
 ```r
 alg = "native:union"
-# qgis_description(alg)
 qgis_show_help(alg)
 ```
 
+The description gives a few sentences summary of what the selected algorithm does. 
+Next, a list of arguments gives us the possible arguments' names, for example, `INPUT`, `OVERLAY`, `OVERLAY_FIELDS_PREFIX`, and `OUTPUT` in this case, and their acceptable values.
+Based on the help information, some of the above arguments seem to expect a "path to a vector layer".
+However, the **qgisprocess** package also allows to provide `sf` object as well in these cases.^[Objects from the **terra** and **stars** package can be used when a path to a raster layer.]
+The algorithm's outputs (it is possible to have more than one output) are listed at the end of the help list.
+
 Finally, we can let QGIS\index{QGIS} do the work.
-<!-- qgis_run_algorithm -->
-<!-- Note that the workhorse function `run_qgis()` accepts R named arguments, i.e., you can specify the parameter names as returned by `get_usage()` in `run_qgis()` as you would do in any other regular R function. -->
-<!-- Note also that `run_qgis()` accepts spatial objects residing in R's global environment as input (here: `aggzone_wgs` and `incongr_wgs`).  -->
-<!-- But of course, you could also specify paths to spatial vector files stored on disk. -->
-<!-- Setting the `load_output` to `TRUE` automatically loads the QGIS output as an **sf**-object\index{sf} into R. -->
+The main function of **qgisprocess** is `qgis_run_algorithm()`.
+It accepts the used algorithm name and a set of named arguments shown in the help list, and performs expected calculations.
+In our case, three arguments seem important - `INPUT`, `OVERLAY`, and `OUTPUT`.
+The first one, `INPUT`, is our main vector object `incongr_wgs`, while the second one, `OVERLAY`, is `aggzone_wgs`.
+The last argument, `OUTPUT`, expects a path to a new vector file; however, if we do not provide the path, **qgisprocess** will automatically create a temporary file.
 
 
+```r
+union = qgis_run_algorithm(alg, INPUT = incongr_wgs, OVERLAY = aggzone_wgs)
+union
+```
 
-<!-- Note that the QGIS\index{QGIS} union\index{vector!union} operation merges the two input layers into one layer by using the intersection\index{vector!intersection} and the symmetrical difference of the two input layers (which by the way is also the default when doing a union operation in GRASS\index{GRASS} and SAGA\index{SAGA}). -->
-<!-- This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)! -->
-<!-- The QGIS output contains empty geometries and multipart polygons. -->
-<!-- Empty geometries might lead to problems in subsequent geoprocessing tasks which is why they will be deleted. -->
-<!-- `st_dimension()` returns `NA` if a geometry is empty, and can therefore be used as a filter.  -->
-
-
-
-<!-- Next we convert multipart polygons into single-part polygons (also known as explode geometries or casting). -->
-<!-- This is necessary for the deletion of sliver polygons\index{sliver polygons} later on. -->
+Running the above line of code will save our two input objects into temporary .gpkg files, run the selected algorithm on them, and return a temporary .gpkg file as the output.
+The **qgisprocess** package stores the `qgis_run_algorithm()` result as a list containing, in this case, a path to the output file.
+We can either read this file back into R with `read_sf()` (e.g., `union_sf = read_sf(union[[1]])`) or directly with `st_as_sf()`:
 
 
+```r
+union_sf = st_as_sf(union)
+```
 
-<!-- One way to identify slivers\index{sliver polygons} is to find polygons with comparatively very small areas, here, e.g., 25000 m^2^ (see blue colored polygons in the left panel of Figure \@ref(fig:sliver-fig)).  -->
+Note that the QGIS\index{QGIS} union\index{vector!union} operation merges the two input layers into one layer by using the intersection\index{vector!intersection} and the symmetrical difference of the two input layers (which, by the way, is also the default when doing a union operation in GRASS\index{GRASS} and SAGA\index{SAGA}).
+This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)!
 
+<!--toDo:jn-->
+<!-- expand the output description -->
+<!-- mention the problems (e.g., what sliver polygons are) -->
+<!-- One way to identify slivers is to find polygons with comparatively very small areas, here, e.g., 25000 m2 (see red colored polygons in the left panel of Figure \@ref(fig:sliver)). -->
 
-
-<!-- The next step is to find a function that makes the slivers\index{sliver polygons} disappear. -->
-<!-- Assuming the function or its short description contains the word "sliver", we can run: -->
-
-
-
-<!-- This returns only one geoalgorithm\index{geoalgorithm} whose parameters can be accessed with the help of `get_usage()` again. -->
-
-
-<!-- \index{sliver polygons} -->
-
-<!-- Conveniently, the user does not need to specify each single parameter. -->
-<!-- In case a parameter is left unspecified, `run_qgis()` will automatically use the corresponding default value as an argument if available. -->
-<!-- To find out about the default values, run `get_args_man()`.   -->
-
-<!-- To remove the slivers, we specify that all polygons with an area less or equal to 25,000 m^2^ should be joined to the neighboring polygon with the largest area (see right panel of Figure \@ref(fig:sliver-fig)). -->
+Let's search for an appropriate algorithm.
 
 
+```r
+grep("clean", qgis_algo$algorithm, value = TRUE)
+```
+
+This time the found algorithm is not included in QGIS, but GRASS GIS.
+<!-- add move about v.clean -->
+
+
+```r
+qgis_show_help("grass7:v.clean")
+```
+
+<!-- https://grass.osgeo.org/grass78/manuals/v.clean.html -->
+
+
+```r
+clean = qgis_run_algorithm("grass7:v.clean", input = union_sf,
+                           type = 4, tool = 10, threshold = 25000)
+clean_sf = st_as_sf(clean)
+```
+
+\@ref(fig:sliver)
 
 <div class="figure" style="text-align: center">
-<img src="figures/09_sliver.png" alt="Sliver polygons colored in blue (left panel). Cleaned polygons (right panel)." width="100%" />
-<p class="caption">(\#fig:sliver-fig)Sliver polygons colored in blue (left panel). Cleaned polygons (right panel).</p>
+<img src="figures/10-sliver.png" alt="Sliver polygons colored in red (left panel). Cleaned polygons (right panel)." width="100%" />
+<p class="caption">(\#fig:sliver)Sliver polygons colored in red (left panel). Cleaned polygons (right panel).</p>
 </div>
-
-<!-- In the code chunk above note that -->
-
-<!-- - leaving the output parameter(s) unspecified saves the resulting QGIS output to a temporary folder created by QGIS\index{QGIS}; -->
-<!-- `run_qgis()` prints these paths to the console after successfully running the QGIS engine; and -->
-<!-- - if the output consists of multiple files and you have set `load_output` to `TRUE`, `run_qgis()` will return a list with each element corresponding to one output file. -->
-
-<!-- To learn more about **RQGIS**\index{RQGIS (package)}, see @muenchow_rqgis:_2017.  -->
 
 ## (R)SAGA {#rsaga}
 
