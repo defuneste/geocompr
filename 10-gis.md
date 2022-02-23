@@ -148,12 +148,15 @@ The output table affirms that we can use QGIS geoalgorithms (`native`, `qgis`, `
 
 We are now ready for some QGIS geocomputation from within R!
 Let's try two example case studies.
-<!--toDo:jn-->
-<!-- add a second one later -->
 The first one shows how to unite polygons\index{union}.
 <!--toDo:jn-->
-<!-- add an extended explanation -->
-We use again the incongruent polygons we have already encountered in Section \@ref(spatial-aggr).
+<!-- add a second one later -->
+
+### Vector data
+
+Consider a situation when you have two polygon objects with different spatial units (e.g., regions, administrative units).
+Our goal is to merge these two objects into one, containing all of the boundary lines and related attributes.
+We use again the incongruent polygons we have already encountered in Section \@ref(incongruent) (Figure \@ref(fig:uniondata)).
 Both polygon datasets are available in the **spData** package, and for both we would like to use a geographic CRS\index{CRS!geographic} (see also Chapter \@ref(reproj-geo-data)).
 
 
@@ -163,13 +166,13 @@ incongr_wgs = st_transform(incongruent, "EPSG:4326")
 aggzone_wgs = st_transform(aggregating_zones, "EPSG:4326")
 ```
 
-<!--toDo:jn-->
-<!-- next mention and explain qgis_algorithms() -->
-<!-- You can also find the algorithms\index{algorithm} in the [QGIS online documentation](https://docs.qgis.org/2.18/en/docs/user_manual/processing_algs/index.html). -->
-<!-- maybe also mention that it can be expanded based on other installed software... -->
-<!-- qgis_show_help() -->
+<div class="figure" style="text-align: center">
+<img src="10-gis_files/figure-html/uniondata-1.png" alt="Illustration of two areal units: incongruent (black lines) and aggregating zones (red borders). " width="100%" />
+<p class="caption">(\#fig:uniondata)Illustration of two areal units: incongruent (black lines) and aggregating zones (red borders). </p>
+</div>
+
 To find an algorithm to do this work, we can search the output of the `qgis_algorithms()` function.
-This function returns a data frame containing all of the available providers and the algorithms they provide. 
+This function returns a data frame containing all of the available providers and the algorithms they contain.^[Therefore, if you cannot see an expected provider, it is probably because you still need to install some external GIS software.] 
 
 
 ```r
@@ -226,11 +229,10 @@ union_sf = st_as_sf(union)
 Note that the QGIS\index{QGIS} union\index{vector!union} operation merges the two input layers into one layer by using the intersection\index{vector!intersection} and the symmetrical difference of the two input layers (which, by the way, is also the default when doing a union operation in GRASS\index{GRASS} and SAGA\index{SAGA}).
 This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)!
 
-<!--toDo:jn-->
-<!-- expand the output description -->
-<!-- mention the problems (e.g., what sliver polygons are) -->
-<!-- One way to identify slivers is to find polygons with comparatively very small areas, here, e.g., 25000 m2 (see red colored polygons in the left panel of Figure \@ref(fig:sliver)). -->
-
+Our result, `union_sf`, is a multipolygon with a larger number of features than two input objects .
+Notice, however, that many of these polygons are small and do not represent real areas but are rather a result of our two datasets having a different level of detail.
+These artifacts of error are called sliver polygons (see red-colored polygons in the left panel of \@ref(fig:sliver))
+One way to identify slivers is to find polygons with comparatively very small areas, here, e.g., 25000 m^2^, and next remove them.
 Let's search for an appropriate algorithm.
 
 
@@ -238,29 +240,45 @@ Let's search for an appropriate algorithm.
 grep("clean", qgis_algo$algorithm, value = TRUE)
 ```
 
-This time the found algorithm is not included in QGIS, but GRASS GIS.
-<!-- add move about v.clean -->
+This time the found algorithm, `v.clean`, is not included in QGIS, but GRASS GIS.
+GRASS GIS's `v.clean` is a powerful tool for cleaning topology of spatial vector data. 
+Importantly, we can use it through **qgisprocess**.
+
+Similarly to the previous step, we should start by looking at this algorithm's help.
 
 
 ```r
 qgis_show_help("grass7:v.clean")
 ```
 
-<!-- https://grass.osgeo.org/grass78/manuals/v.clean.html -->
+You may notice that the help text is quite long and contains a lot of arguments.^[Also note that these arguments, contrary to the QGIS's ones, are in lower case.]
+This is because `v.clean` is a multi tool -- it can clean different types of geometries and solve different types of topological problems.
+For this example, let's focus on just a few arguments, however, we encourage you to visit [this algorithm's documentation](https://grass.osgeo.org/grass78/manuals/v.clean.html) to learn more about `v.clean` capabilities.
+
+The main argument for this algorithm is `input` -- our vector object.
+Next, we need to select a tool -- a cleaning method. ^[It is also possible to select several tools, which will then be executed sequentially.]
+About a dozen of tools exist in `v.clean` allowing to, for example, remove duplicate geometries, remove small angles between lines, or remove small areas.
+In this case, we are interested in the latter tool, `rmarea`, which is identified by the number 10.
+Several of the tools, `rmarea` included, expect an additional argument `threshold`, which behavior depends on the selected tool.
+In our case, the `rmarea` tool removes all areas smaller or equal to `threshold`. 
+
+Let's run this algorithm and convert its output into a new `sf` object `clean_sf`.
 
 
 ```r
 clean = qgis_run_algorithm("grass7:v.clean", input = union_sf,
-                           type = 4, tool = 10, threshold = 25000)
+                           tool = 10, threshold = 25000)
 clean_sf = st_as_sf(clean)
 ```
 
-\@ref(fig:sliver)
+The result, the right panel of \@ref(fig:sliver), looks as expected -- sliver polygons are now removed.
 
 <div class="figure" style="text-align: center">
 <img src="figures/10-sliver.png" alt="Sliver polygons colored in red (left panel). Cleaned polygons (right panel)." width="100%" />
 <p class="caption">(\#fig:sliver)Sliver polygons colored in red (left panel). Cleaned polygons (right panel).</p>
 </div>
+
+### Raster data
 
 ## (R)SAGA {#rsaga}
 
@@ -577,12 +595,12 @@ As mentioned previously, SAGA\index{SAGA} is especially good at the fast process
 GRASS GIS\index{GRASS}, on the other hand, is the only GIS presented here supporting a topologically based spatial database which is especially useful for network analyses but also simulation studies (see below).
 QGIS is much more user-friendly compared to GRASS- and SAGA-GIS, especially for first-time GIS users, and probably the most popular open-source GIS.
 Therefore, **RQGIS**\index{RQGIS (package)} is an appropriate choice for most use cases.
-Its main advantages are
+Its main advantages are:
 
-- a unified access to several GIS, and therefore the provision of >1000 geoalgorithms (Table \@ref(tab:gis-comp)) including duplicated functionality, e.g., you can perform overlay-operations using QGIS-\index{QGIS}, SAGA-\index{SAGA} or GRASS-geoalgorithms\index{GRASS};
-- automatic data format conversions (SAGA uses `.sdat` grid files and GRASS uses its own database format but QGIS will handle the corresponding conversions);
-- its automatic passing of geographic R objects to QGIS geoalgorithms\index{geoalgorithm} and back into R; and
-- convenience functions to support the access of the online help, named arguments and automatic default value retrieval (**rgrass7**\index{rgrass7 (package)} inspired the latter two features).
+- A unified access to several GIS, and therefore the provision of >1000 geoalgorithms (Table \@ref(tab:gis-comp)) including duplicated functionality, e.g., you can perform overlay-operations using QGIS-\index{QGIS}, SAGA-\index{SAGA} or GRASS-geoalgorithms\index{GRASS}
+- Automatic data format conversions (SAGA uses `.sdat` grid files and GRASS uses its own database format but QGIS will handle the corresponding conversions)
+- Its automatic passing of geographic R objects to QGIS geoalgorithms\index{geoalgorithm} and back into R
+- Convenience functions to support the access of the online help, named arguments and automatic default value retrieval (**rgrass7**\index{rgrass7 (package)} inspired the latter two features)
 
 By all means, there are use cases when you certainly should use one of the other R-GIS bridges.
 Though QGIS is the only GIS providing a unified interface to several GIS\index{GIS} software packages, it only provides access to a subset of the corresponding third-party geoalgorithms (for more information please refer to @muenchow_rqgis:_2017).
