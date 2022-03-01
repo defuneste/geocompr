@@ -231,7 +231,7 @@ This is **not** the same as `st_union(incongr_wgs, aggzone_wgs)` (see Exercises)
 
 Our result, `union_sf`, is a multipolygon with a larger number of features than two input objects .
 Notice, however, that many of these polygons are small and do not represent real areas but are rather a result of our two datasets having a different level of detail.
-These artifacts of error are called sliver polygons (see red-colored polygons in the left panel of \@ref(fig:sliver))
+These artifacts of error are called sliver polygons (see red-colored polygons in the left panel of Figure \@ref(fig:sliver))
 One way to identify slivers is to find polygons with comparatively very small areas, here, e.g., 25000 m^2^, and next remove them.
 Let's search for an appropriate algorithm.
 
@@ -280,14 +280,99 @@ The result, the right panel of \@ref(fig:sliver), looks as expected -- sliver po
 
 ### Raster data
 
-## (R)SAGA {#rsaga}
+<!-- Explain our goal -->
+For this example, we will use `dem.tif` -- a digital elevation model\index{digital elevation model} of the Mongón study area <!--refs??-->.
+It has a resolution of about 30 by 30 meters and uses a projected CRS.
+
+
+```r
+library(qgisprocess)
+library(terra)
+dem = rast(system.file("raster/dem.tif", package = "spDataLarge"))
+```
+
+The **terra** package's `terrain()` allows calculation of several fundamental topographic characteristics such as slope, aspect, TPI (*Topographic Position Index*), TRI (*Topographic Ruggedness Index*), roughness, and flow directions.
+<!--toDo:jn-->
+<!--refs?-->
+It allows selecting a terrain characteristic and, in the case of `"slope"` and `"aspect"`, the output unit.
+
+
+```r
+dem_slope = terrain(dem, unit = "radians")
+dem_aspect = terrain(dem, v = "aspect", unit = "radians")
+```
+
+That being said -- many more topographic characteristics exist, which can be more suitable in some contexts.
+<!--toDo:jn-->
+<!-- for example... -->
+<!-- Topographic Wetness Index -->
+
+
+```r
+qgis_algo = qgis_algorithms()
+grep("wetness", qgis_algo$algorithm, value = TRUE)
+```
+
+An output of the above code suggests that the algorithm we want exists in the SAGA GIS software.
+<!-- https://grass.osgeo.org/grass80/manuals/r.topidx.html -->
+Though SAGA is a hybrid GIS, its main focus has been on raster processing, and here, particularly on digital elevation models\index{digital elevation model} (soil properties, terrain attributes, climate parameters). 
+Hence, SAGA is especially good at the fast processing of large (high-resolution) raster\index{raster} datasets [@conrad_system_2015]. 
+<!-- https://saga-gis.sourceforge.io/saga_tool_doc/2.2.2/ta_hydrology_15.html -->
+
+
+```r
+qgis_show_help("saga:sagawetnessindex")
+```
+
+This algorithm requires only one argument -- the input `DEM` and several additional arguments.^[The additional arguments of `"saga:sagawetnessindex"` are well-explained at https://gis.stackexchange.com/a/323454/20955.]
+It returns not one but four rasters -- catchment area, catchment slope, modified catchment area, and topographic wetness index.
+
+
+```r
+dem_wetness = qgis_run_algorithm("saga:sagawetnessindex", DEM = dem)
+```
+
+The result, `dem_wetness` is a list with file paths to the four outputs.
+We can read a selected output by providing an output name in the `qgis_as_terra()` function.
+
+
+```r
+dem_wetness_twi = qgis_as_terra(dem_wetness$TWI)
+```
+
+<!-- The result shows (the left panel of Figure \@ref(fig:qgis-raster-map). -->
+
+<!-- @jasiewicz_geomorphons_2013 -->
+
+
+```r
+grep("geomorphon", qgis_algo$algorithm, value = TRUE)
+qgis_show_help("grass7:r.geomorphon")
+```
+
+
+```r
+dem_geomorph = qgis_run_algorithm("grass7:r.geomorphon", elevation = dem, 
+                                    `-m` = TRUE, search = 120)
+```
+
+
+```r
+dem_geomorph_terra = qgis_as_terra(dem_geomorph$forms)
+```
+
+<img src="figures/10-qgis-raster-map.png" width="100%" style="display: block; margin: auto;" />
+
+## Other GIS bridges
+
+### (R)SAGA {#rsaga}
 
 The System for Automated Geoscientific Analyses (SAGA\index{SAGA}; Table \@ref(tab:gis-comp)) provides the possibility to execute SAGA modules via the command line interface\index{command-line interface} (`saga_cmd.exe` under Windows and just `saga_cmd` under Linux) (see the [SAGA wiki on modules](https://sourceforge.net/p/saga-gis/wiki/Executing%20Modules%20with%20SAGA%20CMD/)).
 In addition, there is a Python interface (SAGA Python API\index{API}).
 **RSAGA**\index{RSAGA (package)} uses the former to run SAGA\index{SAGA} from within R.
 
-Though SAGA is a hybrid GIS, its main focus has been on raster processing, and here particularly on digital elevation models\index{digital elevation model} (soil properties, terrain attributes, climate parameters). 
-Hence, SAGA is especially good at the fast processing of large (high-resolution) raster\index{raster} datasets [@conrad_system_2015]. 
+<!-- Though SAGA is a hybrid GIS, its main focus has been on raster processing, and here particularly on digital elevation models\index{digital elevation model} (soil properties, terrain attributes, climate parameters).  -->
+<!-- Hence, SAGA is especially good at the fast processing of large (high-resolution) raster\index{raster} datasets [@conrad_system_2015].  -->
 Therefore, we will introduce **RSAGA**\index{RSAGA (package)} with a raster use case from @muenchow_geomorphic_2012.
 Specifically, we would like to compute the SAGA wetness index from a digital elevation model.
 First of all, we need to make sure that **RSAGA** will find SAGA on the computer when called.
@@ -389,7 +474,7 @@ plot(twi, col = RColorBrewer::brewer.pal(n = 9, name = "Blues"))
 You can find an extended version of this example in `vignette("RSAGA-landslides")` which includes the use of statistical geocomputing to derive terrain attributes as predictors for a non-linear Generalized Additive Model\index{generalized additive model} (GAM) to predict spatially landslide susceptibility [@muenchow_geomorphic_2012].
 The term statistical geocomputation emphasizes the strength of combining R's data science\index{data science} power with the geoprocessing power of a GIS which is at the very heart of building a bridge from R\index{R} to GIS\index{GIS}.
 
-## GRASS through **rgrass7** {#rgrass}
+### GRASS through **rgrass7** {#rgrass}
 
 The U.S. Army - Construction Engineering Research Laboratory (USA-CERL) created the core of the Geographical Resources Analysis Support System (GRASS)\index{GRASS} [Table \@ref(tab:gis-comp); @neteler_open_2008] from 1982 to 1995. 
 Academia continued this work since 1997.
