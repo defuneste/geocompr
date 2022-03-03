@@ -109,6 +109,7 @@ fig:cartomap2
 tab:gis-comp
 fig:uniondata
 fig:sliver
+fig:qgis-raster-map
 fig:saga-twi
 fig:grass-mapview
 fig:postgis
@@ -270,8 +271,8 @@ exercises-7
 gis
 introduction-6
 rqgis
-vector-data-2
-raster-data-1
+qgis-vector
+qgis-raster
 other-gis-bridges
 rsaga
 rgrass
