@@ -17,7 +17,7 @@
 <meta name="twitter:title" content="Chapter 2 Geographic data in R | Geocomputation with R">
 <meta name="twitter:description" content="Prerequisites This is the first practical chapter of the book, and therefore it comes with some software requirements. We assume that you have an up-to-date version of R installed and that you are...">
 <meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
-<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.11/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.12/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/_Lato-0.4.0/font.css" rel="stylesheet">
 <link href="libs/_Roboto%20Mono-0.4.0/font.css" rel="stylesheet">
@@ -127,7 +127,7 @@ The necessary packages can be ‘loaded’ (technically they are attached) with 
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/">terra</a></span><span class="op">)</span>      <span class="co"># classes and functions for raster data</span></code></pre></div>
 <p>The other packages that were installed contain data that will be used in the book:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nowosad.github.io/spData/">spData</a></span><span class="op">)</span>        <span class="co"># load geographic data</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/spData/">spData</a></span><span class="op">)</span>        <span class="co"># load geographic data</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Nowosad/spData">spDataLarge</a></span><span class="op">)</span>   <span class="co"># load larger geographic data</span></code></pre></div>
 </div>
 <div id="intro-spatial-class" class="section level2" number="2.1">
@@ -337,18 +337,18 @@ There are many reasons (linked to the advantages of the simple features model):<
 Unlike the function <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read()</a></code>, which returns attributes stored in a base R <code>data.frame</code> (and which provides more verbose messages, not shown in the code chunk below), <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf()</a></code> returns data as a <strong>tidyverse</strong> <code>tibble</code>.
 This is demonstrated below (see Section <a href="read-write.html#iovec">8.6.1</a>) on reading geographic vector data):</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nc_dfr</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shape/nc.shp"</span>, package <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; Reading layer `nc' from data source </span>
-<span class="co">#&gt;   `/usr/local/lib/R/site-library/sf/shape/nc.shp' using driver `ESRI Shapefile'</span>
-<span class="co">#&gt; Simple feature collection with 100 features and 14 fields</span>
+<code class="sourceCode R"><span class="va">world_dfr</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shapes/world.shp"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; Reading layer `world' from data source </span>
+<span class="co">#&gt;   `/usr/local/lib/R/site-library/spData/shapes/world.shp' using driver `ESRI Shapefile'</span>
+<span class="co">#&gt; Simple feature collection with 177 features and 10 fields</span>
 <span class="co">#&gt; Geometry type: MULTIPOLYGON</span>
 <span class="co">#&gt; Dimension:     XY</span>
-<span class="co">#&gt; Bounding box:  xmin: -84.3 ymin: 33.9 xmax: -75.5 ymax: 36.6</span>
-<span class="co">#&gt; Geodetic CRS:  NAD27</span>
-<span class="va">nc_tbl</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shape/nc.shp"</span>, package <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">nc_dfr</span><span class="op">)</span>
+<span class="co">#&gt; Bounding box:  xmin: -180 ymin: -89.9 xmax: 180 ymax: 83.6</span>
+<span class="co">#&gt; Geodetic CRS:  WGS 84</span>
+<span class="va">world_tbl</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shapes/world.shp"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">world_dfr</span><span class="op">)</span>
 <span class="co">#&gt; [1] "sf"         "data.frame"</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">nc_tbl</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">world_tbl</span><span class="op">)</span>
 <span class="co">#&gt; [1] "sf"         "tbl_df"     "tbl"        "data.frame"</span></code></pre></div>
 <p>As described in Chapter <a href="attr.html#attr">3</a>, which shows how to manipulate <code>sf</code> objects with <strong>tidyverse</strong> functions, <strong>sf</strong> is now the go-to package for analysis of spatial vector data in R (not withstanding the <strong>spatstat</strong> package ecosystem which provides numerous functions for spatial statistics).
 Many popular packages build on <strong>sf</strong>, as shown by the rise in its popularity in terms of number of downloads per day, as shown in Section <a href="intro.html#r-ecosystem">1.4</a> in the previous chapter.
@@ -1221,7 +1221,7 @@ What kind of information you can learn from it?</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-03-03.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-03-12.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">
