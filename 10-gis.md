@@ -405,66 +405,73 @@ The U.S. Army - Construction Engineering Research Laboratory (USA-CERL) created 
 Academia continued this work since 1997.
 Similar to SAGA\index{SAGA}, GRASS focused on raster processing in the beginning while only later, since GRASS 6.0, adding advanced vector functionality [@bivand_applied_2013].
 
-<!-- We will introduce **rgrass7**\index{rgrass7 (package)} with one of the most interesting problems in GIScience - the traveling salesman problem\index{traveling salesman}.  -->
-<!-- Suppose a traveling salesman would like to visit 24 customers.  -->
-<!-- Additionally, he would like to start and finish his journey at home which makes a total of 25 locations while covering the shortest distance possible. -->
-<!-- There is a single best solution to this problem; however, to find it is even for modern computers (mostly) impossible [@longley_geographic_2015]. -->
-<!-- In our case, the number of possible solutions correspond to `(25 - 1)! / 2`, i.e., the factorial of 24 divided by 2 (since we do not differentiate between forward or backward direction). -->
-<!-- Even if one iteration can be done in a nanosecond, this still corresponds to 9837145 years.  -->
-<!-- Luckily, there are clever, almost optimal solutions which run in a tiny fraction of this inconceivable amount of time. -->
-<!-- GRASS GIS\index{GRASS} provides one of these solutions (for more details, see [v.net.salesman](https://grass.osgeo.org/grass77/manuals/v.net.salesman.html)).  -->
-<!-- In our use case, we would like to find the shortest path\index{shortest route} between the first 25 bicycle stations (instead of customers) on London's streets (and we simply assume that the first bike station corresponds to the home of our traveling salesman\index{traveling salesman}). -->
+Here, we introduce **rgrass**\index{rgrass (package)} with one of the most interesting problems in GIScience - the traveling salesman problem\index{traveling salesman}.
+Suppose a traveling salesman would like to visit 24 customers.
+Additionally, he would like to start and finish his journey at home which makes a total of 25 locations while covering the shortest distance possible.
+There is a single best solution to this problem; however, to check all of the possible solutions it is (mostly) impossible for modern computers [@longley_geographic_2015].
+In our case, the number of possible solutions correspond to `(25 - 1)! / 2`, i.e., the factorial of 24 divided by 2 (since we do not differentiate between forward or backward direction).
+Even if one iteration can be done in a nanosecond, this still corresponds to 9837145 years.
+Luckily, there are clever, almost optimal solutions which run in a tiny fraction of this inconceivable amount of time.
+GRASS GIS\index{GRASS} provides one of these solutions (for more details, see [v.net.salesman](https://grass.osgeo.org/grass80/manuals/v.net.salesman.html)).
+In our use case, we would like to find the shortest path\index{shortest route} between the first 25 bicycle stations (instead of customers) on London's streets (and we simply assume that the first bike station corresponds to the home of our traveling salesman\index{traveling salesman}).
 
-<!-- ```{r 09-gis-24} -->
-<!-- data("cycle_hire", package = "spData") -->
-<!-- points = cycle_hire[1:25, ] -->
-<!-- ``` -->
 
-<!-- Aside from the cycle hire points data, we will need the OpenStreetMap\index{OpenStreetMap} data of London. -->
-<!-- We download it with the help of the **osmdata**\index{osmdata (package)} package (see also Section \@ref(retrieving-data)). -->
-<!-- We constrain the download of the street network (in OSM language called "highway") to  the bounding box\index{bounding box} of the cycle hire data, and attach the corresponding data as an `sf`-object\index{sf}. -->
-<!-- `osmdata_sf()` returns a list with several spatial objects (points, lines, polygons, etc.). -->
-<!-- Here, we will only keep the line objects. -->
+```r
+data("cycle_hire", package = "spData")
+points = cycle_hire[1:25, ]
+```
+
+Aside from the cycle hire points data, we need a street network for this area.
+We can download it with from OpenStreetMap\index{OpenStreetMap} with the help of the **osmdata** \index{osmdata (package)} package (see also Section \@ref(retrieving-data)).
+To do this, we constrain the query of the street network (in OSM language called "highway") to the bounding box\index{bounding box} of `points`, and attach the corresponding data as an `sf`-object\index{sf}.
+`osmdata_sf()` returns a list with several spatial objects (points, lines, polygons, etc.), but here, we only keep the line objects with their related ids.
 <!-- OpenStreetMap\index{OpenStreetMap} objects come with a lot of columns, `streets` features almost 500. -->
 <!-- In fact, we are only interested in the geometry column. -->
 <!-- Nevertheless, we are keeping one attribute column; otherwise, we will run into trouble when trying to provide `writeVECT()` only with a geometry object (see further below and `?writeVECT` for more details). -->
 <!-- Remember that the geometry column is sticky, hence, even though we are just selecting one attribute, the geometry column will be also returned (see Section \@ref(intro-sf)). -->
 
-<!-- ```{r 09-gis-25, eval=FALSE} -->
-<!-- library(osmdata) -->
-<!-- b_box = st_bbox(points) -->
-<!-- london_streets = opq(b_box) %>% -->
-<!--   add_osm_feature(key = "highway") %>% -->
-<!--   osmdata_sf() %>% -->
-<!--   `[[`("osm_lines") -->
-<!-- london_streets = dplyr::select(london_streets, osm_id) -->
-<!-- ``` -->
 
-<!-- As a convenience to the reader, one can attach `london_streets` to the global environment using `data("london_streets", package = "spDataLarge")`.  -->
+```r
+library(osmdata)
+b_box = st_bbox(points)
+london_streets = opq(b_box) %>%
+  add_osm_feature(key = "highway") %>%
+  osmdata_sf() 
+london_streets = london_streets[["osm_lines"]]
+london_streets = dplyr::select(london_streets, osm_id)
+```
 
-<!-- ```{r 09-gis-26, eval=FALSE, echo=FALSE} -->
-<!-- data("london_streets", package = "spDataLarge") -->
-<!-- ``` -->
+As a convenience to the reader, one can attach `london_streets` to the global environment using `data("london_streets", package = "spDataLarge")`.
 
-<!-- Now that we have the data, we can go on and initiate a GRASS\index{GRASS} session, i.e., we have to create a GRASS spatial database. -->
-<!-- The GRASS geodatabase \index{spatial database} system is based on SQLite. -->
-<!-- Consequently, different users can easily work on the same project, possibly with different read/write permissions. -->
-<!-- However, one has to set up this spatial database\index{spatial database} (also from within R), and users used to a GIS GUI\index{graphical user interface} popping up by one click might find this process a bit intimidating in the beginning. -->
-<!-- First of all, the GRASS database requires its own directory, and contains a location (see the [GRASS GIS Database](https://grass.osgeo.org/grass77/manuals/grass_database.html) help pages at [grass.osgeo.org](https://grass.osgeo.org/grass77/manuals/index.html) for further information). -->
-<!-- The location in turn simply contains the geodata for one project.  -->
-<!-- Within one location, several mapsets can exist and typically refer to different users.  -->
-<!-- PERMANENT is a mandatory mapset and is created automatically. -->
-<!-- It stores the projection, the spatial extent and the default resolution for raster data. -->
-<!-- In order to share geographic data with all users of a project, the database owner can add spatial data to the PERMANENT mapset. -->
-<!-- Please refer to @neteler_open_2008 and the [GRASS GIS quick start](https://grass.osgeo.org/grass77/manuals/helptext.html) for more information on the GRASS spatial database\index{spatial database} system. -->
+Now that we have the data, we can go on and initiate a GRASS\index{GRASS} session.
+First of all, we need to find out if and where GRASS is installed on the computer.
 
-<!-- You have to set up a location and a mapset if you want to use GRASS\index{GRASS} from within R. -->
-<!-- First of all, we need to find out if and where GRASS 7 is installed on the computer. -->
 
-<!-- ```{r 09-gis-27, eval=FALSE} -->
-<!-- library(link2GI) -->
-<!-- link = findGRASS()  -->
-<!-- ``` -->
+```r
+library(link2GI)
+link = findGRASS()
+```
+
+GRASS GIS differs from many other GIS software in its approach for handling input data -- it puts all of the input data in a GRASS spatial database.
+The GRASS geodatabase \index{spatial database} system is based on SQLite.
+Consequently, different users can easily work on the same project, possibly with different read/write permissions.
+However, one has to set up this spatial database\index{spatial database} (also from within R), and users might find this process a bit intimidating in the beginning.
+First of all, the GRASS database requires its own directory, which, in turn, contains a location (see the [GRASS GIS Database](https://grass.osgeo.org/grass80/manuals/grass_database.html) help pages at [grass.osgeo.org](https://grass.osgeo.org/grass80/manuals/index.html) for further information).
+The location stores the geodata for one project or one area.
+Within one location, several mapsets can exist that typically refer to different users or different tasks.
+Each location also has PERMANENT -- a mandatory mapset that is created automatically.
+PERMANENT stores the projection, the spatial extent and the default resolution for raster data.
+In order to share geographic data with all users of a project, the database owner can add spatial data to the PERMANENT mapset.
+So, to sum it all up -- the GRASS geodatabase may contain many locations (all data in one location have the same CRS), and each location can store many mapsets (groups of datasets).
+Please refer to @neteler_open_2008 and the [GRASS GIS quick start](https://grass.osgeo.org/grass80/manuals/helptext.html) for more information on the GRASS spatial database\index{spatial database} system.
+
+Now, you have to set up a location and a mapset if you want to use GRASS\index{GRASS} from within R.
+
+<!--toDo:jn-->
+<!--improve the next code chunk-->
+
+
+
 
 <!-- `link` is a `data.frame` which contains in its rows the GRASS 7 installations on your computer.  -->
 <!-- Here, we will use a GRASS 7\index{GRASS} installation. -->
@@ -599,7 +606,31 @@ Similar to SAGA\index{SAGA}, GRASS focused on raster processing in the beginning
 
 ### WhiteboxTools {#whitebox}
 
+<!-- whitebox init -->
+
 <!-- https://giswqs.github.io/whiteboxR/ -->
+
+<!-- Pre-compiled binaries are only available for download for 64-bit Linux (Ubuntu 20.04), Windows and Mac OS (Intel) platforms. -->
+
+
+```r
+whitebox::install_whitebox()
+```
+
+<!-- source code (or docker) - https://github.com/jblindsay/whitebox-tools -->
+
+
+```r
+library(whitebox)
+wbt_init()
+```
+
+<!-- `??whitebox` -->
+<!-- ??wbt_ -->
+
+<!-- For more information visit https://giswqs.github.io/whiteboxR/ -->
+<!-- https://www.whiteboxgeo.com/manual/wbt_book/intro.html -->
+
 
 ## When to use what?
 
@@ -646,7 +677,6 @@ It has [geoprocessing tools](https://gdal.org/programs/index.html) for vector an
 
 <!--toDo:jn-->
 <!--expand a list of what is possible-->
-
 
 The code chunk below demonstrates this functionality:
 `linkGDAL()` searches the computer for a working GDAL\index{GDAL} installation and adds the location of the executable files to the PATH variable, allowing GDAL to be called.
