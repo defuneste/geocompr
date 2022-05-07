@@ -111,7 +111,7 @@ With a wide range of packages, R also supports advanced geospatial statistics\in
 \index{R!language}
 New integrated development environments (IDEs\index{IDE}) such as RStudio\index{RStudio} have made R more user-friendly for many, easing map making with a panel dedicated to interactive visualization.
 
-At its core, R is an object-oriented, [functional programming language](http://adv-r.had.co.nz/Functional-programming.html) [@wickham_advanced_2019], and was specifically designed as an interactive interface to other software [@chambers_extending_2016]. 
+At its core, R is an object-oriented, [functional programming language](https://adv-r.hadley.nz/fp.html) [@wickham_advanced_2019], and was specifically designed as an interactive interface to other software [@chambers_extending_2016]. 
 The latter also includes many 'bridges' to a treasure trove of GIS\index{GIS} software, 'geolibraries' and functions (see Chapter \@ref(gis)).
 It is thus ideal for quickly creating 'geo-tools', without needing to master lower level languages (compared to R) such as C\index{C}, FORTRAN\index{FORTRAN} or Java\index{Java} (see Section \@ref(software-for-geocomputation)). 
 \index{R}
@@ -233,15 +233,15 @@ An obvious feature of the **tidyverse** is the tendency for packages to work in 
 There is no equivalent **geoverse**, but there are attempts at harmonization between packages hosted in the [r-spatial](https://github.com/r-spatial/discuss/issues/11) organization and a growing number of packages use **sf**\index{sf} (Table \@ref(tab:revdep)). 
 
 
-Table: (\#tab:revdep)The top 5 most downloaded packages that depend on sf, in terms of average number of downloads per day over the previous month. As of 2021-11-19  there are  289  packages which import sf.
+Table: (\#tab:revdep)The top 5 most downloaded packages that depend on sf, in terms of average number of downloads per day over the previous month. As of 2022-04-22  there are  332  packages which import sf.
 
 |Package | Downloads|
 |:-------|---------:|
-|spdep   |      1413|
-|lwgeom  |      1163|
-|stars   |       960|
-|leafem  |       898|
-|tmap    |       841|
+|spdep   |      1419|
+|lwgeom  |      1000|
+|stars   |       940|
+|leafem  |       863|
+|mapview |       760|
 
 Parallel group of developments relates to the [rspatial](https://github.com/rspatial) set of packages.^[Note the difference between "r-spatial", organization containing packages such as **sf**, and "rspatial", organization responsible for **terra**.]
 Its main member is the **terra** package for spatial raster handling (see Section \@ref(an-introduction-to-terra)).

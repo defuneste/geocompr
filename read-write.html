@@ -7,7 +7,7 @@
 <title>Chapter 8 Geographic data I/O | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites This chapter requires the following packages: library(sf) library(terra) library(dplyr) library(spData)  8.1 Introduction  This chapter is about reading and writing geographic data....">
-<meta name="generator" content="bookdown 0.25 with bs4_book()">
+<meta name="generator" content="bookdown 0.26 with bs4_book()">
 <meta property="og:title" content="Chapter 8 Geographic data I/O | Geocomputation with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://geocompr.robinlovelace.net/read-write.html">
@@ -102,7 +102,7 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/">terra</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jakubnowosad.com/spData/">spData</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nowosad.github.io/spData/">spData</a></span><span class="op">)</span></code></pre></div>
 </div>
 <div id="introduction-4" class="section level2" number="8.1">
 <h2>
@@ -142,7 +142,7 @@ Various ‘geoportals’ (web services providing geospatial datasets such as <a 
 Some global geoportals overcome this issue.
 The <a href="http://www.geoportal.org/">GEOSS portal</a> and the <a href="https://scihub.copernicus.eu/">Copernicus Open Access Hub</a>, for example, contain many raster datasets with global coverage.
 A wealth of vector datasets can be accessed from the <a href="http://sedac.ciesin.columbia.edu/">SEDAC</a> portal run by the National Aeronautics and Space Administration (NASA) and the European Union’s <a href="http://inspire-geoportal.ec.europa.eu/">INSPIRE geoportal</a>, with global and regional coverage.</p>
-<p>Most geoportals provide a graphical interface allowing datasets to be queried based on characteristics such as spatial and temporal extent, the United States Geological Services’ <a href="https://earthexplorer.usgs.gov/">EarthExplorer</a> being a prime example.
+<p>Most geoportals provide a graphical interface allowing datasets to be queried based on characteristics such as spatial and temporal extent, the United States Geological Survey’s <a href="https://earthexplorer.usgs.gov/">EarthExplorer</a> being a prime example.
 <em>Exploring</em> datasets interactively on a browser is an effective way of understanding available layers.
 <em>Downloading</em> data is best done with code, however, from reproducibility and efficiency perspectives.
 Downloads can be initiated from the command line using a variety of techniques, primarily via URLs and APIs (see the <a href="https://scihub.copernicus.eu/twiki/do/view/SciHubWebPortal/APIHubDescription">Sentinel API</a> for example).
@@ -273,10 +273,10 @@ Using OSM encourages ‘citizen science’ and contributions back to the digital
 Further examples of OSM data in action are provided in Chapters <a href="gis.html#gis">10</a>, <a href="transport.html#transport">13</a> and <a href="location.html#location">14</a>.</p>
 <p>Sometimes, packages come with built-in datasets.
 These can be accessed in four ways: by attaching the package (if the package uses ‘lazy loading’ as <strong>spData</strong> does), with <code>data(dataset, package = mypackage)</code>, by referring to the dataset with <code>mypackage::dataset</code>, or with <code>system.file(filepath, package = mypackage)</code> to access raw data files.
-The following code chunk illustrates the latter two options using the <code>world</code> dataset (already loaded by attaching its parent package with <code><a href="https://jakubnowosad.com/spData/">library(spData)</a></code>):<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
+The following code chunk illustrates the latter two options using the <code>world</code> dataset (already loaded by attaching its parent package with <code><a href="https://nowosad.github.io/spData/">library(spData)</a></code>):<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
 For more information on data import with R packages, see Sections 5.5 and 5.6 of &lt;span class="citation"&gt;Gillespie and Lovelace (&lt;a href="references.html#ref-gillespie_efficient_2016" role="doc-biblioref"&gt;2016&lt;/a&gt;)&lt;/span&gt;.&lt;/p&gt;'><sup>36</sup></a></p>
 <div class="sourceCode" id="cb264"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">world2</span> <span class="op">=</span> <span class="fu">spData</span><span class="fu">::</span><span class="va"><a href="https://jakubnowosad.com/spData/reference/world.html">world</a></span>
+<code class="sourceCode R"><span class="va">world2</span> <span class="op">=</span> <span class="fu">spData</span><span class="fu">::</span><span class="va"><a href="https://nowosad.github.io/spData/reference/world.html">world</a></span>
 <span class="va">world3</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shapes/world.gpkg"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The last example, <code>system.file("shapes/world.gpkg", package = "spData")</code>, returns a path to the <code>world.gpkg</code> file, which is stored inside of the <code>"shapes/"</code> folder of the <strong>spData</strong> package.</p>
 <p>
@@ -360,7 +360,7 @@ The package’s basic functionality is demonstrated below, in commands that get 
 To filter features on the server before downloading them, the argument &lt;code&gt;cql_filter&lt;/code&gt; can be used. Adding &lt;code&gt;cql_filter = URLencode(&quot;F_CODE= '27'&quot;)&lt;/code&gt; to the command, for example, would instruct the server to only return the feature with values in the &lt;code&gt;F_CODE&lt;/code&gt; column equal to 27.&lt;/p&gt;"><sup>37</sup></a></p>
 <div class="sourceCode" id="cb271"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/eblondel/ows4R">ows4R</a></span><span class="op">)</span>
-<span class="va">wfs</span> <span class="op">=</span> <span class="va"><a href="https://rdrr.io/pkg/ows4R/man/WFSClient.html">WFSClient</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"http://www.fao.org/figis/geoserver/wfs"</span>,
+<span class="va">wfs</span> <span class="op">=</span> <span class="va">WFSClient</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"http://www.fao.org/figis/geoserver/wfs"</span>,
                       serviceVersion <span class="op">=</span> <span class="st">"1.0.0"</span>, logger <span class="op">=</span> <span class="st">"INFO"</span><span class="op">)</span>
 <span class="va">fao_areas</span> <span class="op">=</span> <span class="va">wfs</span><span class="op">$</span><span class="fu">getFeatures</span><span class="op">(</span><span class="st">"area:FAO_AREAS"</span><span class="op">)</span></code></pre></div>
 <p>There is much more to learn about web services and much potential for development of R-OWS interfaces, an active area of development.
@@ -943,7 +943,7 @@ The speed of the writing process depends also on the driver.</p>
 <p><strong>Note</strong>: if you try to write to the same data source again, the function will overwrite the file:</p>
 <div class="sourceCode" id="cb285"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">write_sf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">world</span>, dsn <span class="op">=</span> <span class="st">"world.gpkg"</span><span class="op">)</span></code></pre></div>
-<p>Instead of overwriting the file, we could add a new layer to the file with <code>append = TRUE</code>, which is supported my several spatial formats, including GeoPackage.</p>
+<p>Instead of overwriting the file, we could add a new layer to the file with <code>append = TRUE</code>, which is supported by several spatial formats, including GeoPackage.</p>
 <div class="sourceCode" id="cb286"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_write.html">write_sf</a></span><span class="op">(</span>obj <span class="op">=</span> <span class="va">world</span>, dsn <span class="op">=</span> <span class="st">"world_many_layers.gpkg"</span>, append <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Alternatively, you can use <code><a href="https://r-spatial.github.io/sf/reference/st_write.html">st_write()</a></code> since it is equivalent to <code><a href="https://r-spatial.github.io/sf/reference/st_write.html">write_sf()</a></code>.
@@ -1191,7 +1191,7 @@ Export this map to a file called <code>cycle_hire.html</code>.</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-03-25.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-05-07.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

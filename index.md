@@ -1,7 +1,7 @@
 --- 
 title: 'Geocomputation with R'
 author: 'Robin Lovelace, Jakub Nowosad, Jannes Muenchow'
-date: '2022-03-25'
+date: '2022-05-07'
 site: bookdown::bookdown_site
 output: bookdown::bs4_book
 documentclass: krantz
@@ -42,7 +42,7 @@ Its current 'build status' as follows:
 
 [![Actions](https://github.com/Robinlovelace/geocompr/workflows/Render/badge.svg)](https://github.com/Robinlovelace/geocompr/actions)
 
-This version of the book was built on GH Actions on 2022-03-25.
+This version of the book was built on GH Actions on 2022-05-07.
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>.
 
@@ -90,7 +90,7 @@ remotes::install_github("geocompr/geocompkg")
 
 After installing the book's dependencies, you can rebuild the book for testing and educational purposes.
 To do this [download](https://github.com/Robinlovelace/geocompr/archive/refs/heads/main.zip) and unzip or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the book's source code.
-After opening the `geocompr.Rproj` project in RStudio (or opening the folder in another IDE such as [VS Code](https://github.com/REditorSupport/vscode-R)), you should be able to reproduce the contents with the following command:
+After opening the `geocompr.Rproj` project in [RStudio](https://www.rstudio.com/products/rstudio/download/#download) (or opening the folder in another IDE such as [VS Code](https://github.com/REditorSupport/vscode-R)), you should be able to reproduce the contents with the following command:
 
 
 ```r
@@ -180,7 +180,9 @@ The chapters in Part I aim to address this by providing reproducible code on sim
 
 An important aspect of the book from a teaching/learning perspective is the **exercises** at the end of each chapter.
 Completing these will develop your skills and equip you with the confidence needed to tackle a range of geospatial problems.
-Solutions to the exercises, and a number of extended examples, are provided on the book's supporting website, at [geocompr.github.io](https://geocompr.github.io/).
+Solutions to the exercises can be found in an online booklet that accompanies Geocomputation with R, hosted at [geocompr.github.io/solutions](https://geocompr.github.io/solutions/).
+To learn how to this booklet was created, and how to update solutions in files such as [_01-ex.Rmd](https://github.com/Robinlovelace/geocompr/blob/main/_01-ex.Rmd), see this [blog post](https://geocompr.github.io/post/2022/geocompr-solutions/).
+For more blog posts and extended examples see the book's supporting website at [geocompr.github.io](https://geocompr.github.io/).
 
 Impatient readers are welcome to dive straight into the practical examples, starting in Chapter \@ref(spatial-class).
 However, we recommend reading about the wider context of *Geocomputation with R* in Chapter \@ref(intro) first.
@@ -219,7 +221,7 @@ If you are interested in the wider context and motivations behind this book, rea
 
 
 
-Many thanks to everyone who contributed directly and indirectly via the code hosting and collaboration site GitHub, including the following people who contributed direct via pull requests: prosoitos, florisvdh, katygregg, rsbivand, iod-ine, KiranmayiV, zmbc, erstearns, dcooley, MikeJohnPage, defuneste, eyesofbambi, nickbearman, tyluRp, marcosci, giocomai, KHwong12, LaurieLBaker, MarHer90, mdsumner, pat-s, darrellcarvalho, e-clin, gisma, ateucher, annakrystalli, kant, gavinsimpson, Himanshuteli, yutannihilation, jimr1603, jbixon13, olyerickson, yvkschaefer, katiejolly, layik, mpaulacaldas, mtennekes, mvl22, ganes1410, richfitz, wdearden, yihui, chihinl, cshancock, ec-nebi, gregor-d, jasongrahn, p-kono, pokyah, schuetzingit, sdesabbata, tim-salabim, tszberkowitz.
+Many thanks to everyone who contributed directly and indirectly via the code hosting and collaboration site GitHub, including the following people who contributed direct via pull requests: prosoitos, florisvdh, katygregg, rsbivand, iod-ine, KiranmayiV, defuneste, zmbc, erstearns, FlorentBedecarratsNM, dcooley, marcosci, MikeJohnPage, eyesofbambi, nickbearman, tyluRp, giocomai, KHwong12, LaurieLBaker, MarHer90, mdsumner, pat-s, darrellcarvalho, e-clin, gisma, ateucher, annakrystalli, kant, gavinsimpson, Himanshuteli, yutannihilation, jimr1603, jbixon13, olyerickson, yvkschaefer, katiejolly, kwhkim, layik, mpaulacaldas, mtennekes, mvl22, ganes1410, richfitz, wdearden, yihui, chihinl, cshancock, ec-nebi, gregor-d, jasongrahn, p-kono, pokyah, schuetzingit, sdesabbata, tim-salabim, tszberkowitz.
 Special thanks to Marco Sciaini, who not only created the front cover image, but also published the code that generated it (see `code/frontcover.R` in the book's GitHub repo). 
 Dozens more people contributed online, by raising and commenting on issues, and by providing feedback via social media.
 The `#geocompr` hashtag will live on!

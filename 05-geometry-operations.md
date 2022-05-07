@@ -76,8 +76,13 @@ As we show in Chapter \@ref(reproj-geo-data), GEOS assumes that the data is in a
 Therefore, the first step is to project the data into some adequate projected CRS, such as US National Atlas Equal Area (epsg = 2163) (on the left in Figure \@ref(fig:us-simp)):
 
 
+
+
+
 ```r
-us_states2163 = st_transform(us_states, 2163)
+us_states2163 = st_transform(us_states, "EPSG:2163")
+us_states2163 = us_states2163 %>% 
+  mutate(AREA = as.numeric(AREA)) 
 ```
 
 `st_simplify()` works equally well with projected polygons:
@@ -100,7 +105,6 @@ Simplification of multipolygon objects can remove small internal polygons, even 
 
 ```r
 # proportion of points to retain (0-1; default 0.05)
-us_states2163$AREA = as.numeric(us_states2163$AREA)
 us_states_simp2 = rmapshaper::ms_simplify(us_states2163, keep = 0.01,
                                           keep_shapes = TRUE)
 ```
@@ -442,7 +446,9 @@ The transformation process can be also reversed using `st_cast`:
 ```r
 multipoint_2 = st_cast(linestring, "MULTIPOINT")
 multipoint_3 = st_cast(polyg, "MULTIPOINT")
-all.equal(multipoint, multipoint_2, multipoint_3)
+all.equal(multipoint, multipoint_2)
+#> [1] TRUE
+all.equal(multipoint, multipoint_3)
 #> [1] TRUE
 ```
 
@@ -674,7 +680,7 @@ The same problem arises when we would like to merge satellite imagery from diffe
 We can deal with such mismatches by aligning the rasters.
 
 In the simplest case, two images only differ with regard to their extent.
-Following code adds one row and two columns to each side of the raster while setting all new values to an elevation of 1000 meters (Figure \@ref(fig:extend-example)).
+Following code adds one row and two columns to each side of the raster while setting all new values to `NA` (Figure \@ref(fig:extend-example)).
 
 
 ```r
@@ -698,7 +704,7 @@ elev_3 = elev + elev_2
 However, we can align the extent of two rasters with `extend()`. 
 Instead of telling the function how many rows or columns should be added (as done before), we allow it to figure it out by using another raster object.
 Here, we extend the `elev` object to the extent of `elev_2`. 
-The newly added rows and column receive the default value of the `value` parameter, i.e., `NA`.
+The newly added rows and column receive the `NA`.
 
 
 ```r
@@ -792,17 +798,18 @@ In short, this process takes the values of our original raster and recalculates 
 
 
 
-Several methods for recalculating (estimating) values for a raster with different resolutions/origins exist (Figure \@ref(fig:resampl)).
-It includes:
+There are several methods for estimating values for a raster with different resolutions/origins, as shown in Figure \@ref(fig:resampl).
+These resampling methods include:
 
-- Nearest neighbor - assigns the value of the nearest cell of the original raster to the cell of the target one.
-It is fast and usually suitable for categorical rasters
-- Bilinear interpolation - assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). The fastest method for continuous rasters
-- Cubic interpolation - uses values of 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters. It results in a more smoothed surface than the bilinear interpolation, but is also more computationally demanding
-- Cubic spline interpolation - also uses values of 16 nearest cells of the original raster to determine the output cell value, but applies cubic splines (piecewise third-order polynomial functions) to derive the results. Used for continuous rasters
-- Lanczos windowed sinc resampling - uses values of 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters^[More detailed explanation of this method can be found at https://gis.stackexchange.com/a/14361/20955.]
+- Nearest neighbor: assigns the value of the nearest cell of the original raster to the cell of the target one. This is a fast simple technique that is usually suitable for resampling categorical rasters.
+- Bilinear interpolation: assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). This is the fastest method that is appropriate for continuous rasters.
+- Cubic interpolation: uses values of 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters and results in a smoother surface that results bilinear interpolation, but is more computationally intensive.
+- Cubic spline interpolation: also uses values of 16 nearest cells of the original raster to determine output cell, but applies cubic splines (piecewise third-order polynomial functions) to derive the results. Used for continuous rasters.
+- Lanczos windowed sinc resampling: uses values of 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters.^[
+More detailed explanation of this method can be found at https://gis.stackexchange.com/a/14361/20955.
+]
 
-As you can find in the above explanation, only *nearest neighbor* is suitable for categorical rasters, while all the methods can be used (with different outcomes) for the continuous rasters.
+The above explanation highlights that only *nearest neighbor* resampling is suitable for categorical rasters, while all the methods can be used (with different outcomes) for continuous rasters.
 Additionally, each successive method requires more processing time.
 
 To apply resampling, the **terra** package provides a `resample()` function.

@@ -399,6 +399,35 @@ In addition, there is a Python interface (SAGA Python API\index{API}).
 <!-- You can find an extended version of this example in `vignette("RSAGA-landslides")` which includes the use of statistical geocomputing to derive terrain attributes as predictors for a non-linear Generalized Additive Model\index{generalized additive model} (GAM) to predict spatially landslide susceptibility [@muenchow_geomorphic_2012]. -->
 <!-- The term statistical geocomputation emphasizes the strength of combining R's data science\index{data science} power with the geoprocessing power of a GIS which is at the very heart of building a bridge from R\index{R} to GIS\index{GIS}. -->
 
+<!-- saga_bin -->
+<!-- cores -->
+<!-- backend -->
+
+
+```r
+library(terra)
+library(Rsagacmd)
+saga = saga_gis(backend = "terra")
+```
+
+
+```r
+ndvi = rast(system.file("raster/ndvi.tif", package = "spDataLarge"))
+```
+
+<!-- add ref to the ndvi calculations section -->
+
+<!-- explain saga$ -->
+
+<!-- expain/mention other segmentation techinques -->
+<!-- mention supercells -->
+<!-- https://github.com/joaofgoncalves/SegOptim ?? -->
+
+<!-- add figure -->
+
+<!-- mention many raster layers -->
+<!-- how to find help? other resources -->
+
 ### GRASS GIS {#grass}
 
 The U.S. Army - Construction Engineering Research Laboratory (USA-CERL) created the core of the Geographical Resources Analysis Support System (GRASS)\index{GRASS} [Table \@ref(tab:gis-comp); @neteler_open_2008] from 1982 to 1995. 
