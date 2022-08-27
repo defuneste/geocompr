@@ -59,7 +59,7 @@ The syntax differs but the results are (in essence) the same:
 ```r
 library(dplyr)                          # attach tidyverse package
 nz_name1 = nz["Name"]                   # base R approach
-nz_name2 = nz %>% select(Name)          # tidyverse approach
+nz_name2 = nz |> select(Name)          # tidyverse approach
 identical(nz_name1$Name, nz_name2$Name) # check results
 #> [1] TRUE
 ```
@@ -73,7 +73,7 @@ However, if you do choose to use **tidyverse**\index{tidyverse (package)} functi
 While commonly needed operators/functions were covered in depth --- such as the base R `[` subsetting operator and the **dplyr** function `filter()` --- there are many other functions for working with geographic data, from other packages, that have not been mentioned.
 Chapter \@ref(intro) mentions 20+ influential packages for working with geographic data, and only a handful of these are demonstrated in subsequent chapters.
 There are hundreds more.
-As of early 2019, there are nearly 200 packages mentioned in the Spatial [Task View](https://cran.r-project.org/web/views/);
+As of mid-2022, there are about 200 packages mentioned in the Spatial [Task View](https://cran.r-project.org/web/views/);
 more packages and countless functions for geographic data are developed each year, making it impractical to cover them all in a single book.
 
 
@@ -128,8 +128,9 @@ The first thing to learn is to handle geographic data queries.
 This is because big data\index{big data} analytics often boil down to extracting a small amount of data from a database for a specific statistical analysis.
 For this, we have provided an introduction to spatial databases\index{spatial database} and how to use a GIS\index{GIS} from within R in Chapter \@ref(gis).
 If you really have to do the analysis on a big or even the complete dataset, hopefully, the problem you are trying to solve is embarrassingly parallel.
-For this, you need to learn a system that is able to do this parallelization efficiently such as Hadoop, GeoMesa (http://www.geomesa.org/) or GeoSpark [@huang_geospark_2017].
-But still, you are applying the same techniques and concepts you have used on small datasets to answer a big data\index{big data} question, the only difference is that you then do it in a big data setting.
+For this, you need to learn a system that is able to do this parallelization efficiently such as [Apache Sedona](https://sedona.apache.org/), as mentioned in Section \@ref(postgis).
+Regardless of dataset size, the techniques and concepts you have used on small datasets will be useful\index{big data} question, the only difference being the extra considterations when working in a big data setting.
+<!-- TODO: add reference on big data?-->
 
 ## Getting help? {#questions}
 <!-- Now wondering if this should be an appendix, or even a new chapter?? -->

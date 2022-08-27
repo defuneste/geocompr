@@ -131,8 +131,8 @@ This is demonstrated by the following code chunk, which creates Figure \@ref(fig
 ```r
 library(leaflet)
 popup = c("Robin", "Jakub", "Jannes")
-leaflet() %>%
-  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") %>%
+leaflet() |>
+  addProviderTiles("NASAGIBS.ViirsEarthAtNight2012") |>
   addMarkers(lng = c(-3, 23, 11),
              lat = c(52, 53, 49), 
              popup = popup)
@@ -303,7 +303,7 @@ Functions such as `gIntersection()` enabled users to find spatial relationships 
 
 A limitation of the **sp** ecosystem was its limited support for raster data.
 This was overcome by **raster**\index{raster}, first released in 2010 [@R-raster].
-**rasters**'s class system and functions enabled a range of raster operations, capabilities now implemented in the **terra** package, which superscedes **raster**, as outlined in Section \@ref(raster-data).
+**raster**'s class system and functions enabled a range of raster operations, capabilities now implemented in the **terra** package, which superscedes **raster**, as outlined in Section \@ref(raster-data).
 An important capability of **raster** and **terra** is their ability to work with datasets that are too large to fit into RAM (R's interface to PostGIS\index{PostGIS} also supports off-disk operations, on geographic vector datasets).
 **raster** and **terra** also supports map algebra, as described in Section \@ref(map-algebra).
 
@@ -337,7 +337,7 @@ Additional ways of representing and working with geographic data in R since 2018
 
 This modernization had several motivations, including the emergence of new technologies and standard, and the impacts from spatial software development outside of the R environment [@bivand_progress_2021].
 The most important external factor affecting most spatial software, including R spatial packages, were the major updates, including many breaking changes to the PROJ library\index{PROJ} that had begun in 2018.
-Most importantly, these changes forced the replacement of `proj4string` to `WKT` representation for storage of coordinate reference systems and coordinates operations (learn more in Section \@ref(crs-intro) and Chapter \@ref(reproj-geo-data)).
+Most importantly, these changes forced the replacement of 'proj-string' representations of coordinate reference systems with 'Well Known Text', as described in Section \@ref(crs-intro) and Chapter \@ref(reproj-geo-data).
 
 \index{rayshader (package)}
 Since 2018, the progress of spatial visualization tools in R has been related to a few factors.

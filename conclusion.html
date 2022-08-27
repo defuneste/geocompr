@@ -7,7 +7,7 @@
 <title>Chapter 16 Conclusion | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites Like the introduction, this concluding chapter contains few code chunks. But its prerequisites are demanding. It assumes that you have: read through and attempted the exercises in...">
-<meta name="generator" content="bookdown 0.26 with bs4_book()">
+<meta name="generator" content="bookdown 0.28 with bs4_book()">
 <meta property="og:title" content="Chapter 16 Conclusion | Geocomputation with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://geocompr.robinlovelace.net/conclusion.html">
@@ -19,11 +19,17 @@
 <meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/_Lato-0.4.1/font.css" rel="stylesheet">
-<link href="libs/_Roboto%20Mono-0.4.1/font.css" rel="stylesheet">
-<link href="libs/_Montserrat-0.4.1/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.3.1/transition.js"></script><script src="libs/bs3compat-0.3.1/tabs.js"></script><script src="libs/bs3compat-0.3.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
-<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.2/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.2/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.2/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.0/transition.js"></script><script src="libs/bs3compat-0.4.0/tabs.js"></script><script src="libs/bs3compat-0.4.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 16 Conclusion | Geocomputation with R">
+<meta name="citation_author" content="Robin Lovelace">
+<meta name="citation_author" content="Jakub Nowosad">
+<meta name="citation_author" content="Jannes Muenchow">
+<meta name="citation_publication_date" content="2019">
+<meta name="citation_isbn" content="9780203730058">
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -124,20 +130,20 @@ This final section of the book also provides some pointers on how to get involve
 </h2>
 <p>A characteristic of R is that there are often multiple ways to achieve the same result.
 The code chunk below illustrates this by using three functions, covered in Chapters <a href="attr.html#attr">3</a> and <a href="geometric-operations.html#geometric-operations">5</a>, to combine the 16 regions of New Zealand into a single geometry:</p>
-<div class="sourceCode" id="cb492"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nowosad.github.io/spData/">spData</a></span><span class="op">)</span>
-<span class="va">nz_u1</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html">st_union</a></span><span class="op">(</span><span class="va">nz</span><span class="op">)</span>
-<span class="va">nz_u2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/aggregate.sf.html">aggregate</a></span><span class="op">(</span><span class="va">nz</span><span class="op">[</span><span class="st">"Population"</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">nz</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="va">sum</span><span class="op">)</span>
-<span class="va">nz_u3</span> <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="va">nz</span>, t <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/summarize-generics.html">sum</a></span><span class="op">(</span><span class="va">Population</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_u1</span>, <span class="va">nz_u2</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_u1</span>, <span class="va">nz_u3</span><span class="op">$</span><span class="va">geom</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span></code></pre></div>
+<div class="sourceCode" id="cb503"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://nowosad.github.io/spData/">spData</a></span><span class="op">)</span></span>
+<span><span class="va">nz_u1</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html">st_union</a></span><span class="op">(</span><span class="va">nz</span><span class="op">)</span></span>
+<span><span class="va">nz_u2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">nz</span><span class="op">[</span><span class="st">"Population"</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">nz</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="va">sum</span><span class="op">)</span></span>
+<span><span class="va">nz_u3</span> <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="va">nz</span>, t <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">Population</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_u1</span>, <span class="va">nz_u2</span><span class="op">$</span><span class="va">geometry</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_u1</span>, <span class="va">nz_u3</span><span class="op">$</span><span class="va">geom</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Although the classes, attributes and column names of the resulting objects <code>nz_u1</code> to <code>nz_u3</code> differ, their geometries are identical.
 This is verified using the base R function <code><a href="https://rdrr.io/r/base/identical.html">identical()</a></code>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
 The first operation, undertaken by the function &lt;code&gt;st_union()&lt;/code&gt;, creates an object of class &lt;code&gt;sfc&lt;/code&gt; (a simple feature column).
 The latter two operations create &lt;code&gt;sf&lt;/code&gt; objects, each of which &lt;em&gt;contains&lt;/em&gt; a simple feature column.
-Therefore, it is the geometries contained in simple feature columns, not the objects themselves, that are identical.&lt;/p&gt;"><sup>92</sup></a>
+Therefore, it is the geometries contained in simple feature columns, not the objects themselves, that are identical.&lt;/p&gt;"><sup>93</sup></a>
 Which to use?
 It depends: the former only processes the geometry data contained in <code>nz</code> so is faster, while the other options performed attribute operations, which may be useful for subsequent steps.</p>
 <p>The wider point is that there are often multiple options to choose from when working with geographic data in R, even within a single package.
@@ -147,12 +153,12 @@ We recommend using <strong>sf</strong> and the other packages showcased in this 
 We cover both and encourage you to try both before deciding which is more appropriate for different tasks.
 The following code chunk, described in Chapter <a href="attr.html#attr">3</a>, shows how attribute data subsetting works in each approach, using the base R operator <code>[</code> and the <code><a href="https://dplyr.tidyverse.org/reference/select.html">select()</a></code> function from the <strong>tidyverse</strong> package <strong>dplyr</strong>.
 The syntax differs but the results are (in essence) the same:</p>
-<div class="sourceCode" id="cb493"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>                          <span class="co"># attach tidyverse package</span>
-<span class="va">nz_name1</span> <span class="op">=</span> <span class="va">nz</span><span class="op">[</span><span class="st">"Name"</span><span class="op">]</span>                   <span class="co"># base R approach</span>
-<span class="va">nz_name2</span> <span class="op">=</span> <span class="va">nz</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Name</span><span class="op">)</span>          <span class="co"># tidyverse approach</span>
-<span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_name1</span><span class="op">$</span><span class="va">Name</span>, <span class="va">nz_name2</span><span class="op">$</span><span class="va">Name</span><span class="op">)</span> <span class="co"># check results</span>
-<span class="co">#&gt; [1] TRUE</span></code></pre></div>
+<div class="sourceCode" id="cb504"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>                          <span class="co"># attach tidyverse package</span></span>
+<span><span class="va">nz_name1</span> <span class="op">=</span> <span class="va">nz</span><span class="op">[</span><span class="st">"Name"</span><span class="op">]</span>                   <span class="co"># base R approach</span></span>
+<span><span class="va">nz_name2</span> <span class="op">=</span> <span class="va">nz</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Name</span><span class="op">)</span>          <span class="co"># tidyverse approach</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">nz_name1</span><span class="op">$</span><span class="va">Name</span>, <span class="va">nz_name2</span><span class="op">$</span><span class="va">Name</span><span class="op">)</span> <span class="co"># check results</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Again the question arises: which to use?
 Again the answer is: it depends.
 Each approach has advantages: the pipe syntax is popular and appealing to some, while base R is more stable, and is well known to others.
@@ -161,7 +167,7 @@ However, if you do choose to use <strong>tidyverse</strong> functions to handle 
 <p>While commonly needed operators/functions were covered in depth — such as the base R <code>[</code> subsetting operator and the <strong>dplyr</strong> function <code><a href="https://dplyr.tidyverse.org/reference/filter.html">filter()</a></code> — there are many other functions for working with geographic data, from other packages, that have not been mentioned.
 Chapter <a href="intro.html#intro">1</a> mentions 20+ influential packages for working with geographic data, and only a handful of these are demonstrated in subsequent chapters.
 There are hundreds more.
-As of early 2019, there are nearly 200 packages mentioned in the Spatial <a href="https://cran.r-project.org/web/views/">Task View</a>;
+As of mid-2022, there are about 200 packages mentioned in the Spatial <a href="https://cran.r-project.org/web/views/">Task View</a>;
 more packages and countless functions for geographic data are developed each year, making it impractical to cover them all in a single book.</p>
 <p>The rate of evolution in R’s spatial ecosystem may seem overwhelming, but there are strategies to deal with the wide range of options.
 Our advice is to start by learning one approach <em>in depth</em> but to have a general understand of the <em>breadth</em> of options available.
@@ -174,7 +180,7 @@ It can increase resilience, performance (partly driven by friendly competition a
 In this context the decision to use a particular approach, such as the <strong>sf</strong>/<strong>tidyverse</strong>/<strong>raster</strong> ecosystem advocated in this book should be made with knowledge of alternatives.
 The <strong>sp</strong>/<strong>rgdal</strong>/<strong>rgeos</strong> ecosystem that <strong>sf</strong> is designed to supersede, for example, can do many of the things covered in this book and, due to its age, is built on by many other packages.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
 At the time of writing 452 package &lt;code&gt;Depend&lt;/code&gt; or &lt;code&gt;Import&lt;/code&gt; &lt;strong&gt;sp&lt;/strong&gt;, showing that its data structures are widely used and have been extended in many directions.
-The equivalent number for &lt;strong&gt;sf&lt;/strong&gt; was 69 in October 2018; with the growing popularity of &lt;strong&gt;sf&lt;/strong&gt;, this is set to grow.&lt;/p&gt;"><sup>93</sup></a>
+The equivalent number for &lt;strong&gt;sf&lt;/strong&gt; was 69 in October 2018; with the growing popularity of &lt;strong&gt;sf&lt;/strong&gt;, this is set to grow.&lt;/p&gt;"><sup>94</sup></a>
 Although best known for point pattern analysis, the <strong>spatstat</strong> package also supports raster and other vector geometries <span class="citation">(<a href="references.html#ref-baddeley_spatstat_2005" role="doc-biblioref">Baddeley and Turner 2005</a>)</span>.
 At the time of writing (October 2018) 69 packages depend on it, making it more than a package: <strong>spatstat</strong> is an alternative R-spatial ecosystem.</p>
 <p>It is also being aware of promising alternatives that are under development.
@@ -206,8 +212,9 @@ The first thing to learn is to handle geographic data queries.
 This is because big data analytics often boil down to extracting a small amount of data from a database for a specific statistical analysis.
 For this, we have provided an introduction to spatial databases and how to use a GIS from within R in Chapter <a href="gis.html#gis">10</a>.
 If you really have to do the analysis on a big or even the complete dataset, hopefully, the problem you are trying to solve is embarrassingly parallel.
-For this, you need to learn a system that is able to do this parallelization efficiently such as Hadoop, GeoMesa (<a href="http://www.geomesa.org/" class="uri">http://www.geomesa.org/</a>) or GeoSpark <span class="citation">(<a href="references.html#ref-huang_geospark_2017" role="doc-biblioref">Huang et al. 2017</a>)</span>.
-But still, you are applying the same techniques and concepts you have used on small datasets to answer a big data question, the only difference is that you then do it in a big data setting.</p>
+For this, you need to learn a system that is able to do this parallelization efficiently such as <a href="https://sedona.apache.org/">Apache Sedona</a>, as mentioned in Section <a href="gis.html#postgis">10.5.2</a>.
+Regardless of dataset size, the techniques and concepts you have used on small datasets will be useful question, the only difference being the extra considterations when working in a big data setting.
+<!-- TODO: add reference on big data?--></p>
 </div>
 <div id="questions" class="section level2" number="16.4">
 <h2>
@@ -305,19 +312,15 @@ This can be done with reference to documents that are part of R, and which can b
 There are good reasons for learning R as a language for geocomputation, as described in Chapter <a href="intro.html#intro">1</a>, but it is not the only option.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
 R’s strengths relevant to our definition of geocomputation include its emphasis on scientific reproducibility, widespread use in academic research and unparalleled support for statistical modeling of geographic data.
 Furthermore, we advocate learning one language (R) for geocomputation in depth before delving into other languages/frameworks because of the costs associated with context switching.
-It is preferable to have expertise in one language than basic knowledge of many.&lt;/p&gt;"><sup>94</sup></a>
+It is preferable to have expertise in one language than basic knowledge of many.&lt;/p&gt;"><sup>95</sup></a>
 It would be possible to study <em>Geocomputation with: Python</em>, <em>C++</em>, <em>JavaScript</em>, <em>Scala</em> or <em>Rust</em> in equal depth.
 Each has evolving geospatial capabilities.
 <a href="https://github.com/mapbox/rasterio"><strong>rasterio</strong></a>, for example, is a Python package
 that could supplement/replace the <strong>raster</strong> package used in this book — see <span class="citation">Garrard (<a href="references.html#ref-garrard_geoprocessing_2016" role="doc-biblioref">2016</a>)</span> and online tutorials such as <a href="https://automating-gis-processes.github.io/CSC18">automating-gis-processes</a> for more on the Python ecosystem.
 Dozens of geospatial libraries have been developed in C++, including well known libraries such as GDAL and GEOS, and less well known libraries such as the <strong><a href="https://github.com/orfeotoolbox/OTB">Orfeo Toolbox</a></strong> for processing remote sensing (raster) data.
 <a href="https://github.com/Turfjs/turf"><strong>Turf.js</strong></a> is an example of the potential for doing geocomputation with JavaScript.
-
-
 <a href="https://geotrellis.io/">GeoTrellis</a> provides functions for working with raster and vector data in the Java-based language Scala.
 And <a href="https://github.com/jblindsay/whitebox-tools">WhiteBoxTools</a> provides an example of a rapidly evolving command-line GIS implemented in Rust.
-
-
 Each of these packages/libraries/languages has advantages for geocomputation and there are many more to discover, as documented in the curated list of open source geospatial resources <a href="https://github.com/sacridini/Awesome-Geospatial">Awesome-Geospatial</a>.</p>
 <p>There is more to geocomputation than software, however.
 We can recommend <strong>exploring and learning new research topics and methods</strong> from academic and theoretical perspectives.
@@ -389,7 +392,7 @@ Whether it’s raising a constructive issue alerting developers to problems in t
 <!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
           <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://how-to-help-ukraine-now.super.site">Support Ukraine 🇺🇦
+          <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
 <hr>
@@ -427,7 +430,7 @@ Whether it’s raising a constructive issue alerting developers to problems in t
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-05-29.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-08-27.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

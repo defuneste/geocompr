@@ -110,6 +110,7 @@ tab:gis-comp
 fig:uniondata
 fig:sliver
 fig:qgis-raster-map
+fig:grass-mapview
 fig:postgis
 fig:codecheck
 fig:polymat
@@ -128,6 +129,7 @@ tab:od
 fig:desire
 fig:routes
 fig:stations
+fig:rnetvis
 fig:wayssln
 fig:cycleways
 tab:census-desc
@@ -139,7 +141,6 @@ fig:study-area-mongon
 fig:sa-mongon
 fig:xy-nmds
 fig:tree
-fig:rf-pred
 intro
 what-is-geocomputation
 why-use-r-for-geocomputation
@@ -274,7 +275,6 @@ qgis-raster
 other-gis-bridges
 saga
 grass
-whitebox
 when-to-use-what
 other-bridges
 gdal
@@ -305,7 +305,7 @@ introduction-7
 bris-case
 transport-zones
 desire-lines
-routes
+routes-and-routing-engines
 nodes
 route-networks
 prioritizing-new-infrastructure

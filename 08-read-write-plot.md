@@ -56,14 +56,15 @@ Most geoportals provide a graphical interface allowing datasets to be queried ba
 *Exploring* datasets interactively on a browser is an effective way of understanding available layers.
 *Downloading* data is best done with code, however, from reproducibility and efficiency perspectives.
 Downloads can be initiated from the command line using a variety of techniques, primarily via URLs and APIs\index{API} (see the [Sentinel API](https://scihub.copernicus.eu/twiki/do/view/SciHubWebPortal/APIHubDescription) for example).
-Files hosted on static URLs can be downloaded with `download.file()`, as illustrated in the code chunk below which accesses US National Parks data from [catalog.data.gov/dataset/national-parks](https://catalog.data.gov/dataset/national-parks):
+Files hosted on static URLs can be downloaded with `download.file()`, as illustrated in the code chunk below which accesses PeRL: Permafrost Region Pond and Lake Database from [doi.pangaea.de](https://doi.pangaea.de/10.1594/PANGAEA.868349):
 
 
 ```r
-download.file(url = "https://irma.nps.gov/DataStore/DownloadFile/666527",
-              destfile = "nps_boundary.zip")
-unzip(zipfile = "nps_boundary.zip")
-usa_parks = read_sf(dsn = "nps_boundary.shp")
+download.file(url = "https://hs.pangaea.de/Maps/PeRL/PeRL_permafrost_landscapes.zip",
+              destfile = "PeRL_permafrost_landscapes.zip", 
+              mode = "wb")
+unzip("PeRL_permafrost_landscapes.zip")
+canada_perma_land = read_sf("PeRL_permafrost_landscapes/canada_perma_land.shp")
 ```
 
 ## Geographic data packages
@@ -179,8 +180,8 @@ Next, they are passed to the function `osmdata_sf()` which does the work of down
 
 ```r
 library(osmdata)
-parks = opq(bbox = "leeds uk") %>% 
-  add_osm_feature(key = "leisure", value = "park") %>% 
+parks = opq(bbox = "leeds uk") |> 
+  add_osm_feature(key = "leisure", value = "park") |> 
   osmdata_sf()
 ```
 
@@ -310,29 +311,7 @@ fao_areas = read_sf(file)
 Note the use of `write_disk()` to ensure that the results are written to disk rather than loaded into memory, allowing them to be imported with **sf**.
 This example shows how to gain low-level access to web services using **httr**, which can be useful for understanding how web services work.
 For many everyday tasks, however, a higher-level interface may be more appropriate, and a number of R packages, and tutorials, have been developed precisely for this purpose.
-
-Packages **ows4R**, **rwfs** and **sos4R** have been developed for working with OWS services in general, WFS and the sensor observation service (SOS) respectively.
-As of October 2018, only **ows4R** is on CRAN.
-The package's basic functionality is demonstrated below, in commands that get all `FAO_AREAS` as we did in the previous code chunk:^[
-To filter features on the server before downloading them, the argument `cql_filter` can be used. Adding `cql_filter = URLencode("F_CODE= '27'")` to the command, for example, would instruct the server to only return the feature with values in the `F_CODE` column equal to 27.
-]
-
-
-```r
-library(ows4R)
-wfs = WFSClient$new("http://www.fao.org/figis/geoserver/wfs",
-                      serviceVersion = "1.0.0", logger = "INFO")
-fao_areas = wfs$getFeatures("area:FAO_AREAS")
-```
-
-
-
-There is much more to learn about web services and much potential for development of R-OWS interfaces, an active area of development.
-For further information on the topic, we recommend examples from European Centre for Medium-Range Weather Forecasts (ECMWF) services at [github.com/OpenDataHack](https://github.com/OpenDataHack/data_service_catalogue) and reading-up on OCG Web Services at [opengeospatial.org](http://www.opengeospatial.org/standards).
-
-
-
-
+The package **ows4R** was developed for working with OWS services.
 
 ## File formats
 
@@ -436,6 +415,7 @@ Table \@ref(tab:formats) presents some basic information about selected and ofte
 <!-- additional suggestions from our readers: -->
 <!-- - KEA - https://gdal.org/drivers/raster/kea.html -->
 <!-- - sfarrow & geoparquet/pandas/GeoFeather -->
+<!-- Zarr - long term time series raster cloud format -->
 
 \index{Shapefile}
 \index{GeoPackage}
@@ -670,17 +650,17 @@ download.file(u, "KML_Samples.kml")
 st_layers("KML_Samples.kml")
 #> Driver: LIBKML 
 #> Available layers:
-#>               layer_name geometry_type features fields
-#> 1             Placemarks                      3     11
-#> 2      Styles and Markup                      1     11
-#> 3       Highlighted Icon                      1     11
-#> 4        Ground Overlays                      1     11
-#> 5        Screen Overlays                      0     11
-#> 6                  Paths                      6     11
-#> 7               Polygons                      0     11
-#> 8          Google Campus                      4     11
-#> 9       Extruded Polygon                      1     11
-#> 10 Absolute and Relative                      4     11
+#>               layer_name geometry_type features fields crs_name
+#> 1             Placemarks                      3     11   WGS 84
+#> 2      Styles and Markup                      1     11   WGS 84
+#> 3       Highlighted Icon                      1     11   WGS 84
+#> 4        Ground Overlays                      1     11   WGS 84
+#> 5        Screen Overlays                      0     11   WGS 84
+#> 6                  Paths                      6     11   WGS 84
+#> 7               Polygons                      0     11   WGS 84
+#> 8          Google Campus                      4     11   WGS 84
+#> 9       Extruded Polygon                      1     11   WGS 84
+#> 10 Absolute and Relative                      4     11   WGS 84
 kml = read_sf("KML_Samples.kml", layer = "Placemarks")
 ```
 
@@ -752,8 +732,10 @@ snow_rey
 This way, we just downloaded a single value instead of the whole, large GeoTIFF file.
 
 The above example just shows one simple (but useful) case, but there is more to explore.
-The `/vsicurl/` prefix also works not only for raster but also for vector file formats allowing to read vectors directly from online storage.
-Importantly, it is not the only prefix provided by GDAL -- many more exist, such as `/vsizip/` to read spatial files from ZIP archives without decompressing them beforehand or `/vsis3/` for on-the-fly reading files available in AWS S3 buckets.
+The `/vsicurl/` prefix also works not only for raster but also for vector file formats.
+It allows reading vectors directly from online storage with `read_sf()` just by adding the prefix before the vector file URL.
+
+Importantly, `/vsicurl/` is not the only prefix provided by GDAL -- many more exist, such as `/vsizip/` to read spatial files from ZIP archives without decompressing them beforehand or `/vsis3/` for on-the-fly reading files available in AWS S3 buckets.
 You can learn more about it at https://gdal.org/user/virtual_file_systems.html.
 
 <!-- ### Databases -->
@@ -896,16 +878,21 @@ writeRaster(single_layer, filename = "my_raster.tif", datatype = "INT2U")
 Some raster file formats have additional options, that can be set by providing [GDAL parameters](http://www.gdal.org/formats_list.html) to the `options` argument of `writeRaster()`.
 GeoTIFF files are written in **terra**, by default, with the LZW compression `gdal = c("COMPRESS=LZW")`.
 To change or disable the compression, we need to modify this argument.
-Additionally, we can save our raster object as COG (*Cloud Optimized GeoTIFF*, Section \@ref(file-formats)) with the `"of=COG"` option.
 
 
 ```r
-writeRaster(x = single_layer,
-            filename = "my_raster.tif",
-            datatype = "INT2U",
-            gdal = c("COMPRESS=NONE", "of=COG"),
-            overwrite = TRUE)
+writeRaster(x = single_layer, filename = "my_raster.tif",
+            gdal = c("COMPRESS=NONE"), overwrite = TRUE)
 ```
+
+Additionally, we can save our raster object as COG (*Cloud Optimized GeoTIFF*, Section \@ref(file-formats)) with the `filetype = "COG"` options.
+
+
+```r
+writeRaster(x = single_layer, filename = "my_raster.tif",
+            filetype = "COG", overwrite = TRUE)
+```
+
 
 ## Visual outputs
 
@@ -952,7 +939,7 @@ E1. List and describe three types of vector, raster, and geodatabase formats.
 
 
 
-E2. Name at least two differences between `read_sf()` and the more well-known function `st_read()`.
+E2. Name at least two differences between the **sf** functions `read_sf()` and `st_read()`.
 
 
 

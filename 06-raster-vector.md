@@ -27,11 +27,6 @@ Often the extent of input raster datasets is larger than the area of interest.
 In this case raster **cropping** and **masking** are useful for unifying the spatial extent of input data.
 Both operations reduce object memory use and associated computational resources for subsequent analysis steps, and may be a necessary preprocessing step before creating attractive maps involving raster data.
 
-<!--jn:toDo-->
-<!-- two possibilities: -->
-<!-- 1. explain the need of the use of `vect()` -->
-<!-- 2. wait for https://github.com/rspatial/terra/issues/89 -->
-
 We will use two objects to illustrate raster cropping:
 
 - A `SpatRaster` object `srtm` representing elevation (meters above sea level) in south-western Utah
@@ -47,12 +42,13 @@ zion = read_sf(system.file("vector/zion.gpkg", package = "spDataLarge"))
 zion = st_transform(zion, crs(srtm))
 ```
 
-We will use `crop()` from the **terra** package to crop the `srtm` raster.
-It reduces the rectangular extent of the object passed to its first argument based on the extent of the object passed to its second argument, as demonstrated in the command below (which generates Figure \@ref(fig:cropmask)(B) --- note the smaller extent of the raster background):
+We use `crop()` from the **terra** package to crop the `srtm` raster.
+The function reduces the rectangular extent of the object passed to its first argument based on the extent of the object passed to its second argument.
+This functionality is demonstrated in the command below, which generates Figure \@ref(fig:cropmask)(B):
 
 
 ```r
-srtm_cropped = crop(srtm, vect(zion))
+srtm_cropped = crop(srtm, zion)
 ```
 
 \index{raster-vector!raster masking} 
@@ -61,7 +57,7 @@ The following command therefore masks every cell outside of the Zion National Pa
 
 
 ```r
-srtm_masked = mask(srtm, vect(zion))
+srtm_masked = mask(srtm, zion)
 ```
 
 Importantly, we want to use both `crop()` and `mask()` together in most cases. 
@@ -69,8 +65,8 @@ This combination of functions would (a) limit the raster's extent to our area of
 
 
 ```r
-srtm_cropped = crop(srtm, vect(zion))
-srtm_final = mask(srtm_cropped, vect(zion))
+srtm_cropped = crop(srtm, zion)
+srtm_final = mask(srtm_cropped, zion)
 ```
 
 Changing the settings of `mask()` yields different results.
@@ -79,7 +75,7 @@ Setting `inverse = TRUE` will mask everything *inside* the bounds of the park (s
 
 
 ```r
-srtm_inv_masked = mask(srtm, vect(zion), inverse = TRUE)
+srtm_inv_masked = mask(srtm, zion, inverse = TRUE)
 ```
 
 <div class="figure" style="text-align: center">
@@ -88,11 +84,6 @@ srtm_inv_masked = mask(srtm, vect(zion), inverse = TRUE)
 </div>
 
 ## Raster extraction
-
-<!--jn:toDo-->
-<!-- two possibilities: -->
-<!-- 1. explain the need of the use of `vect()` -->
-<!-- 2. wait for https://github.com/rspatial/terra/issues/89 -->
 
 \index{raster-vector!raster extraction} 
 Raster extraction is the process of identifying and returning the values associated with a 'target' raster at specific locations, based on a (typically vector) geographic 'selector' object.
@@ -107,7 +98,7 @@ Now, we can add the resulting object to our `zion_points` dataset with the `cbin
 
 ```r
 data("zion_points", package = "spDataLarge")
-elevation = terra::extract(srtm, vect(zion_points))
+elevation = terra::extract(srtm, zion_points)
 zion_points = cbind(zion_points, elevation)
 ```
 
@@ -125,12 +116,15 @@ However, the line extraction approach is not recommended to obtain values along 
 In this case, a better approach is to split the line into many points and then extract the values for these points.
 To demonstrate this, the code below creates `zion_transect`, a straight line going from northwest to southeast of the Zion National Park, illustrated in Figure \@ref(fig:lineextr)(A) (see Section \@ref(vector-data) for a recap on the vector data model):
 
+<!--toDo:jn-->
+<!--fix pipes-->
+
 
 ```r
-zion_transect = cbind(c(-113.2, -112.9), c(37.45, 37.2)) %>%
-  st_linestring() %>% 
-  st_sfc(crs = crs(srtm)) %>% 
-  st_sf()
+zion_transect = cbind(c(-113.2, -112.9), c(37.45, 37.2)) |>
+  st_linestring() |> 
+  st_sfc(crs = crs(srtm)) |>
+  st_sf(geometry = _)
 ```
 
 
@@ -153,8 +147,8 @@ In this case, we only have one transect, but the code, in principle, should work
 
 
 ```r
-zion_transect = zion_transect %>% 
-  group_by(id) %>% 
+zion_transect = zion_transect |> 
+  group_by(id) |> 
   mutate(dist = st_distance(geometry)[, 1]) 
 ```
 
@@ -162,7 +156,7 @@ Finally, we can extract elevation values for each point in our transects and com
 
 
 ```r
-zion_elev = terra::extract(srtm, vect(zion_transect))
+zion_elev = terra::extract(srtm, zion_transect)
 zion_transect = cbind(zion_transect, zion_elev)
 ```
 
@@ -177,11 +171,15 @@ The final type of geographic vector object for raster extraction is **polygons**
 Like lines, polygons tend to return many raster values per polygon.
 This is demonstrated in the command below, which results in a data frame with column names `ID` (the row number of the polygon) and `srtm` (associated elevation values):
 
+<!--toDo:jn-->
+<!--fix pipes-->
+
+
 
 
 
 ```r
-zion_srtm_values = terra::extract(x = srtm, y = vect(zion))
+zion_srtm_values = terra::extract(x = srtm, y = zion)
 ```
 
 Such results can be used to generate summary statistics for raster values per polygon, for example to characterize a single region or to compare many regions.
@@ -189,7 +187,7 @@ The generation of summary statistics is demonstrated in the code below, which cr
 
 
 ```r
-group_by(zion_srtm_values, ID) %>% 
+group_by(zion_srtm_values, ID) |> 
   summarize(across(srtm, list(min = min, mean = mean, max = max)))
 #> # A tibble: 1 × 4
 #>      ID srtm_min srtm_mean srtm_max
@@ -212,9 +210,9 @@ This is illustrated with a land cover dataset (`nlcd`) from the **spDataLarge** 
 ```r
 nlcd = rast(system.file("raster/nlcd.tif", package = "spDataLarge"))
 zion2 = st_transform(zion, st_crs(nlcd))
-zion_nlcd = terra::extract(nlcd, vect(zion2))
-zion_nlcd %>% 
-  group_by(ID, levels) %>%
+zion_nlcd = terra::extract(nlcd, zion2)
+zion_nlcd |> 
+  group_by(ID, levels) |>
   count()
 #> # A tibble: 7 × 3
 #> # Groups:   ID, levels [7]
@@ -232,11 +230,16 @@ zion_nlcd %>%
 <p class="caption">(\#fig:polyextr)Area used for continuous (left) and categorical (right) raster extraction.</p>
 </div>
 
+Although the **terra** package offers rapid extraction of raster values within polygons, `extract()` can still be a bottleneck when processing large polygon datasets.
+The **exactextractr** package offers a [significantly faster alternative](https://github.com/Robinlovelace/geocompr/issues/813) for extracting pixel values through the `exact_extract()` function. 
+The `exact_extract()` function also computes, by default, the fraction of each raster cell overlapped by the polygon, which is more precise (see note below for details). 
+
 \BeginKnitrBlock{rmdnote}<div class="rmdnote">Polygons usually have irregular shapes, and therefore, a polygon can overlap only some parts of a raster's cells. 
 To get more detailed results, the `extract()` function has an argument called `exact`. 
 With `exact = TRUE`, we get one more column `fraction` in the output data frame, which contains a fraction of each cell that is covered by the polygon.
 This could be useful to calculate a weighted mean for continuous rasters or more precise coverage for categorical rasters.
-By default, it is `FALSE` as this operation requires more computations.</div>\EndKnitrBlock{rmdnote}
+By default, it is `FALSE` as this operation requires more computations. 
+The `exactextractr::exact_extract()` function always computes the coverage fraction of the polygon in each cell.</div>\EndKnitrBlock{rmdnote}
 
 
 
@@ -275,7 +278,7 @@ In this case `rasterize()` requires only one argument in addition to `x` and `y`
 
 
 ```r
-ch_raster1 = rasterize(vect(cycle_hire_osm_projected), raster_template,
+ch_raster1 = rasterize(cycle_hire_osm_projected, raster_template,
                        field = 1)
 ```
 
@@ -284,7 +287,7 @@ By default `fun = "last"` is used but other options such as `fun = "length"` can
 
 
 ```r
-ch_raster2 = rasterize(vect(cycle_hire_osm_projected), raster_template, 
+ch_raster2 = rasterize(cycle_hire_osm_projected, raster_template, 
                        fun = "length")
 ```
 
@@ -294,7 +297,7 @@ To calculate that we must `sum` the field (`"capacity"`), resulting in output il
 
 
 ```r
-ch_raster3 = rasterize(vect(cycle_hire_osm_projected), raster_template, 
+ch_raster3 = rasterize(cycle_hire_osm_projected, raster_template, 
                        field = "capacity", fun = sum)
 ```
 
@@ -320,7 +323,7 @@ Line rasterization with `touches = TRUE` is demonstrated in the code below (Figu
 
 
 ```r
-california_raster1 = rasterize(vect(california_borders), raster_template2,
+california_raster1 = rasterize(california_borders, raster_template2,
                                touches = TRUE)
 ```
 
@@ -328,7 +331,7 @@ Compare it to a polygon rasterization, with `touches = FALSE` by default, which 
 
 
 ```r
-california_raster2 = rasterize(vect(california), raster_template2) 
+california_raster2 = rasterize(california, raster_template2) 
 ```
 
 <div class="figure" style="text-align: center">
@@ -352,7 +355,7 @@ Note, here we also used `st_as_sf()` to convert the resulting object to the `sf`
 
 ```r
 elev = rast(system.file("raster/elev.tif", package = "spData"))
-elev_point = as.points(elev) %>% 
+elev_point = as.points(elev) |> 
   st_as_sf()
 ```
 
@@ -380,7 +383,7 @@ As illustrated in Figure \@ref(fig:contour-tmap), isolines can be labelled.
 \index{hillshade}
 
 <div class="figure" style="text-align: center">
-<img src="figures/05-contour-tmap.png" alt="DEM with hillshading, showing the southern flank of Mt. Mongón overlaid with contour lines." width="100%" />
+<img src="figures/06-contour-tmap.png" alt="DEM with hillshading, showing the southern flank of Mt. Mongón overlaid with contour lines." width="100%" />
 <p class="caption">(\#fig:contour-tmap)DEM with hillshading, showing the southern flank of Mt. Mongón overlaid with contour lines.</p>
 </div>
 
@@ -392,9 +395,14 @@ This is illustrated below by converting the `grain` object into polygons and sub
 
 ```r
 grain = rast(system.file("raster/grain.tif", package = "spData"))
-grain_poly = as.polygons(grain) %>% 
+grain_poly = as.polygons(grain) |> 
   st_as_sf()
 ```
+
+The aggregated polygons of the `grain` dataset have rectilinear boundaries which arise from being defined by connecting rectangular pixels.
+The **smoothr** package described in Chapter \@ref(geometry-operations) can be used to smooth the edges of the polygons.
+As smoothing removes sharp edges in the polygon boundaries, the smoothed polygons will not have the same exact spatial coverage as the original pixels (see the **smoothr** [website](https://strimas.com/smoothr/) for examples).
+Caution should therefore be taken when using the smoothed polygons for further analysis.
 
 <div class="figure" style="text-align: center">
 <img src="06-raster-vector_files/figure-html/06-raster-vector-40-1.png" alt="Illustration of vectorization of raster (left) into polygons (dissolve = FALSE; center) and aggregated polygons (dissolve = TRUE; right)." width="100%" />
@@ -414,8 +422,8 @@ library(spData)
 zion_points_path = system.file("vector/zion_points.gpkg", package = "spDataLarge")
 zion_points = read_sf(zion_points_path)
 srtm = rast(system.file("raster/srtm.tif", package = "spDataLarge"))
-ch = st_combine(zion_points) %>%
-  st_convex_hull() %>% 
+ch = st_combine(zion_points) |>
+  st_convex_hull() |> 
   st_as_sf()
 ```
 
@@ -430,6 +438,8 @@ How can you explain that?
 E2. Firstly, extract values from `srtm` at the points represented in `zion_points`.
 Next, extract average values of `srtm` using a 90 buffer around each point from `zion_points` and compare these two sets of values. 
 When would extracting values by buffers be more suitable than by points alone?
+
+- Bonus: Implement extraction using the **exactextractr** package and compare the results.
 
 
 

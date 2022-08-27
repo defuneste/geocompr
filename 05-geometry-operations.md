@@ -28,7 +28,8 @@ Section \@ref(geo-ras) covers geometric transformations on raster objects.
 This involves changing the size and number of the underlying pixels, and assigning them new values.
 It teaches how to change the resolution (also called raster aggregation and disaggregation), the extent and the origin of a raster.
 These operations are especially useful if one would like to align raster datasets from diverse sources.
-Aligned raster objects share a one-to-one correspondence between pixels, allowing them to be processed using map algebra operations, described in Section \@ref(map-algebra). The final Section \@ref(raster-vector) connects vector and raster objects. 
+Aligned raster objects share a one-to-one correspondence between pixels, allowing them to be processed using map algebra operations, described in Section \@ref(map-algebra). 
+The interaction between raster and vector objects is covered in Chapter \@ref(raster-vector). 
 It shows how raster values can be 'masked' and 'extracted' by vector geometries.
 Importantly it shows how to 'polygonize' rasters and 'rasterize' vector datasets, making the two data models more interchangeable.
 
@@ -76,13 +77,9 @@ As we show in Chapter \@ref(reproj-geo-data), GEOS assumes that the data is in a
 Therefore, the first step is to project the data into some adequate projected CRS, such as US National Atlas Equal Area (epsg = 2163) (on the left in Figure \@ref(fig:us-simp)):
 
 
-
-
-
 ```r
 us_states2163 = st_transform(us_states, "EPSG:2163")
-us_states2163 = us_states2163 %>% 
-  mutate(AREA = as.numeric(AREA)) 
+us_states2163 = us_states2163
 ```
 
 `st_simplify()` works equally well with projected polygons:
@@ -109,11 +106,25 @@ us_states_simp2 = rmapshaper::ms_simplify(us_states2163, keep = 0.01,
                                           keep_shapes = TRUE)
 ```
 
-Finally, the visual comparison of the original dataset and the two simplified versions shows differences between the Douglas-Peucker (`st_simplify`) and Visvalingam (`ms_simplify`) algorithm outputs (Figure \@ref(fig:us-simp)):
+
+An alternative to simplification is smoothing the boundaries of polygon and linestring geometries, which is implemented in the **smoothr** package. 
+Smoothing interpolates the edges of geometries and does not necessarily lead to fewer vertices, but can be especially useful when working with geometries that arise from spatially vectorizing a raster (a topic covered in Chapter \@ref(raster-vector).
+**smoothr** implements three techniques for smoothing: a Gaussian kernel regression, Chaikin's corner cutting algorithm, and spline interpolation, which are all described in the package vignette and [website](https://strimas.com/smoothr/). 
+Note that similar to `st_simplify()`, the smoothing algorithms don't preserve 'topology'.
+The workhorse function of **smoothr** is `smooth()`, where the `method` argument specifies what smoothing technique to use.
+Below is an example of using Gaussian kernel regression to smooth the borders of US states by using `method=ksmooth`.
+The `smoothness` argument controls the bandwidth of the Gaussian that is used to smooth the geometry and has a default value of 1.
+
+
+```r
+us_states_simp3 = smoothr::smooth(us_states2163, method = 'ksmooth', smoothness = 6)
+```
+
+Finally, the visual comparison of the original dataset with the simplified and smoothed versions is shown in (Figure \@ref(fig:us-simp)). Differences can be observed between the outputs of the Douglas-Peucker (`st_simplify`), Visvalingam (`ms_simplify`), and Gaussian kernel regression (`smooth(method=ksmooth`) algorithms.
 
 <div class="figure" style="text-align: center">
-<img src="05-geometry-operations_files/figure-html/us-simp-1.png" alt="Polygon simplification in action, comparing the original geometry of the contiguous United States with simplified versions, generated with functions from sf (center) and rmapshaper (right) packages." width="100%" />
-<p class="caption">(\#fig:us-simp)Polygon simplification in action, comparing the original geometry of the contiguous United States with simplified versions, generated with functions from sf (center) and rmapshaper (right) packages.</p>
+<img src="05-geometry-operations_files/figure-html/us-simp-1.png" alt="Polygon simplification in action, comparing the original geometry of the contiguous United States with simplified versions, generated with functions from sf (top-right), rmapshaper (bottom-left), and smoothr (bottom-right) packages." width="100%" />
+<p class="caption">(\#fig:us-simp)Polygon simplification in action, comparing the original geometry of the contiguous United States with simplified versions, generated with functions from sf (top-right), rmapshaper (bottom-left), and smoothr (bottom-right) packages.</p>
 </div>
 
 ### Centroids
@@ -378,7 +389,8 @@ This is demonstrated in the code chunk below in which 49 `us_states` are aggrega
 ```r
 regions = aggregate(x = us_states[, "total_pop_15"], by = list(us_states$REGION),
                     FUN = sum, na.rm = TRUE)
-regions2 = us_states %>% group_by(REGION) %>%
+regions2 = us_states |> 
+  group_by(REGION) |>
   summarize(pop = sum(total_pop_15, na.rm = TRUE))
 ```
 
@@ -567,7 +579,7 @@ Let's try to apply geometry type transformations on a new object, `multilinestri
 multilinestring_list = list(matrix(c(1, 4, 5, 3), ncol = 2), 
                             matrix(c(4, 4, 4, 1), ncol = 2),
                             matrix(c(2, 4, 2, 2), ncol = 2))
-multilinestring = st_multilinestring((multilinestring_list))
+multilinestring = st_multilinestring(multilinestring_list)
 multilinestring_sf = st_sf(geom = st_sfc(multilinestring))
 multilinestring_sf
 #> Simple feature collection with 1 feature and 0 fields
@@ -642,8 +654,7 @@ In any case, there are other reasons to perform a geometric operation on a singl
 For instance, in Chapter \@ref(location) we define metropolitan areas in Germany as 20 km^2^ pixels with more than 500,000 inhabitants. 
 The original inhabitant raster, however, has a resolution of 1 km^2^ which is why we will decrease (aggregate) the resolution by a factor of 20 (see Section \@ref(define-metropolitan-areas)).
 Another reason for aggregating a raster is simply to decrease run-time or save disk space.
-Of course, this is only possible if the task at hand allows a coarser resolution.
-Sometimes a coarser resolution is sufficient for the task at hand.
+Of course, this approach is only recommended if the task at hand allows a coarser resolution of raster data.
 
 ### Geometric intersections
 
@@ -799,7 +810,7 @@ In short, this process takes the values of our original raster and recalculates 
 
 
 There are several methods for estimating values for a raster with different resolutions/origins, as shown in Figure \@ref(fig:resampl).
-These resampling methods include:
+The main resampling methods include:
 
 - Nearest neighbor: assigns the value of the nearest cell of the original raster to the cell of the target one. This is a fast simple technique that is usually suitable for resampling categorical rasters.
 - Bilinear interpolation: assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). This is the fastest method that is appropriate for continuous rasters.
@@ -839,14 +850,13 @@ Figure \@ref(fig:resampl) shows a comparison of different resampling methods on 
 <p class="caption">(\#fig:resampl)Visual comparison of the original raster and five different resampling methods.</p>
 </div>
 
+The `resample()` function also has some additional resampling methods, including `sum`, `min`, `q1`, `med`, `q3`, `max`, `average`, `mode`, and `rms`.
+All of them calculate a given statistic based on the values of all non-NA contributing grid cells.
+For example, `sum` is useful when each raster cell represents a spatially extensive variable (e.g., number of people).
+As an effect of using `sum`, the resampled raster should have the sample total number of people as the original one.
+
 As you will see in section \@ref(reproj-ras), raster reprojection is a special case of resampling when our target raster has a different CRS than the original raster.
 
-<!--jn:toDo-->
-<!-- decide -->
-<!-- should we mention gdalUtils or gdalUtilities? -->
-<!-- gdalUtils - https://cran.r-project.org/web/packages/gdalUtils/index.html - we mentioned it in geocompr 1; however it seems abandoned -->
-<!-- gdalUtilities - https://cran.r-project.org/web/packages/gdalUtilities/index.html -->
-<!-- also - add some reference to GDAL functions! -->
 \index{GDAL}
 \BeginKnitrBlock{rmdnote}<div class="rmdnote">Most geometry operations in **terra** are user-friendly, rather fast, and work on large raster objects.
 However, there could be some cases, when **terra** is not the most performant either for extensive rasters or many raster files, and some alternatives should be considered.
@@ -892,7 +902,7 @@ Hint: you need to use a two-element vector for this transformation.
  
 
 
-E5. Subset the point in `p` that is contained within `x` *and* `y`.
+E5. Run the code in Section [5.2.6](https://geocompr.robinlovelace.net/geometric-operations.html#subsetting-and-clipping). With reference to the objects created in that section, subset the point in `p` that is contained within `x` *and* `y`.
 
 - Using base subsetting operators.
 - Using an intermediary object created with `st_intersection()`\index{vector!intersection}.
