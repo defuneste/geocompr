@@ -532,7 +532,7 @@ routes_short_scenario = routes_short |>
   mutate(bicycle = bicycle + car_driver * uptake,
          car_driver = car_driver * (1 -uptake))
 sum(routes_short_scenario$bicycle) - sum(routes_short$bicycle)
-#> [1] 3999
+#> [1] 3986
 ```
 
 Having created a scenario in which approximately 4000 trips have switched from driving to cycling, we can now model where this updated modeled cycling activity will take place.
@@ -701,15 +701,14 @@ The wider point is that car dependency has a spatial distribution which has impl
 
 ## Future directions of travel
 
-This chapter provides a taste of the possibilities of using geocomputation for transport research.
-It has explored some key geographic elements that make-up a city's transport system using open data and reproducible code.
+This chapter provided a taste of the possibilities of using geocomputation for transport research, and explored some key geographic elements that make-up a city's transport system with open data and reproducible code.
 The results could help plan where investment is needed.
 
 Transport systems operate at multiple interacting levels, meaning that geocomputational methods have great potential to generate insights into how they work.
 There is much more that could be done in this area: it would be possible to build on the foundations presented in this chapter in many directions.
 Transport is the fastest growing source of greenhouse gas emissions in many countries, and is set to become "the largest GHG emitting sector, especially in developed countries" (see [EURACTIV.com](https://www.euractiv.com/section/agriculture-food/opinion/transport-needs-to-do-a-lot-more-to-fight-climate-change/)).
 Because of the highly unequal distribution of transport-related emissions across society, and the fact that transport (unlike food and heating) is not essential for well-being, there is great potential for the sector to rapidly decarbonize through demand reduction, electrification of the vehicle fleet and the uptake of active travel modes such as walking and cycling.
-Further exploration of such 'transport futures' at the local level represents promising direction of travel for transport-related geocomputational research.
+Further exploration of such 'transport futures' at the local level represents promising direction of travel for transport-related geographic and computational research.
 
 Methodologically, the foundations presented in this chapter could be extended by including more variables in the analysis.
 Characteristics of the route such as speed limits, busyness and the provision of protected cycling and walking paths could be linked to 'mode-split' (the proportion of trips made by different modes of transport).
