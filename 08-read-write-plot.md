@@ -535,6 +535,15 @@ summary(sf_drivers[-c(1:2)])
    <td style="text-align:left;"> TRUE </td>
    <td style="text-align:left;"> TRUE </td>
   </tr>
+  <tr>
+   <td style="text-align:left;"> FlatGeobuf </td>
+   <td style="text-align:left;width: 7em; "> FlatGeobuf </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> FALSE </td>
+   <td style="text-align:left;"> TRUE </td>
+   <td style="text-align:left;"> TRUE </td>
+  </tr>
 </tbody>
 </table>
 
@@ -935,7 +944,6 @@ mapshot(mapview_obj, file = "my_interactive_map.html")
 
 
 E1. List and describe three types of vector, raster, and geodatabase formats.
-
 
 
 

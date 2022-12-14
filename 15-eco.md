@@ -9,20 +9,19 @@ The chapter uses the following packages:
 
 
 ```r
-library(data.table)
-library(dplyr)
-library(mlr3)
-library(mlr3spatiotempcv)
-library(mlr3tuning)
-library(mlr3learners)
-library(qgisprocess)
-library(paradox)
-library(ranger)
-library(tree)
 library(sf)
 library(terra)
-library(tree)
-library(vegan)
+library(dplyr)
+library(data.table)        # fast data.frame manipulation (used by mlr3)
+library(mlr3)              # machine learning (see Chapter 12)
+library(mlr3spatiotempcv)  # spatio-temporal resampling 
+library(mlr3tuning)        # hyperparameter tuning package
+library(mlr3learners)      # interface to most important machine learning packages
+library(paradox)           # defining hyperparameter spaces
+library(ranger)            # random forest package
+library(qgisprocess)       # bridge to QGIS (Chapter 10)
+library(tree)              # decision tree package
+library(vegan)             # community ecology package
 ```
 
 ## Introduction
@@ -33,7 +32,7 @@ To do so, we will bring together concepts presented in previous chapters and eve
 Fog oases are one of the most fascinating vegetation formations we have ever encountered.
 These formations, locally termed *lomas*, develop on mountains along the coastal deserts of Peru and Chile.^[Similar vegetation formations develop also in other parts of the world, e.g., in Namibia and along the coasts of Yemen and Oman [@galletti_land_2016].]
 The deserts' extreme conditions and remoteness provide the habitat for a unique ecosystem, including species endemic to the fog oases.
-Despite the arid conditions and low levels of precipitation of around 30-50 mm per year on average, fog deposition increases the amount of water available to plants during winter.
+Despite the arid conditions and low levels of precipitation of around 30-50 mm per year on average, fog deposition increases the amount of water available to plants during austral winter.
 This results in green southern-facing mountain slopes along the coastal strip of Peru (Figure \@ref(fig:study-area-mongon)). 
 The fog, which develops below the temperature inversion caused by the cold Humboldt current in austral winter, provides the name for this habitat.
 Every few years, the El Niño phenomenon brings torrential rainfall to this sun-baked environment [@dillon_lomas_2003].
@@ -220,8 +219,7 @@ Principal component analysis (PCA\index{PCA}) is probably the most famous ordina
 It is a great tool to reduce dimensionality if one can expect linear relationships between variables, and if the joint absence of a variable in two plots (observations) can be considered a similarity.
 This is barely the case with vegetation data.
 
-For one, relationships are usually non-linear along environmental gradients.
-That means the presence of a plant usually follows a unimodal relationship along a gradient (e.g., humidity, temperature or salinity) with a peak at the most favorable conditions and declining ends towards the unfavorable conditions. 
+For one, the presence of a plant often follows a unimodal, i.e. a non-linear, relationship along a gradient (e.g., humidity, temperature or salinity) with a peak at the most favorable conditions and declining ends towards the unfavorable conditions.
 
 Secondly, the joint absence of a species in two plots is hardly an indication for similarity.
 Suppose a plant species is absent from the driest (e.g., an extreme desert) and the most moistest locations (e.g., a tree savanna) of our sampling.
@@ -288,7 +286,7 @@ elev = dplyr::filter(random_points, id %in% rownames(pa)) |>
 # rotating NMDS in accordance with altitude (proxy for humidity)
 rotnmds = vegan::MDSrotate(nmds, elev)
 # extracting the first two axes
-sc = vegan::scores(rotnmds, choices = 1:2)
+sc = vegan::scores(rotnmds, choices = 1:2, display = "sites")
 # plotting the first axis against altitude
 plot(y = sc[, 1], x = elev, xlab = "elevation in m", 
      ylab = "First NMDS axis", cex.lab = 0.8, cex.axis = 0.8)
@@ -313,7 +311,7 @@ We refer the reader to @james_introduction_2013 for a more detailed description 
 
 To introduce decision trees by example, we first construct a response-predictor matrix by joining the rotated NMDS\index{NMDS} scores to the field observations (`random_points`).
 We will also use the resulting data frame for the **mlr3**\index{mlr3 (package)} modeling later on.
-<!-- JM: build process stops telling us that sc[, 1] causes the problem though I really don't know why... -->
+
 
 ```r
 # construct response-predictor matrix
@@ -322,8 +320,6 @@ rp = data.frame(id = as.numeric(rownames(sc)), sc = sc[, 1])
 # join the predictors (dem, ndvi and terrain attributes)
 rp = inner_join(random_points, rp, by = "id")
 ```
-
-
 
 Decision trees split the predictor space into a number of regions.
 To illustrate this, we apply a decision tree to our data using the scores of the first NMDS\index{NMDS} axis as the response (`sc`) and altitude (`dem`) as the only predictor.
@@ -347,6 +343,8 @@ The first internal node at the top of the tree assigns all observations which ar
 The observations falling into the left branch have a mean NMDS\index{NMDS} score of
 <!---->-1.198.
 Overall, we can interpret the tree as follows: the higher the elevation, the higher the NMDS\index{NMDS} score becomes.
+This means that the simple decision tree has already revealed four distinct floristic assemblages.
+For a more in-depth interpretation please refer to the \@ref(predictive-mapping) section.
 Decision trees have a tendency to overfit\index{overfitting}, that is they mirror too closely the input data including its noise which in turn leads to bad predictive performances [Section \@ref(intro-cv); @james_introduction_2013].
 Bootstrap aggregation (bagging) is an ensemble technique that can help to overcome this problem.
 Ensemble techniques simply combine the predictions of multiple models.
@@ -389,12 +387,6 @@ For specifying a spatial task, we use again the **mlr3spatiotempcv** package [@s
 
 
 ```r
-knitr::opts_chunk$set(eval = FALSE)
-```
-
-
-
-```r
 # create task
 task = mlr3spatiotempcv::as_task_regr_st(dplyr::select(rp, -id, -spri),
   id = "mongon", target = "sc")
@@ -402,7 +394,7 @@ task = mlr3spatiotempcv::as_task_regr_st(dplyr::select(rp, -id, -spri),
 
 Using an `sf` object as the backend automatically provides the geometry information needed for the spatial partitioning later on.
 Additionally, we got rid of the columns `id` and `spri` since these variables should not be used as predictors in the modeling.
-Next, we go on to construct the a random forest\index{random forest} learner from the **ranger** package.
+Next, we go on to construct the a random forest\index{random forest} learner from the **ranger** package [@wright_ranger_2017].
 
 
 ```r
@@ -420,7 +412,7 @@ The `min.node.size` parameter indicates the number of observations a terminal no
 Naturally, as trees and computing time become larger, the lower the `min.node.size`.
 
 Hyperparameter\index{hyperparameter} combinations will be selected randomly but should fall inside specific tuning limits (created with `paradox::ps()`).
-`mtry` should range between 1 and the number of predictors (7) <!-- (4)-->, `sample.fraction` should range between 0.2 and 0.9 and `min.node.size` should range between 1 and 10.
+`mtry` should range between 1 and the number of predictors (4) <!-- (4)-->, `sample.fraction` should range between 0.2 and 0.9 and `min.node.size` should range between 1 and 10 [@probst_hyperparameters_2018].
 
 
 ```r
@@ -466,6 +458,8 @@ autotuner_rf$train(task)
 
 ```r
 autotuner_rf$tuning_result
+#>    mtry sample.fraction min.node.size learner_param_vals  x_domain regr.rmse
+#> 1:    4             0.9             7          <list[4]> <list[3]>     0.375
 ```
 
 <!--
@@ -482,6 +476,19 @@ To do so, we only need to run the `predict` method of our fitted `AutoTuner` obj
 ```r
 # predicting using the best hyperparameter combination
 autotuner_rf$predict(task)
+#> Warning: Detected version mismatch: Learner 'regr.ranger.tuned' has been trained
+#> with mlr3 version '0.13.3', not matching currently installed version '0.14.1'
+#> Warning: Detected version mismatch: Learner 'regr.ranger' has been trained with
+#> mlr3 version '0.13.3', not matching currently installed version '0.14.1'
+#> <PredictionRegr> for 84 observations:
+#>     row_ids  truth response
+#>           1 -1.084   -1.073
+#>           2 -0.975   -1.050
+#>           3 -0.912   -1.012
+#> ---                        
+#>          82  0.814    0.646
+#>          83  0.814    0.790
+#>          84  0.808    0.845
 ```
 
 The `predict` method will apply the model to all observations used in the modeling.
@@ -492,7 +499,10 @@ Given a multilayer `SpatRaster` containing rasters named as the predictors used 
 pred = terra::predict(ep, model = autotuner_rf, fun = predict)
 ```
 
-
+<div class="figure" style="text-align: center">
+<img src="figures/15_rf_pred.png" alt="Predictive mapping of the floristic gradient clearly revealing distinct vegetation belts." width="60%" />
+<p class="caption">(\#fig:rf-pred)Predictive mapping of the floristic gradient clearly revealing distinct vegetation belts.</p>
+</div>
 
 In case, `terra::predict()` does not support a model algorithm, you can still make the predictions manually.
 
@@ -512,7 +522,7 @@ all(values(pred - pred_2) == 0)
 ```
 
 The predictive mapping clearly reveals distinct vegetation belts (Figure \@ref(fig:rf-pred)).
-Please refer to @muenchow_soil_2013 for a detailed description of vegetation belts on **lomas** mountains.
+Please refer to @muenchow_soil_2013 for a detailed description of vegetation belts on *lomas* mountains.
 The blue color tones represent the so-called *Tillandsia*-belt.
 *Tillandsia* is a highly adapted genus especially found in high quantities at the sandy and quite desertic foot of *lomas* mountains.
 The yellow color tones refer to a herbaceous vegetation belt with a much higher plant cover compared to the *Tillandsia*-belt.
@@ -523,12 +533,12 @@ Interestingly, the spatial prediction clearly reveals that the bromeliad belt is
 
 ## Conclusions
 
-In this chapter we have ordinated\index{ordination} the community matrix of the **lomas** Mt. Mongón with the help of a NMDS\index{NMDS} (Section \@ref(nmds)).
+In this chapter we have ordinated\index{ordination} the community matrix of the *lomas* Mt. Mongón with the help of a NMDS\index{NMDS} (Section \@ref(nmds)).
 The first axis, representing the main floristic gradient in the study area, was modeled as a function of environmental predictors which partly were derived through R-GIS\index{GIS} bridges (Section \@ref(data-and-data-preparation)).
 The **mlr3**\index{mlr3 (package)} package provided the building blocks to spatially tune the hyperparameters\index{hyperparameter} `mtry`, `sample.fraction` and `min.node.size` (Section \@ref(mlr3-building-blocks)).
 The tuned hyperparameters\index{hyperparameter} served as input for the final model which in turn was applied to the environmental predictors for a spatial representation of the floristic gradient (Section \@ref(predictive-mapping)).
 The result demonstrates spatially the astounding biodiversity in the middle of the desert.
-Since **lomas** mountains are heavily endangered, the prediction map can serve as basis for informed decision-making on delineating protection zones, and making the local population aware of the uniqueness found in their immediate neighborhood.
+Since *lomas* mountains are heavily endangered, the prediction map can serve as basis for informed decision-making on delineating protection zones, and making the local population aware of the uniqueness found in their immediate neighborhood.
 
 In terms of methodology, a few additional points could be addressed:
 
@@ -551,3 +561,29 @@ However, this does not imply that the random forest\index{random forest} model h
 ## Exercises
 
 
+The solutions assume the following packages are attached (other packages will be attached when needed):
+
+
+
+E1. Run a NMDS\index{NMDS} using the percentage data of the community matrix. 
+Report the stress value and compare it to the stress value as retrieved from the NMDS using presence-absence data.
+What might explain the observed difference?
+
+
+
+
+
+E2. Compute all the predictor rasters\index{raster} we have used in the chapter (catchment slope, catchment area), and put them into a `SpatRaster`-object.
+Add `dem` and `ndvi` to it.
+Next, compute profile and tangential curvature and add them as additional predictor rasters (hint: `grass7:r.slope.aspect`).
+Finally, construct a response-predictor matrix. 
+The scores of the first NMDS\index{NMDS} axis (which were the result when using the presence-absence community matrix) rotated in accordance with elevation represent the response variable, and should be joined to `random_points` (use an inner join).
+To complete the response-predictor matrix, extract the values of the environmental predictor raster object to `random_points`.
+
+
+
+E3. Retrieve the bias-reduced RMSE of a random forest\index{random forest} and a linear model using spatial cross-validation\index{cross-validation!spatial CV}.
+The random forest modeling should include the estimation of optimal hyperparameter\index{hyperparameter} combinations (random search with 50 iterations) in an inner tuning loop (see Section \@ref(svm)).
+Parallelize\index{parallelization} the tuning level (see Section \@ref(svm)).
+Report the mean RMSE\index{RMSE} and use a boxplot to visualize all retrieved RMSEs.
+Please not that this exercise is best solved using the mlr3 functions `benchmark_grid()` and `benchmark()` (see https://mlr3book.mlr-org.com/perf-eval-cmp.html#benchmarking for more information).

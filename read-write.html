@@ -7,7 +7,7 @@
 <title>Chapter 8 Geographic data I/O | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites This chapter requires the following packages: library(sf) library(terra) library(dplyr) library(spData)  8.1 Introduction  This chapter is about reading and writing geographic data....">
-<meta name="generator" content="bookdown 0.29 with bs4_book()">
+<meta name="generator" content="bookdown 0.30 with bs4_book()">
 <meta property="og:title" content="Chapter 8 Geographic data I/O | Geocomputation with R">
 <meta property="og:type" content="book">
 <meta property="og:url" content="https://geocompr.robinlovelace.net/read-write.html">
@@ -19,10 +19,10 @@
 <meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.2/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.2/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.2/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.0/transition.js"></script><script src="libs/bs3compat-0.4.0/tabs.js"></script><script src="libs/bs3compat-0.4.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 8 Geographic data I/O | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
@@ -100,8 +100,8 @@
 <h1>
 <span class="header-section-number">8</span> Geographic data I/O<a class="anchor" aria-label="anchor" href="#read-write"><i class="fas fa-link"></i></a>
 </h1>
-<div id="prerequisites-5" class="section level2 unnumbered">
-<h2>Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites-5"><i class="fas fa-link"></i></a>
+<div id="prerequisites-6" class="section level2 unnumbered">
+<h2>Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites-6"><i class="fas fa-link"></i></a>
 </h2>
 <p>This chapter requires the following packages:</p>
 <div class="sourceCode" id="cb260"><pre class="downlit sourceCode r">
@@ -766,6 +766,29 @@ TRUE
 TRUE
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+FlatGeobuf
+</td>
+<td style="text-align:left;width: 7em; ">
+FlatGeobuf
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
 </tbody>
 </table></div>
 <!-- One of the major advantages of **sf** is that it is fast. --><!-- reference to the vignette --><p>The first argument of <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf()</a></code> is <code>dsn</code>, which should be a text string or an object containing a single text string.
@@ -1141,6 +1164,7 @@ Export this map to a file called <code>cycle_hire.html</code>.</p>
 <!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
           <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
+          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -1148,7 +1172,7 @@ Export this map to a file called <code>cycle_hire.html</code>.</p>
 <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#read-write"><span class="header-section-number">8</span> Geographic data I/O</a></li>
-<li><a class="nav-link" href="#prerequisites-5">Prerequisites</a></li>
+<li><a class="nav-link" href="#prerequisites-6">Prerequisites</a></li>
 <li><a class="nav-link" href="#introduction-4"><span class="header-section-number">8.1</span> Introduction</a></li>
 <li><a class="nav-link" href="#retrieving-data"><span class="header-section-number">8.2</span> Retrieving open data</a></li>
 <li><a class="nav-link" href="#geographic-data-packages"><span class="header-section-number">8.3</span> Geographic data packages</a></li>
@@ -1185,7 +1209,7 @@ Export this map to a file called <code>cycle_hire.html</code>.</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-09-24.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

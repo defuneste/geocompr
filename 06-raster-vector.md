@@ -1,12 +1,14 @@
 # Raster-vector interactions {#raster-vector}
 
-This chapter requires the following packages:
+## Prerequisites {.unnumbered}
+
+- This chapter requires the following packages:
 
 
 ```r
-library(dplyr)
-library(terra)
 library(sf)
+library(terra)
+library(dplyr)
 ```
 
 ## Introduction

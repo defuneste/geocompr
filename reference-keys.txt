@@ -7,6 +7,7 @@ fig:vectorplots
 fig:sf-ogc
 fig:world-all
 fig:sfplot
+fig:asia
 fig:contpop
 fig:china
 fig:sfcs
@@ -143,6 +144,7 @@ fig:study-area-mongon
 fig:sa-mongon
 fig:xy-nmds
 fig:tree
+fig:rf-pred
 intro
 what-is-geocomputation
 why-use-r-for-geocomputation
@@ -308,10 +310,10 @@ transport-zones
 desire-lines
 nodes
 routes
-routing-engines-in-r-package
-locally-hosted-dedicated-routing-engines
-remotely-hosted-dedicated-routing-engines
-route-and-segment-level-outputs
+route-legs-segments
+memengine
+localengine
+remoteengine
 routing-a-worked-example
 route-networks
 prioritizing-new-infrastructure
