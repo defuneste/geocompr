@@ -45,7 +45,7 @@ Routes (which can be represented as single linestrings or multiple short *segmen
 - **Route networks**\index{network}: these represent the system of roads, paths and other linear features in an area and are covered in Section \@ref(route-networks).
 They can be represented as geographic features (typically short segments of road that add up to create a full network) or structured as an interconnected graph, with the level of traffic on different segments referred to as 'flow' by transport modelers [@hollander_transport_2016]
 
-Another key level is **agents**, mobile entities like you and me and vehicles that enable use to move such as bikes and buses.
+Another key level is **agents**, mobile entities like you and me and vehicles that enable us to move such as bikes and buses.
 These can be represented computationally in software such as [MATSim](http://www.matsim.org/) and [A/B Street](https://github.com/a-b-street/abstreet), which represent the dynamics of transport systems using an agent-based modeling (ABM)\index{agent-based modeling} frameworks, usually at high levels of spatial and temporal resolution [@horni_multi-agent_2016]. 
 ABM is a powerful approach to transport research with great potential for integration with R's spatial classes [@thiele_r_2014; @lovelace_spatial_2016], but is outside the scope of this chapter.
 Beyond geographic levels and agents, the basic unit of analysis in many transport models is the **trip**, a single purpose journey from an origin 'A' to a destination 'B' [@hollander_transport_2016].
@@ -232,7 +232,7 @@ zones_destinations = bristol_od |>
 zones_od = inner_join(zones_joined, zones_destinations, by = "geo_code")
 ```
 
-A simplified version of Figure \@ref(fig:zones) is created with the code below (see `12-zones.R` in the [`code`](https://github.com/Robinlovelace/geocompr/tree/main/code) folder of the book's GitHub repo to reproduce the figure and Section \@ref(faceted-maps) for details on faceted maps with **tmap**\index{tmap (package)}):
+A simplified version of Figure \@ref(fig:zones) is created with the code below (see `12-zones.R` in the [`code`](https://github.com/geocompx/geocompr/tree/main/code) folder of the book's GitHub repo to reproduce the figure and Section \@ref(faceted-maps) for details on faceted maps with **tmap**\index{tmap (package)}):
 
 
 ```r
@@ -556,7 +556,7 @@ routes_short_scenario = routes_short |>
   mutate(bicycle = bicycle + car_driver * uptake,
          car_driver = car_driver * (1 - uptake))
 sum(routes_short_scenario$bicycle) - sum(routes_short$bicycle)
-#> [1] 3980
+#> [1] 3792
 ```
 
 Having created a scenario in which approximately 4000 trips have switched from driving to cycling, we can now model where this updated modeled cycling activity will take place.
@@ -722,6 +722,7 @@ Similar tools could be used to encourage evidence-based transport policies relat
 
 
 E1. In much of the analysis presented in the chapter we focused on active modes, but what about driving trips?
+
   - What proportion of trips in the `desire_lines` object are made by driving?
   - What proportion of `desire_lines` have a straight line length of 5 km or more in distance?
   - What proportion of trips in desire lines that are longer than 5 km in length are made by driving?
@@ -730,20 +731,25 @@ E1. In much of the analysis presented in the chapter we focused on active modes,
 
 
 
-E2. What additional length of cycleways would result if all the routes presented in Figure \@ref(fig:cycleways), on sections beyond 100 m from existing cycleways, were constructed?
+E2. What additional length of cycleways would result if all the routes presented in the last Figure, on sections beyond 100 m from existing cycleways, were constructed?
 
 
 
 E3. What proportion of trips represented in the `desire_lines` are accounted for in the `routes_short_scenario` object?
-    - Bonus: what proportion of all trips happen on desire lines that cross `routes_short_scenario`?
+
+  - Bonus: what proportion of all trips happen on desire lines that cross `routes_short_scenario`?
 
 
 
-E4. The analysis presented in this chapter is designed for teaching how geocomputation methods can be applied to transport research. If you were doing this for real, in government or for a transport consultancy, what top 3 things would you do differently?
+E4. The analysis presented in this chapter is designed for teaching how geocomputation methods can be applied to transport research.
+If you were doing this for real, in government or for a transport consultancy, what top 3 things would you do differently?
 
 
 
-E5. Clearly, the routes identified in Figure \@ref(fig:cycleways) only provide part of the picture. How would you extend the analysis?
+E5. Clearly, the routes identified in the last Figure only provide part of the picture.
+How would you extend the analysis?
 
-E6. Imagine that you want to extend the scenario by creating key *areas* (not routes) for investment in place-based cycling policies such as car-free zones, cycle parking points and reduced car parking strategy. How could raster\index{raster} datasets assist with this work? 
-    - Bonus: develop a raster layer that divides the Bristol region into 100 cells (10 by 10) and estimate the average speed limit of roads in each, from the `bristol_ways` dataset (see Chapter \@ref(location)).
+E6. Imagine that you want to extend the scenario by creating key *areas* (not routes) for investment in place-based cycling policies such as car-free zones, cycle parking points and reduced car parking strategy.
+How could raster\index{raster} datasets assist with this work? 
+
+  - Bonus: develop a raster layer that divides the Bristol region into 100 cells (10 by 10) and estimate the average speed limit of roads in each, from the `bristol_ways` dataset (see Chapter \@ref(location)).

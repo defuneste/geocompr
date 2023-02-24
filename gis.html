@@ -7,29 +7,29 @@
 <title>Chapter 10 Bridges to GIS software | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content='Prerequisites This chapter requires QGIS, SAGA and GRASS to be installed and the following packages to be attached: library(sf) library(terra)  # remotes::install_github("paleolimbot/qgisprocess")...'>
-<meta name="generator" content="bookdown 0.30 with bs4_book()">
+<meta name="generator" content="bookdown 0.32 with bs4_book()">
 <meta property="og:title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://geocompr.robinlovelace.net/gis.html">
-<meta property="og:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta property="og:url" content="https://r.geocompx.org/gis.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover.png">
 <meta property="og:description" content='Prerequisites This chapter requires QGIS, SAGA and GRASS to be installed and the following packages to be attached: library(sf) library(terra)  # remotes::install_github("paleolimbot/qgisprocess")...'>
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
 <meta name="twitter:description" content='Prerequisites This chapter requires QGIS, SAGA and GRASS to be installed and the following packages to be attached: library(sf) library(terra)  # remotes::install_github("paleolimbot/qgisprocess")...'>
-<meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.5/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
 <meta name="citation_author" content="Jannes Muenchow">
 <meta name="citation_publication_date" content="2019">
 <meta name="citation_isbn" content="9780203730058">
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -68,6 +68,7 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Welcome</a></li>
 <li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
 <li><a class="" href="preface.html">Preface</a></li>
 <li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li class="book-part">Foundations</li>
@@ -92,7 +93,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/Robinlovelace/geocompr">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -116,7 +117,7 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paleolimbot/qgisprocess">qgisprocess</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stevenpawley.github.io/Rsagacmd/">Rsagacmd</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsbivand.github.io/rgrass/">rgrass</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brazil-data-cube/rstac">rstac</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://brazil-data-cube.github.io/rstac/">rstac</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/appelmar/gdalcubes_R">gdalcubes</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div id="introduction-6" class="section level2" number="10.1">
@@ -137,7 +138,7 @@ This means many GIS users miss out on the advantages of the command-line accordi
 <blockquote>
 <p>With the advent of ‘modern’ GIS software, most people want to point and click their way through life. That’s good, but there is a tremendous amount of flexibility and power waiting for you with the command line. Many times you can do something on the command line in a fraction of the time you can do it with a GUI.</p>
 </blockquote>
-<p>The ‘CLI vs GUI’ debate can be adversial but it does not have to be; both options can be used interchangeably, depending on the task at hand and the user’s skillset.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;GRASS GIS and PostGIS are popular in academia and industry and can be seen as products which buck this trend as they are built around the command-line.&lt;/p&gt;"><sup>47</sup></a>
+<p>The ‘CLI vs GUI’ debate can be adversarial but it does not have to be; both options can be used interchangeably, depending on the task at hand and the user’s skillset.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;GRASS GIS and PostGIS are popular in academia and industry and can be seen as products which buck this trend as they are built around the command-line.&lt;/p&gt;"><sup>47</sup></a>
 The advantages of a good CLI such as that provided by R (and enhanced by IDEs such as RStudio) are numerous.
 A good CLI:</p>
 <ul>
@@ -156,7 +157,6 @@ The &lt;strong&gt;mapedit&lt;/strong&gt; package allows the quick editing of a f
 </li>
 <li>Enables georeferencing (matching raster images to existing maps) with ground control points and orthorectification</li>
 <li>Supports stereoscopic mapping (e.g., LiDAR and structure from motion)</li>
-<li>Provides access to spatial database management systems with object-oriented relational data models, topology and fast (spatial) querying</li>
 </ul>
 <p>Another advantage of dedicated GISs is that they provide access to hundreds of ‘geoalgorithms’ (computational recipes to solve geographic problems — see Chapter <a href="algorithms.html#algorithms">11</a>).
 Many of these are unavailable from the R command line, except via ‘GIS bridges’, the topic of (and motivation for) this chapter.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
@@ -175,8 +175,9 @@ However, its ability to interface with dedicated GISs gives it astonishing geosp
 R is well known as a statistical programming language, but many people are unaware of its ability to replicate GIS workflows, with the additional benefits of a (relatively) consistent CLI.
 Furthermore, R outperforms GISs in some areas of geocomputation, including interactive/animated map making (see Chapter <a href="adv-map.html#adv-map">9</a>) and spatial statistical modeling (see Chapter <a href="spatial-cv.html#spatial-cv">12</a>).
 This chapter focuses on ‘bridges’ to three mature open source GIS products (see Table <a href="gis.html#tab:gis-comp">10.1</a>): QGIS (via the package <strong>qgisprocess</strong>; Section <a href="gis.html#rqgis">10.2</a>), SAGA (via <strong>Rsagacmd</strong>; Section <a href="gis.html#saga">10.3</a>) and GRASS (via <strong>rgrass</strong>; Section <a href="gis.html#grass">10.4</a>).<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
-Though not covered here, it is worth being aware of so-called R-ArcGIS bridge (see &lt;a href="https://github.com/R-ArcGIS/r-bridge" class="uri"&gt;https://github.com/R-ArcGIS/r-bridge&lt;/a&gt;) that allows R to be used from within ArcGIS
-One can also use R scripts from within QGIS (see &lt;a href="https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html" class="uri"&gt;https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html&lt;/a&gt;).
+The now now longer maintained R package &lt;strong&gt;RPyGeo&lt;/strong&gt; established an interface to the geoprocessing tools of ArcGIS from with R.
+And though not covered here, it is worth being aware of the so-called R-ArcGIS bridge (see &lt;a href="https://github.com/R-ArcGIS/r-bridge" class="uri"&gt;https://github.com/R-ArcGIS/r-bridge&lt;/a&gt;) that allows R to be used from within ArcGIS.
+Please note further that one can also use R scripts from within QGIS (see &lt;a href="https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html" class="uri"&gt;https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html&lt;/a&gt;).
 Finally, it is also possible to use R from the GRASS GIS command line (see &lt;a href="https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#R_within_GRASS" class="uri"&gt;https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#R_within_GRASS&lt;/a&gt;).&lt;/p&gt;'><sup>50</sup></a></p>
 <div class="inline-table"><table class="table table-sm">
 <caption>
@@ -286,7 +287,7 @@ Here, we only present the arguments<code>"native:union"</code> expects.</p>
 <span><span class="fu"><a href="https://rdrr.io/pkg/qgisprocess/man/qgis_show_help.html">qgis_arguments</a></span><span class="op">(</span><span class="va">alg</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>acceptable_values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">acceptable_values</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">description</span>, <span class="va">acceptable_values</span><span class="op">)</span></span></code></pre></div>
-<p>Apparently, these are <code>INPUT</code>, <code>OVERLAY</code>, <code>OVERLAY_FIELDS_PREFIX</code>, and <code>OUTPUT</code>.
+<p>These arguments are <code>INPUT</code>, <code>OVERLAY</code>, <code>OVERLAY_FIELDS_PREFIX</code>, and <code>OUTPUT</code>.
 It seems that some of the above arguments expect a “path to a vector layer” (column: <code>acceptaple_values</code>).
 However, the <strong>qgisprocess</strong> package also allows to provide <code>sf</code> objects as well in these cases.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Objects from the &lt;strong&gt;terra&lt;/strong&gt; and &lt;strong&gt;stars&lt;/strong&gt; package can be used when a “path to a raster layer” is expected.&lt;/p&gt;"><sup>54</sup></a>
 Though this is really convenient, if your spatial data is already available in your R session, we recommend to provide the path to your spatial data on disk when you only read it in to submit it to a <strong>qgisprocess</strong> algorithm because the first thing <strong>qgisprocess</strong> does when executing a geoalgorithm is to export the spatial data living in your R session back to disk in a format known to QGIS such as .gpkg or .tif files.</p>
@@ -456,8 +457,7 @@ Then, the region growing algorithm is used to merge neighboring pixels of the se
 We also assigned it to the <code>sg</code> object, not to retype the whole tool code in our next steps.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can read more about the tool at &lt;a href="https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_2.html" class="uri"&gt;https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_2.html&lt;/a&gt;.&lt;/p&gt;'><sup>61</sup></a>
 If we just type <code>sg</code>, we will get a quick summary of the tool and a data frame with its parameters, descriptions, and defaults.
 You may also use <code>tidy(sg)</code> to extract just the parameters’ table.
-The <code>seed_generation</code> tool requires at least one input (<code>features</code>): a raster data.
-We are able to provide a set of additional parameters, including <code>band_width</code> that specifies the size of initial polygons.</p>
+The <code>seed_generation</code> tool takes a raster dataset as its first argument (<code>features</code>); optional arguments include <code>band_width</code> that specifies the size of initial polygons.</p>
 <div class="sourceCode" id="cb364"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ndvi_seeds</span> <span class="op">=</span> <span class="fu">sg</span><span class="op">(</span><span class="va">ndvi</span>, band_width <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co"># plot(ndvi_seeds$seed_grid)</span></span></code></pre></div>
@@ -511,7 +511,8 @@ In addition, the PERMANENT mapset stores the projection, the spatial extent and 
 So, to sum it all up – the GRASS GIS database may contain many locations (all data in one location have the same CRS), and each location can store many mapsets (groups of datasets).
 Please refer to <span class="citation">Neteler and Mitasova (<a href="references.html#ref-neteler_open_2008" role="doc-biblioref">2008</a>)</span> and the <a href="https://grass.osgeo.org/grass-stable/manuals/helptext.html">GRASS GIS quick start</a> for more information on the GRASS spatial database system.
 To quickly use GRASS from within R, we will use the <strong>link2GI</strong> package, however, one can also set up the GRASS GIS database step-by-step.
-See <a href="https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#GRASS_within_R">GRASS within R</a> for how to do so.</p>
+See <a href="https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#GRASS_within_R">GRASS within R</a> for how to do so.
+Please note that the code instructions in the following paragraphs might be hard to follow when using GRASS for the first time but by running through the code line-by-line and by examining the intermediate results, the reasoning behind it should become even clearer.</p>
 <p>Here, we introduce <strong>rgrass</strong> with one of the most interesting problems in GIScience - the traveling salesman problem.
 Suppose a traveling salesman would like to visit 24 customers.
 Additionally, he would like to start and finish his journey at home which makes a total of 25 locations while covering the shortest distance possible.
@@ -547,21 +548,21 @@ Second, <code>linkGRASS()</code> establishes a connection to GRASS GIS.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsbivand.github.io/rgrass/">rgrass</a></span><span class="op">)</span></span>
 <span><span class="fu">link2GI</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/link2GI/reference/linkGRASS.html">linkGRASS</a></span><span class="op">(</span><span class="va">london_streets</span>, ver_select <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Before we can use GRASS geoalgorithms, we need to add data to GRASS’s spatial database.
-Luckily, the convenience function <code>write_VECT()</code> does this for us.
-(Use <code>write_RAST()</code> for raster data.)
+Luckily, the convenience function <code><a href="https://rsbivand.github.io/rgrass/reference/readVECT.html">write_VECT()</a></code> does this for us.
+(Use <code><a href="https://rsbivand.github.io/rgrass/reference/readRAST.html">write_RAST()</a></code> for raster data.)
 In our case, we add the street and cycle hire point data while using only the first attribute column, and name them as <code>london_streets</code> and <code>points</code> in GRASS.</p>
 <div class="sourceCode" id="cb370"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">write_VECT</span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">london_streets</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"london_streets"</span><span class="op">)</span></span>
-<span><span class="fu">write_VECT</span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">points</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"points"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/readVECT.html">write_VECT</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">london_streets</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"london_streets"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/readVECT.html">write_VECT</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">points</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"points"</span><span class="op">)</span></span></code></pre></div>
 <p>The <strong>rgrass</strong> package expects its inputs and gives its outputs as <strong>terra</strong> objects.
-Therefore, we need to convert our <code>sf</code> spatial vectors to <strong>terra</strong>’s <code>SpatVector</code>s using the <code><a href="https://rdrr.io/pkg/terra/man/vect.html">vect()</a></code> function to be able to use <code>write_VECT()</code>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can learn more how to convert between spatial classes in R by reading the (Conversions between different spatial classes in R)[&lt;a href="https://geocompr.github.io/post/2021/spatial-classes-conversion/" class="uri"&gt;https://geocompr.github.io/post/2021/spatial-classes-conversion/&lt;/a&gt;] blog post and the
+Therefore, we need to convert our <code>sf</code> spatial vectors to <strong>terra</strong>’s <code>SpatVector</code>s using the <code><a href="https://rdrr.io/pkg/terra/man/vect.html">vect()</a></code> function to be able to use <code><a href="https://rsbivand.github.io/rgrass/reference/readVECT.html">write_VECT()</a></code>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can learn more how to convert between spatial classes in R by reading the (Conversions between different spatial classes in R)[&lt;a href="https://geocompr.github.io/post/2021/spatial-classes-conversion/" class="uri"&gt;https://geocompr.github.io/post/2021/spatial-classes-conversion/&lt;/a&gt;] blog post and the
 (Coercion between object formats)[&lt;a href="https://CRAN.R-project.org/package=rgrass/vignettes/coerce.html" class="uri"&gt;https://CRAN.R-project.org/package=rgrass/vignettes/coerce.html&lt;/a&gt;] vignette&lt;/p&gt;'><sup>64</sup></a></p>
 <p>Now, both datasets exist in the GRASS GIS database.
 To perform our network analysis, we need a topological clean street network.
 GRASS’s <code>"v.clean"</code> takes care of the removal of duplicates, small angles and dangles, among others.
 Here, we break lines at each intersection to ensure that the subsequent routing algorithm can actually turn right or left at an intersection, and save the output in a GRASS object named <code>streets_clean</code>.</p>
 <div class="sourceCode" id="cb371"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">execGRASS</span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.clean"</span>, input <span class="op">=</span> <span class="st">"london_streets"</span>, output <span class="op">=</span> <span class="st">"streets_clean"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/execGRASS.html">execGRASS</a></span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.clean"</span>, input <span class="op">=</span> <span class="st">"london_streets"</span>, output <span class="op">=</span> <span class="st">"streets_clean"</span>,</span>
 <span>          tool <span class="op">=</span> <span class="st">"break"</span>, flags <span class="op">=</span> <span class="st">"overwrite"</span><span class="op">)</span></span></code></pre></div>
 
 <div class="rmdnote">
@@ -573,7 +574,7 @@ However, to find the shortest route between them, we need to connect them to the
 <code>"v.net"</code>’s connect-operator does exactly this.
 We save its output in <code>streets_points_con</code>.</p>
 <div class="sourceCode" id="cb372"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">execGRASS</span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.net"</span>, input <span class="op">=</span> <span class="st">"streets_clean"</span>, output <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/execGRASS.html">execGRASS</a></span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.net"</span>, input <span class="op">=</span> <span class="st">"streets_clean"</span>, output <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
 <span>          points <span class="op">=</span> <span class="st">"points"</span>, operation <span class="op">=</span> <span class="st">"connect"</span>, threshold <span class="op">=</span> <span class="fl">0.001</span>,</span>
 <span>          flags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"overwrite"</span>, <span class="st">"c"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting clean dataset serves as input for the <code>"v.net.salesman"</code> algorithm, which finally finds the shortest route between all cycle hire stations.
@@ -582,12 +583,12 @@ This range represents the points for which a shortest route should be calculated
 Since we would like to calculate the route for all cycle stations, we set it to <code>1-25</code>.
 To access the GRASS help page of the traveling salesman algorithm, run <code>execGRASS("g.manual", entry = "v.net.salesman")</code>.</p>
 <div class="sourceCode" id="cb373"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">execGRASS</span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.net.salesman"</span>, input <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/execGRASS.html">execGRASS</a></span><span class="op">(</span>cmd <span class="op">=</span> <span class="st">"v.net.salesman"</span>, input <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
 <span>          output <span class="op">=</span> <span class="st">"shortest_route"</span>, center_cats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"1-"</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">points</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>          flags <span class="op">=</span> <span class="st">"overwrite"</span><span class="op">)</span></span></code></pre></div>
 <p>To see our result, we read the result into R, convert it into an sf-object keeping only the geometry, and visualize it with the help of the <strong>mapview</strong> package (Figure <a href="gis.html#fig:grass-mapview">10.5</a> and Section <a href="adv-map.html#interactive-maps">9.4</a>).</p>
 <div class="sourceCode" id="cb374"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">route</span> <span class="op">=</span> <span class="fu">read_VECT</span><span class="op">(</span><span class="st">"shortest_route"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">route</span> <span class="op">=</span> <span class="fu"><a href="https://rsbivand.github.io/rgrass/reference/readVECT.html">read_VECT</a></span><span class="op">(</span><span class="st">"shortest_route"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">route</span><span class="op">)</span> <span class="op">+</span> <span class="va">points</span></span></code></pre></div>
@@ -796,7 +797,7 @@ PostgreSQL/PostGIS is a formidable choice as an open-source spatial database.
 But the same is true for the lightweight SQLite/SpatiaLite database engine and GRASS which uses SQLite in the background (see Section <a href="gis.html#grass">10.4</a>).</p>
 <p>If your datasets are too big for PostgreSQL/PostGIS and you require massive spatial data management and query performance, it may be worth exploring large-scale geographic querying on distributed computing systems.
 Such systems are outside the scope of this book but it worth mentioning that open source software providing this functionality exists.
-Prominent projects in this space include <a href="http://www.geomesa.org/">GeoMesa</a> and <a href="https://sedona.apache.org/">Apache Sedona</a>, formerly known as GeoSpark <span class="citation">(<a href="references.html#ref-huang_geospark_2017" role="doc-biblioref">Huang et al. 2017</a>)</span>, which has and R interface provided by the <a href="https://cran.r-project.org/package=apache.sedona"><strong>apache.sedona</strong></a> package.</p>
+Prominent projects in this space include <a href="http://www.geomesa.org/">GeoMesa</a> and <a href="https://sedona.apache.org/">Apache Sedona</a>. The <a href="https://cran.r-project.org/package=apache.sedona"><strong>apache.sedona</strong></a> package provides an interface to the latter.</p>
 </div>
 </div>
 <div id="cloud" class="section level2" number="10.7">
@@ -822,15 +823,15 @@ In R, the <strong>rstac</strong> package <span class="citation">(<a href="refere
 In the example below, we request all images from the <a href="https://registry.opendata.aws/sentinel-2-l2a-cogs">Sentinel-2 Cloud-Optimized GeoTIFF (COG) dataset on Amazon Web Services</a> that intersect with a predefined area and time of interest.
 The result contains all found images and their metadata (e.g. cloud cover) and URLs pointing to actual files on AWS.</p>
 <div class="sourceCode" id="cb384"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/brazil-data-cube/rstac">rstac</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://brazil-data-cube.github.io/rstac/">rstac</a></span><span class="op">)</span></span>
 <span><span class="co"># Connect to the STAC-API endpoint for Sentinel-2 data</span></span>
 <span><span class="co"># and search for images intersecting our AOI</span></span>
-<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/rstac/man/stac.html">stac</a></span><span class="op">(</span><span class="st">"https://earth-search.aws.element84.com/v0"</span><span class="op">)</span></span>
+<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/stac.html">stac</a></span><span class="op">(</span><span class="st">"https://earth-search.aws.element84.com/v0"</span><span class="op">)</span></span>
 <span><span class="va">items</span> <span class="op">=</span> <span class="va">s</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rstac/man/stac_search.html">stac_search</a></span><span class="op">(</span>collections <span class="op">=</span> <span class="st">"sentinel-s2-l2a-cogs"</span>,</span>
+<span>  <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/stac_search.html">stac_search</a></span><span class="op">(</span>collections <span class="op">=</span> <span class="st">"sentinel-s2-l2a-cogs"</span>,</span>
 <span>              bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7.1</span>, <span class="fl">51.8</span>, <span class="fl">7.2</span>, <span class="fl">52.8</span><span class="op">)</span>, </span>
 <span>              datetime <span class="op">=</span> <span class="st">"2020-01-01/2020-12-31"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/rstac/man/request.html">post_request</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/pkg/rstac/man/items_functions.html">items_fetch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/request.html">post_request</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/items_functions.html">items_fetch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Cloud storage differs from local hard disks and traditional image file formats do not perform well in cloud-based geoprocessing.
 Broadly speaking, the cloud-optimized GeoTIFF format is a specific type of GeoTIFF that makes it possible to efficiently read only parts of an image from cloud storage.
 As a result, reading rectangular subsets of an image or reading images at lower resolution becomes much more efficient.
@@ -942,10 +943,10 @@ Use <strong>rstac</strong>, <strong>gdalcubes</strong>, and <strong>terra</stron
     <h2>Note: Second Edition is under construction 🏗</h2>
     <!--<p>Now is a great time to provide feedback</p>-->
         <ul class="list-unstyled">
-<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
-          <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://r.geocompx.org/#reproducibility">Install updated packages</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -981,8 +982,8 @@ Use <strong>rstac</strong>, <strong>gdalcubes</strong>, and <strong>terra</stron
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/Robinlovelace/geocompr/blob/main/10-gis.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/Robinlovelace/geocompr/edit/main/10-gis.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/10-gis.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/10-gis.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -994,7 +995,7 @@ Use <strong>rstac</strong>, <strong>gdalcubes</strong>, and <strong>terra</stron
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2023-02-24.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

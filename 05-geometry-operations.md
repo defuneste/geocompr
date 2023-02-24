@@ -108,7 +108,7 @@ us_states_simp2 = rmapshaper::ms_simplify(us_states2163, keep = 0.01,
 
 
 An alternative to simplification is smoothing the boundaries of polygon and linestring geometries, which is implemented in the **smoothr** package. 
-Smoothing interpolates the edges of geometries and does not necessarily lead to fewer vertices, but can be especially useful when working with geometries that arise from spatially vectorizing a raster (a topic covered in Chapter \@ref(raster-vector).
+Smoothing interpolates the edges of geometries and does not necessarily lead to fewer vertices, but can be especially useful when working with geometries that arise from spatially vectorizing a raster (a topic covered in Chapter \@ref(raster-vector)).
 **smoothr** implements three techniques for smoothing: a Gaussian kernel regression, Chaikin's corner cutting algorithm, and spline interpolation, which are all described in the package vignette and [website](https://strimas.com/smoothr/). 
 Note that similar to `st_simplify()`, the smoothing algorithms don't preserve 'topology'.
 The workhorse function of **smoothr** is `smooth()`, where the `method` argument specifies what smoothing technique to use.
@@ -674,6 +674,15 @@ elev = rast(system.file("raster/elev.tif", package = "spData"))
 clip = rast(xmin = 0.9, xmax = 1.8, ymin = -0.45, ymax = 0.45,
             resolution = 0.3, vals = rep(1, 9))
 elev[clip, drop = FALSE]
+#> class       : SpatRaster 
+#> dimensions  : 2, 1, 1  (nrow, ncol, nlyr)
+#> resolution  : 0.5, 0.5  (x, y)
+#> extent      : 1, 1.5, -0.5, 0.5  (xmin, xmax, ymin, ymax)
+#> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
+#> source(s)   : memory
+#> name        : elev 
+#> min value   :   18 
+#> max value   :   24
 ```
 
 For the same operation we can also use the `intersect()` and `crop()` command.
@@ -710,7 +719,7 @@ elev_3 = elev + elev_2
 However, we can align the extent of two rasters with `extend()`. 
 Instead of telling the function how many rows or columns should be added (as done before), we allow it to figure it out by using another raster object.
 Here, we extend the `elev` object to the extent of `elev_2`. 
-The newly added rows and column receive the `NA`.
+The values of the newly added rows and columns are set to `NA`.
 
 
 ```r
@@ -770,7 +779,8 @@ dem_agg = aggregate(dem, fact = 5, fun = mean)
 <p class="caption">(\#fig:aggregate-example)Original raster (left). Aggregated raster (right).</p>
 </div>
 
-The `disagg()` function increases the resolution of raster objects, providing two a methods for assigning values to the newly created cells: the default method (`method = "near"`) simply gives all output cells the value of the input cell, and hence duplicates values, leading to a 'blocky' output.
+The `disagg()` function increases the resolution of raster objects. 
+It comes with two methods on how to compute the values of the newly created cells: the default method (`method = "near"`) simply gives all output cells the value of the input cell, and hence duplicates values, which translates into a 'blocky' output.
 The `bilinear` method uses the four nearest pixel centers of the input image (salmon colored points in Figure \@ref(fig:bilinear)) to compute an average weighted by distance (arrows in Figure \@ref(fig:bilinear).
 The value of the output cell is represented by a square in the upper left corner in Figure \@ref(fig:bilinear)).
 
@@ -809,14 +819,14 @@ The main resampling methods include:
 
 - Nearest neighbor: assigns the value of the nearest cell of the original raster to the cell of the target one. This is a fast simple technique that is usually suitable for resampling categorical rasters.
 - Bilinear interpolation: assigns a weighted average of the four nearest cells from the original raster to the cell of the target one (Figure \@ref(fig:bilinear)). This is the fastest method that is appropriate for continuous rasters.
-- Cubic interpolation: uses values of 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters and results in a smoother surface that results bilinear interpolation, but is more computationally intensive.
-- Cubic spline interpolation: also uses values of 16 nearest cells of the original raster to determine output cell, but applies cubic splines (piecewise third-order polynomial functions) to derive the results. Used for continuous rasters.
-- Lanczos windowed sinc resampling: uses values of 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters.^[
+- Cubic interpolation: uses values of the 16 nearest cells of the original raster to determine the output cell value, applying third-order polynomial functions. Used for continuous rasters and results in a smoother surface compared to bilinear interpolation, but is computationally more demanding.
+- Cubic spline interpolation: also uses values of the 16 nearest cells of the original raster to determine the output cell value, but applies cubic splines (piecewise third-order polynomial functions). Used for continuous rasters.
+- Lanczos windowed sinc resampling: uses values of the 36 nearest cells of the original raster to determine the output cell value. Used for continuous rasters.^[
 More detailed explanation of this method can be found at https://gis.stackexchange.com/a/14361/20955.
 ]
 
-The above explanation highlights that only *nearest neighbor* resampling is suitable for categorical rasters, while all the methods can be used (with different outcomes) for continuous rasters.
-Additionally, each successive method requires more processing time.
+The above explanation highlights that only *nearest neighbor* resampling is suitable for categorical rasters, while all methods can be used (with different outcomes) for continuous rasters.
+Please note also, that the methods gain both in complexity and processing time from top to bottom.
 
 To apply resampling, the **terra** package provides a `resample()` function.
 It accepts an input raster (`x`), a raster with target spatial properties (`y`), and a resampling method (`method`).
@@ -848,7 +858,7 @@ Figure \@ref(fig:resampl) shows a comparison of different resampling methods on 
 The `resample()` function also has some additional resampling methods, including `sum`, `min`, `q1`, `med`, `q3`, `max`, `average`, `mode`, and `rms`.
 All of them calculate a given statistic based on the values of all non-NA contributing grid cells.
 For example, `sum` is useful when each raster cell represents a spatially extensive variable (e.g., number of people).
-As an effect of using `sum`, the resampled raster should have the sample total number of people as the original one.
+As an effect of using `sum`, the resampled raster should have the same total number of people as the original one.
 
 As you will see in section \@ref(reproj-ras), raster reprojection is a special case of resampling when our target raster has a different CRS than the original raster.
 
@@ -864,7 +874,7 @@ It contains several utility functions, including:
 - `gdal_rasterize` - converts vector data into raster files
 - `gdalwarp` - allows for raster mosaicing, resampling, cropping, and reprojecting
 
-All of the above functions are written in C++, but can be called in R using the **gdalUtilities** package.
+All of the above functions are written in C++, but can be called in R using `sf::gdal_utils()`, the **gdalUtilities** package or via system commands (see section \@ref(gdal)).
 Importantly, all of these functions expect a raster file path as an input and often return their output as a raster file (for example, `gdalUtilities::gdal_translate("my_file.tif", "new_file.tif", t_srs = "EPSG:4326")`)
 This is very different from the usual **terra** approach, which expects `SpatRaster` objects as inputs.</div>\EndKnitrBlock{rmdnote}
 
@@ -897,7 +907,7 @@ Hint: you need to use a two-element vector for this transformation.
  
 
 
-E5. Run the code in Section [5.2.6](https://geocompr.robinlovelace.net/geometry-operations.html#subsetting-and-clipping). With reference to the objects created in that section, subset the point in `p` that is contained within `x` *and* `y`.
+E5. Run the code in Section [5.2.6](https://r.geocompx.org/geometry-operations.html#subsetting-and-clipping). With reference to the objects created in that section, subset the point in `p` that is contained within `x` *and* `y`.
 
 - Using base subsetting operators.
 - Using an intermediary object created with `st_intersection()`\index{vector!intersection}.

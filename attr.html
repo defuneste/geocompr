@@ -7,29 +7,29 @@
 <title>Chapter 3 Attribute data operations | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites This chapter requires the following packages to be installed and attached: library(sf)   # vector data package introduced in Chapter 2 library(terra)  # raster data package...">
-<meta name="generator" content="bookdown 0.30 with bs4_book()">
+<meta name="generator" content="bookdown 0.32 with bs4_book()">
 <meta property="og:title" content="Chapter 3 Attribute data operations | Geocomputation with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://geocompr.robinlovelace.net/attr.html">
-<meta property="og:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta property="og:url" content="https://r.geocompx.org/attr.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover.png">
 <meta property="og:description" content="Prerequisites This chapter requires the following packages to be installed and attached: library(sf)   # vector data package introduced in Chapter 2 library(terra)  # raster data package...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 3 Attribute data operations | Geocomputation with R">
 <meta name="twitter:description" content="Prerequisites This chapter requires the following packages to be installed and attached: library(sf)   # vector data package introduced in Chapter 2 library(terra)  # raster data package...">
-<meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.5/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 3 Attribute data operations | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
 <meta name="citation_author" content="Jannes Muenchow">
 <meta name="citation_publication_date" content="2019">
 <meta name="citation_isbn" content="9780203730058">
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -68,6 +68,7 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Welcome</a></li>
 <li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
 <li><a class="" href="preface.html">Preface</a></li>
 <li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li class="book-part">Foundations</li>
@@ -92,7 +93,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/Robinlovelace/geocompr">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -155,12 +156,11 @@ This was described in Chapter <a href="spatial-class.html#spatial-class">2</a>, 
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/methods.html">methods</a></span><span class="op">(</span>class <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span> <span class="co"># methods for sf objects, first 12 shown</span></span></code></pre></div>
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#&gt;  [1] aggregate             cbind                 coerce               </span></span>
-<span><span class="co">#&gt;  [4] initialize            merge                 plot                 </span></span>
-<span><span class="co">#&gt;  [7] print                 rbind                 [                    </span></span>
-<span><span class="co">#&gt; [10] [[&lt;-                  $&lt;-                   show                 </span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#&gt; [1] [             [[&lt;-          $&lt;-           aggregate    </span></span>
+<span><span class="co">#&gt; [5] as.data.frame cbind         coerce        filter       </span></span>
+<span><span class="co">#&gt; [9] identify      initialize    merge         plot        </span></span></code></pre></div>
 <p>Many of these (<code><a href="https://rdrr.io/pkg/terra/man/aggregate.html">aggregate()</a></code>, <code><a href="https://rdrr.io/r/base/cbind.html">cbind()</a></code>, <code><a href="https://rdrr.io/pkg/terra/man/merge.html">merge()</a></code>, <code><a href="https://rdrr.io/r/base/cbind.html">rbind()</a></code> and <code>[</code>) are for manipulating data frames.
-<code><a href="https://rdrr.io/r/base/cbind.html">rbind()</a></code>, for example, is binds rows two data frames together, one ‘on top’ of the other.
+<code><a href="https://rdrr.io/r/base/cbind.html">rbind()</a></code>, for example, binds rows of data frames together, one ‘on top’ of the other.
 <code>$&lt;-</code> creates new columns.
 A key feature of <code>sf</code> objects is that they store spatial and non-spatial data in the same way, as columns in a <code>data.frame</code>.</p>
 
@@ -194,7 +194,7 @@ For most cases, however, it makes sense to keep the geometry column, explaining 
 Non-spatial data operations on <code>sf</code> objects only change an object’s geometry when appropriate (e.g., by dissolving borders between adjacent polygons following aggregation).
 Becoming skilled at geographic attribute data manipulation means becoming skilled at manipulating data frames.</p>
 <p>For many applications, the tidyverse package <strong>dplyr</strong> offers an effective approach for working with data frames.
-Tidyverse compatibility is an advantage of <strong>sf</strong> over its predecessor <strong>sp</strong>, but there are some pitfalls to avoid (see the supplementary <code>tidyverse-pitfalls</code> vignette at <a href="https://geocompr.github.io/geocompkg/articles/tidyverse-pitfalls.html">geocompr.github.io</a> for details).</p>
+Tidyverse compatibility is an advantage of <strong>sf</strong> over its predecessor <strong>sp</strong>, but there are some pitfalls to avoid (see the supplementary <code>tidyverse-pitfalls</code> vignette at <a href="https://geocompx.github.io/geocompkg/articles/tidyverse-pitfalls.html">geocompx.org</a> for details).</p>
 <div id="vector-attribute-subsetting" class="section level3" number="3.2.1">
 <h3>
 <span class="header-section-number">3.2.1</span> Vector attribute subsetting<a class="anchor" aria-label="anchor" href="#vector-attribute-subsetting"><i class="fas fa-link"></i></a>
@@ -456,7 +456,7 @@ It has 3 columns:
 A ‘left join’, which preserves the first dataset, merges <code>world</code> with <code>coffee_data</code>:</p>
 <div class="sourceCode" id="cb87"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world_coffee</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">world</span>, <span class="va">coffee_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = "name_long"</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(name_long)`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">world_coffee</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "sf"         "tbl_df"     "tbl"        "data.frame"</span></span></code></pre></div>
 <p>Because the input datasets share a ‘key variable’ (<code>name_long</code>) the join worked without using the <code>by</code> argument (see <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">?left_join</a></code> for details).
@@ -496,7 +496,7 @@ What if we only want to keep countries that have a match in the key variable?
 In that case an inner join can be used:</p>
 <div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world_coffee_inner</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">world</span>, <span class="va">coffee_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = "name_long"</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(name_long)`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">world_coffee_inner</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 45</span></span></code></pre></div>
 <p>Note that the result of <code><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join()</a></code> has only 45 rows compared with 47 in <code>coffee_data</code>.
@@ -516,7 +516,7 @@ The following command uses a string matching (regex) function from the <strong>s
 <div class="sourceCode" id="cb93"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coffee_data</span><span class="op">$</span><span class="va">name_long</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"Congo,"</span>, <span class="va">coffee_data</span><span class="op">$</span><span class="va">name_long</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="va">drc</span></span>
 <span><span class="va">world_coffee_match</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">world</span>, <span class="va">coffee_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = "name_long"</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(name_long)`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">world_coffee_match</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 46</span></span></code></pre></div>
 <p>It is also possible to join in the other direction: starting with a non-spatial dataset and adding variables from a simple features object.
@@ -525,7 +525,7 @@ In contrast with the previous joins, the result is <em>not</em> another simple f
 the output of a join tends to match its first argument:</p>
 <div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">coffee_world</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">coffee_data</span>, <span class="va">world</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Joining, by = "name_long"</span></span>
+<span><span class="co">#&gt; Joining with `by = join_by(name_long)`</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">coffee_world</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "tbl_df"     "tbl"        "data.frame"</span></span></code></pre></div>
 
@@ -535,7 +535,7 @@ The geometry column can only be used for creating maps and spatial operations if
 Fortunately, non-spatial data frames with a geometry list column (like <code>coffee_world</code>) can be coerced into an <code>sf</code> object as follows: <code>st_as_sf(coffee_world)</code>.
 </div>
 <p>This section covers the majority of joining use cases.
-For more information, we recommend reading the chapter <a href="https://r4ds.had.co.nz/relational-data.html?q=join#relational-data">Relational data</a> in <span class="citation">Grolemund and Wickham (<a href="references.html#ref-grolemund_r_2016" role="doc-biblioref">2016</a>)</span>, the <a href="https://geocompr.github.io/geocompkg/articles/join.html">join vignette</a> in the <strong>geocompkg</strong> package that accompanies this book, and <a href="https://asardaes.github.io/table.express/articles/joins.html">documentation</a> describing joins with <strong>data.table</strong> and other packages.
+For more information, we recommend reading the chapter <a href="https://r4ds.had.co.nz/relational-data.html?q=join#relational-data">Relational data</a> in <span class="citation">Grolemund and Wickham (<a href="references.html#ref-grolemund_r_2016" role="doc-biblioref">2016</a>)</span>, the <a href="https://geocompx.github.io/geocompkg/articles/join.html">join vignette</a> in the <strong>geocompkg</strong> package that accompanies this book, and <a href="https://asardaes.github.io/table.express/articles/joins.html">documentation</a> describing joins with <strong>data.table</strong> and other packages.
 Spatial joins are covered in the next chapter (Section <a href="spatial-operations.html#spatial-joining">4.2.4</a>).</p>
 </div>
 <div id="vec-attr-creation" class="section level3" number="3.2.5">
@@ -549,15 +549,15 @@ Using base R, we can type:</p>
 <div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world_new</span> <span class="op">=</span> <span class="va">world</span> <span class="co"># do not overwrite our original data</span></span>
 <span><span class="va">world_new</span><span class="op">$</span><span class="va">pop_dens</span> <span class="op">=</span> <span class="va">world_new</span><span class="op">$</span><span class="va">pop</span> <span class="op">/</span> <span class="va">world_new</span><span class="op">$</span><span class="va">area_km2</span></span></code></pre></div>
-<p>Alternatively, we can use one of <strong>dplyr</strong> functions - <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">transmute()</a></code>.
+<p>Alternatively, we can use one of <strong>dplyr</strong> functions - <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> or <code><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute()</a></code>.
 <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> adds new columns at the penultimate position in the <code>sf</code> object (the last one is reserved for the geometry):</p>
 <div class="sourceCode" id="cb96"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>pop_dens <span class="op">=</span> <span class="va">pop</span> <span class="op">/</span> <span class="va">area_km2</span><span class="op">)</span></span></code></pre></div>
-<p>The difference between <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">transmute()</a></code> is that the latter drops all other existing columns (except for the sticky geometry column):</p>
+<p>The difference between <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute()</a></code> is that the latter drops all other existing columns (except for the sticky geometry column):</p>
 <div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">world</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">transmute</a></span><span class="op">(</span>pop_dens <span class="op">=</span> <span class="va">pop</span> <span class="op">/</span> <span class="va">area_km2</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span>pop_dens <span class="op">=</span> <span class="va">pop</span> <span class="op">/</span> <span class="va">area_km2</span><span class="op">)</span></span></code></pre></div>
 <p><code>unite()</code> from the <strong>tidyr</strong> package (which provides many useful functions for reshaping datasets, including <code>pivot_longer()</code>) pastes together existing columns.
 For example, we want to combine the <code>continent</code> and <code>region_un</code> columns into a new column named <code>con_reg</code>.
 Additionally, we can define a separator (here: a colon <code>:</code>) which defines how the values of the input columns should be joined, and if the original columns should be removed (here: <code>TRUE</code>):</p>
@@ -603,7 +603,7 @@ Because of their unique structure, subsetting and other operations on raster dat
 <p>The following code recreates the raster dataset used in Section <a href="spatial-class.html#raster-classes">2.3.4</a>, the result of which is illustrated in Figure <a href="attr.html#fig:cont-raster">3.2</a>.
 This demonstrates how the <code><a href="https://rdrr.io/pkg/terra/man/rast.html">rast()</a></code> function works to create an example raster named <code>elev</code> (representing elevations).</p>
 <div class="sourceCode" id="cb103"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">elev</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, </span>
+<code class="sourceCode R"><span><span class="va">elev</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>            xmin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, xmax <span class="op">=</span> <span class="fl">1.5</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, ymax <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>            vals <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">)</span></span></code></pre></div>
 <p>The result is a raster object with 6 rows and 6 columns (specified by the <code>nrow</code> and <code>ncol</code> arguments), and a minimum and maximum spatial extent in x and y direction (<code>xmin</code>, <code>xmax</code>, <code>ymin</code>, <code>ymax</code>).
@@ -614,7 +614,7 @@ The following code creates the raster datasets shown in Figure <a href="attr.htm
 <code class="sourceCode R"><span><span class="va">grain_order</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"clay"</span>, <span class="st">"silt"</span>, <span class="st">"sand"</span><span class="op">)</span></span>
 <span><span class="va">grain_char</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">grain_order</span>, <span class="fl">36</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">grain_fact</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">grain_char</span>, levels <span class="op">=</span> <span class="va">grain_order</span><span class="op">)</span></span>
-<span><span class="va">grain</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, </span>
+<span><span class="va">grain</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>, </span>
 <span>             xmin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, xmax <span class="op">=</span> <span class="fl">1.5</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, ymax <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>             vals <span class="op">=</span> <span class="va">grain_fact</span><span class="op">)</span></span></code></pre></div>
 <p>The raster object stores the corresponding look-up table or “Raster Attribute Table” (RAT) as a list of data frames, which can be viewed with <code>cats(grain)</code> (see <code>?cats()</code> for more information).
@@ -791,10 +791,10 @@ Extract the values of the four corner cells.</p>
     <h2>Note: Second Edition is under construction 🏗</h2>
     <!--<p>Now is a great time to provide feedback</p>-->
         <ul class="list-unstyled">
-<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
-          <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://r.geocompx.org/#reproducibility">Install updated packages</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -824,8 +824,8 @@ Extract the values of the four corner cells.</p>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/Robinlovelace/geocompr/blob/main/03-attribute-operations.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/Robinlovelace/geocompr/edit/main/03-attribute-operations.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/03-attribute-operations.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/03-attribute-operations.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -837,7 +837,7 @@ Extract the values of the four corner cells.</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2023-02-24.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

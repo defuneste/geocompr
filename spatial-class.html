@@ -6,30 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Chapter 2 Geographic data in R | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
-<meta name="description" content="Prerequisites This is the first practical chapter of the book, and therefore it comes with some software requirements. You need access to a computer with a recent version of R installed (R 4.2.0...">
-<meta name="generator" content="bookdown 0.30 with bs4_book()">
+<meta name="description" content="Prerequisites  This is the first practical chapter of the book, and therefore it comes with some software requirements.  You need access to a computer with a recent version of R installed (R 4.2.0...">
+<meta name="generator" content="bookdown 0.32 with bs4_book()">
 <meta property="og:title" content="Chapter 2 Geographic data in R | Geocomputation with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://geocompr.robinlovelace.net/spatial-class.html">
-<meta property="og:image" content="https://geocompr.robinlovelace.net/images/cover.png">
-<meta property="og:description" content="Prerequisites This is the first practical chapter of the book, and therefore it comes with some software requirements. You need access to a computer with a recent version of R installed (R 4.2.0...">
+<meta property="og:url" content="https://r.geocompx.org/spatial-class.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover.png">
+<meta property="og:description" content="Prerequisites  This is the first practical chapter of the book, and therefore it comes with some software requirements.  You need access to a computer with a recent version of R installed (R 4.2.0...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 2 Geographic data in R | Geocomputation with R">
-<meta name="twitter:description" content="Prerequisites This is the first practical chapter of the book, and therefore it comes with some software requirements. You need access to a computer with a recent version of R installed (R 4.2.0...">
-<meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta name="twitter:description" content="Prerequisites  This is the first practical chapter of the book, and therefore it comes with some software requirements.  You need access to a computer with a recent version of R installed (R 4.2.0...">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.5/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 2 Geographic data in R | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
 <meta name="citation_author" content="Jannes Muenchow">
 <meta name="citation_publication_date" content="2019">
 <meta name="citation_isbn" content="9780203730058">
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -68,6 +68,7 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Welcome</a></li>
 <li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
 <li><a class="" href="preface.html">Preface</a></li>
 <li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li class="book-part">Foundations</li>
@@ -92,7 +93,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/Robinlovelace/geocompr">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -103,11 +104,14 @@
 <div id="prerequisites" class="section level2 unnumbered">
 <h2>Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"><i class="fas fa-link"></i></a>
 </h2>
+<!--rl-->
 <p>This is the first practical chapter of the book, and therefore it comes with some software requirements.
+<!-- toDo: rl-->
+<!-- should we be that specific regarding the r version?-->
 You need access to a computer with a recent version of R installed (R <a href="https://stat.ethz.ch/pipermail/r-announce/2022/000683.html">4.2.0</a> or a later version).
 We recommend not only reading the prose but also <em>running the code</em> in each chapter to build your geocomputational skills.</p>
 <p>To keep track of your learning journey, it may be worth starting by creating a new folder on your computer to save your R scripts, outputs and other things related to Geocomputation with R as you go.
-You can also <a href="https://github.com/Robinlovelace/geocompr/archive/refs/heads/main.zip">download</a> or <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository">clone</a> the <a href="https://github.com/Robinlovelace/geocompr">source code</a> underlying the book to support your learning.
+You can also <a href="https://github.com/geocompx/geocompr/archive/refs/heads/main.zip">download</a> or <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository">clone</a> the <a href="https://github.com/geocompx/geocompr">source code</a> underlying the book to support your learning.
 We strongly recommend installing an integrated development environment (IDE) such as <a href="https://www.rstudio.com/products/rstudio/download/#download">RStudio</a> (recommended for most people) or <a href="https://github.com/REditorSupport/vscode-R">VS Code</a> when writing/running/testing R code.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
 We recommend using &lt;a href="https://r4ds.had.co.nz/workflow-projects.html"&gt;RStudio projects&lt;/a&gt;, &lt;a href="https://code.visualstudio.com/docs/editor/workspaces"&gt;VS Code workspaces&lt;/a&gt; or similar system to manage your projects.
 A quick way to do this with RStudio is via the &lt;strong&gt;rstudioapi&lt;/strong&gt; package.
@@ -214,7 +218,7 @@ FIGURE 2.1: Illustration of vector (point) data in which location of London (the
 <!-- - [liblwgeom](https://github.com/postgis/postgis/tree/master/liblwgeom), a geometry engine used by PostGIS, via the [**lwgeom**](https://r-spatial.github.io/lwgeom/) package -->
 </li>
 </ul>
-<p>Information about these interfaces is printed by <strong>sf</strong> the first time the package is loaded: the message <code>Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE</code> that appears below the <code><a href="https://r-spatial.github.io/sf/">library(sf)</a></code> command at the beginning of this chapter tells us the versions of linked GEOS, GDAL and PROJ libraries (these vary between computers and over time) and whether or not the S2 interface is turned on.
+<p>Information about these interfaces is printed by <strong>sf</strong> the first time the package is loaded: the message that appears below the <code><a href="https://r-spatial.github.io/sf/">library(sf)</a></code> command at the beginning of this chapter tells us the versions of linked GEOS, GDAL and PROJ libraries (these vary between computers and over time) and whether or not the S2 interface is turned on.
 Nowadays, we take it for granted, however, only the tight integration with different geographic libraries makes reproducible geocomputation possible in the first place.</p>
 <p>A neat feature of <strong>sf</strong> is that you can change the default geometry engine used on unprojected data: ‘switching off’ S2 can be done with the command <code>sf::sf_use_s2(FALSE)</code>, meaning that the planar geometry engine GEOS will be used by default for all geometry operations, including geometry operations on unprojected data.
 As we will see in Section <a href="spatial-class.html#s2">2.2.9</a>, planar geometry is based on 2 dimensional space.
@@ -239,7 +243,7 @@ FIGURE 2.2: Simple feature types fully supported by sf.
 <p><strong>sf</strong> can represent all common vector geometry types (raster data classes are not supported by <strong>sf</strong>): points, lines, polygons and their respective ‘multi’ versions (which group together features of the same type into a single feature).
 <strong>sf</strong> also supports geometry collections, which can contain multiple geometry types in a single object.
 <strong>sf</strong> provides the same functionality (and more) previously provided in three packages — <strong>sp</strong> for data classes <span class="citation">(<a href="references.html#ref-R-sp" role="doc-biblioref">Pebesma and Bivand 2018</a>)</span>, <strong>rgdal</strong> for data read/write via an interface to GDAL and PROJ <span class="citation">(<a href="references.html#ref-R-rgdal" role="doc-biblioref">Bivand, Keitt, and Rowlingson 2018</a>)</span> and <strong>rgeos</strong> for spatial operations via an interface to GEOS <span class="citation">(<a href="references.html#ref-R-rgeos" role="doc-biblioref">Bivand and Rundel 2018</a>)</span>.</p>
-<p>To re-iterate the message from Chapter 1, geographic R packages have a long history of interfacing with lower level libraries, and <strong>sf</strong> continues this tradition with a unified interface to recent versions GEOS for geometry operations, the GDAL library for reading and writing geographic data files, and the PROJ library for representing and transforming projected coordinate reference systems.
+<p>To re-iterate the message from Chapter 1, geographic R packages have a long history of interfacing with lower level libraries, and <strong>sf</strong> continues this tradition with a unified interface to recent versions of GEOS for geometry operations, the GDAL library for reading and writing geographic data files, and the PROJ library for representing and transforming projected coordinate reference systems.
 Through <strong>s2</strong>,
 <!-- **s2** functions have replaced **lwgeom** ones (Bivand 2021). -->
 <!-- and **lwgeom**, **sf** also has an inter to PostGIS's [`liblwgeom`](https://github.com/postgis/postgis/tree/master/liblwgeom) library  -->
@@ -255,7 +259,7 @@ These can be viewed offline as follows:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span> <span class="co"># see which vignettes are available</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"sf1"</span><span class="op">)</span>          <span class="co"># an introduction to the package</span></span></code></pre></div>
 <p>As the first vignette explains, simple feature objects in R are stored in a data frame, with geographic data occupying a special column, usually named ‘geom’ or ‘geometry’.
-We will use the <code>world</code> dataset provided by <strong>spData</strong>, loaded at the beginning of this chapter, to show what <code>sf</code> objects and how they work.
+We will use the <code>world</code> dataset provided by <strong>spData</strong>, loaded at the beginning of this chapter, to show what <code>sf</code> objects are and how they work.
 <code>world</code> is an ‘<code>sf</code> data frame’ containing spatial and attribute columns, the names of which are returned by the function <code><a href="https://rdrr.io/r/base/names.html">names()</a></code> (the last column in this example contains the geographic information):</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">world</span><span class="op">)</span></span>
@@ -426,7 +430,7 @@ Because <strong>sf</strong> extends base R plotting methods <code><a href="https
 Note: many plot arguments are ignored in facet maps, when more than one &lt;code&gt;sf&lt;/code&gt; column is plotted.&lt;/p&gt;"><sup>11</sup></a>
 </p>
 <p>Figure <a href="spatial-class.html#fig:contpop">2.6</a> illustrates this flexibility by overlaying circles, whose diameters (set with <code>cex =</code>) represent country populations, on a map of the world.
-An unprojected version of this figure can be created with the following commands (see exercises at the end of this chapter and the script <a href="https://github.com/Robinlovelace/geocompr/blob/main/code/02-contpop.R"><code>02-contplot.R</code></a> to reproduce Figure <a href="spatial-class.html#fig:contpop">2.6</a>):</p>
+An unprojected version of this figure can be created with the following commands (see exercises at the end of this chapter and the script <a href="https://github.com/geocompx/geocompr/blob/main/code/02-contpop.R"><code>02-contplot.R</code></a> to reproduce Figure <a href="spatial-class.html#fig:contpop">2.6</a>):</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">world</span><span class="op">[</span><span class="st">"continent"</span><span class="op">]</span>, reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">cex</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">world</span><span class="op">$</span><span class="va">pop</span><span class="op">)</span> <span class="op">/</span> <span class="fl">10000</span></span>
@@ -975,15 +979,17 @@ Rasters from files are usually not read entirely into RAM, with an exception of 
 <p>Rasters can also be created from scratch using the same <code><a href="https://rdrr.io/pkg/terra/man/rast.html">rast()</a></code> function.
 This is illustrated in the subsequent code chunk, which results in a new <code>SpatRaster</code> object.
 The resulting raster consists of 36 cells (6 columns and 6 rows specified by <code>nrows</code> and <code>ncols</code>) centered around the Prime Meridian and the Equator (see <code>xmin</code>, <code>xmax</code>, <code>ymin</code> and <code>ymax</code> parameters).
-The default CRS of raster objects is WGS84, but can be changed with the <code>crs</code> argument.
-This means the unit of the resolution is in degrees which we set to 0.5 (<code>resolution</code>).
 Values (<code>vals</code>) are assigned to each cell: 1 to cell 1, 2 to cell 2, and so on.
-Remember: <code><a href="https://rdrr.io/pkg/terra/man/rast.html">rast()</a></code> fills cells row-wise (unlike <code><a href="https://rdrr.io/r/base/matrix.html">matrix()</a></code>) starting at the upper left corner, meaning the top row contains the values 1 to 6, the second 7 to 12, etc.</p>
+Remember: <code><a href="https://rdrr.io/pkg/terra/man/rast.html">rast()</a></code> fills cells row-wise (unlike <code><a href="https://rdrr.io/r/base/matrix.html">matrix()</a></code>) starting at the upper left corner, meaning the top row contains the values 1 to 6, the second 7 to 12, etc.
+For other ways of creating raster objects, see <code><a href="https://rdrr.io/pkg/terra/man/rast.html">?rast</a></code>.</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">new_raster</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>, resolution <span class="op">=</span> <span class="fl">0.5</span>, </span>
+<code class="sourceCode R"><span><span class="va">new_raster</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">6</span>, ncols <span class="op">=</span> <span class="fl">6</span>, </span>
 <span>                  xmin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, xmax <span class="op">=</span> <span class="fl">1.5</span>, ymin <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, ymax <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>                  vals <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">36</span><span class="op">)</span></span></code></pre></div>
-<p>For other ways of creating raster objects, see <code><a href="https://rdrr.io/pkg/terra/man/rast.html">?rast</a></code>.</p>
+<p>Given the number of rows and columns as well as the extent (<code>xmin</code>, <code>xmax</code>, <code>ymin</code>, <code>ymax</code>), the resolution has to be 0.5.
+The unit of the resolution is that of the underlying CRS.
+Here, it is degrees, because the default CRS of raster objects is WGS84.
+However, one can specify any other CRS with the <code>crs</code> argument.</p>
 <p>The <code>SpatRaster</code> class also handles multiple layers, which typically correspond to a single multispectral satellite file or a time-series of rasters.</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multi_raster_file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"raster/landsat.tif"</span>, package <span class="op">=</span> <span class="st">"spDataLarge"</span><span class="op">)</span></span>
@@ -1190,10 +1196,10 @@ What kind of information you can learn from it?</p>
     <h2>Note: Second Edition is under construction 🏗</h2>
     <!--<p>Now is a great time to provide feedback</p>-->
         <ul class="list-unstyled">
-<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
-          <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://r.geocompx.org/#reproducibility">Install updated packages</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -1236,8 +1242,8 @@ What kind of information you can learn from it?</p>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/Robinlovelace/geocompr/blob/main/02-spatial-data.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/Robinlovelace/geocompr/edit/main/02-spatial-data.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/02-spatial-data.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/02-spatial-data.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -1249,7 +1255,7 @@ What kind of information you can learn from it?</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2023-02-24.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

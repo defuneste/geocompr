@@ -62,16 +62,15 @@ methods(class = "sf") # methods for sf objects, first 12 shown
 
 
 ```r
-#>  [1] aggregate             cbind                 coerce               
-#>  [4] initialize            merge                 plot                 
-#>  [7] print                 rbind                 [                    
-#> [10] [[<-                  $<-                   show                 
+#> [1] [             [[<-          $<-           aggregate    
+#> [5] as.data.frame cbind         coerce        filter       
+#> [9] identify      initialize    merge         plot        
 ```
 
 
 
 Many of these (`aggregate()`, `cbind()`, `merge()`, `rbind()` and `[`) are for manipulating data frames.
-`rbind()`, for example, is binds rows two data frames together, one 'on top' of the other.
+`rbind()`, for example, binds rows of data frames together, one 'on top' of the other.
 `$<-` creates new columns. 
 A key feature of `sf` objects is that they store spatial and non-spatial data in the same way, as columns in a `data.frame`.
 
@@ -116,7 +115,7 @@ Non-spatial data operations on `sf` objects only change an object's geometry whe
 Becoming skilled at geographic attribute data manipulation means becoming skilled at manipulating data frames.
 
 For many applications, the tidyverse\index{tidyverse (package)} package **dplyr** offers an effective approach for working with data frames.
-Tidyverse compatibility is an advantage of **sf** over its predecessor **sp**, but there are some pitfalls to avoid (see the supplementary `tidyverse-pitfalls` vignette at [geocompr.github.io](https://geocompr.github.io/geocompkg/articles/tidyverse-pitfalls.html) for details).
+Tidyverse compatibility is an advantage of **sf** over its predecessor **sp**, but there are some pitfalls to avoid (see the supplementary `tidyverse-pitfalls` vignette at [geocompx.org](https://geocompx.github.io/geocompkg/articles/tidyverse-pitfalls.html) for details).
 
 ### Vector attribute subsetting
 
@@ -421,7 +420,7 @@ A 'left join', which preserves the first dataset, merges `world` with `coffee_da
 
 ```r
 world_coffee = left_join(world, coffee_data)
-#> Joining, by = "name_long"
+#> Joining with `by = join_by(name_long)`
 class(world_coffee)
 #> [1] "sf"         "tbl_df"     "tbl"        "data.frame"
 ```
@@ -474,7 +473,7 @@ In that case an inner join can be used:
 
 ```r
 world_coffee_inner = inner_join(world, coffee_data)
-#> Joining, by = "name_long"
+#> Joining with `by = join_by(name_long)`
 nrow(world_coffee_inner)
 #> [1] 45
 ```
@@ -510,7 +509,7 @@ To fix this issue, we will create a new version of `coffee_data` and update the 
 ```r
 coffee_data$name_long[grepl("Congo,", coffee_data$name_long)] = drc
 world_coffee_match = inner_join(world, coffee_data)
-#> Joining, by = "name_long"
+#> Joining with `by = join_by(name_long)`
 nrow(world_coffee_match)
 #> [1] 46
 ```
@@ -523,7 +522,7 @@ the output of a join tends to match its first argument:
 
 ```r
 coffee_world = left_join(coffee_data, world)
-#> Joining, by = "name_long"
+#> Joining with `by = join_by(name_long)`
 class(coffee_world)
 #> [1] "tbl_df"     "tbl"        "data.frame"
 ```
@@ -533,7 +532,7 @@ The geometry column can only be used for creating maps and spatial operations if
 Fortunately, non-spatial data frames with a geometry list column (like `coffee_world`) can be coerced into an `sf` object as follows: `st_as_sf(coffee_world)`. </div>\EndKnitrBlock{rmdnote}
 
 This section covers the majority of joining use cases.
-For more information, we recommend reading the chapter [Relational data](https://r4ds.had.co.nz/relational-data.html?q=join#relational-data) in @grolemund_r_2016, the [join vignette](https://geocompr.github.io/geocompkg/articles/join.html) in the **geocompkg** package that accompanies this book, and [documentation](https://asardaes.github.io/table.express/articles/joins.html) describing joins with **data.table** and other packages.
+For more information, we recommend reading the chapter [Relational data](https://r4ds.had.co.nz/relational-data.html?q=join#relational-data) in @grolemund_r_2016, the [join vignette](https://geocompx.github.io/geocompkg/articles/join.html) in the **geocompkg** package that accompanies this book, and [documentation](https://asardaes.github.io/table.express/articles/joins.html) describing joins with **data.table** and other packages.
 Spatial joins are covered in the next chapter (Section \@ref(spatial-joining)).
 
 ### Creating attributes and removing spatial information {#vec-attr-creation}
@@ -635,7 +634,7 @@ This demonstrates how the `rast()` function works to create an example raster na
 
 
 ```r
-elev = rast(nrows = 6, ncols = 6, resolution = 0.5, 
+elev = rast(nrows = 6, ncols = 6,
             xmin = -1.5, xmax = 1.5, ymin = -1.5, ymax = 1.5,
             vals = 1:36)
 ```
@@ -650,7 +649,7 @@ The following code creates the raster datasets shown in Figure \@ref(fig:cont-ra
 grain_order = c("clay", "silt", "sand")
 grain_char = sample(grain_order, 36, replace = TRUE)
 grain_fact = factor(grain_char, levels = grain_order)
-grain = rast(nrows = 6, ncols = 6, resolution = 0.5, 
+grain = rast(nrows = 6, ncols = 6, 
              xmin = -1.5, xmax = 1.5, ymin = -1.5, ymax = 1.5,
              vals = grain_fact)
 ```

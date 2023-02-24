@@ -7,29 +7,29 @@
 <title>Chapter 7 Reprojecting geographic data | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites This chapter requires the following packages: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge)  7.1 Introduction Section 2.4 introduced coordinate...">
-<meta name="generator" content="bookdown 0.30 with bs4_book()">
+<meta name="generator" content="bookdown 0.32 with bs4_book()">
 <meta property="og:title" content="Chapter 7 Reprojecting geographic data | Geocomputation with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://geocompr.robinlovelace.net/reproj-geo-data.html">
-<meta property="og:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta property="og:url" content="https://r.geocompx.org/reproj-geo-data.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover.png">
 <meta property="og:description" content="Prerequisites This chapter requires the following packages: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge)  7.1 Introduction Section 2.4 introduced coordinate...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 7 Reprojecting geographic data | Geocomputation with R">
 <meta name="twitter:description" content="Prerequisites This chapter requires the following packages: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge)  7.1 Introduction Section 2.4 introduced coordinate...">
-<meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.5/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 7 Reprojecting geographic data | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
 <meta name="citation_author" content="Jannes Muenchow">
 <meta name="citation_publication_date" content="2019">
 <meta name="citation_isbn" content="9780203730058">
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -68,6 +68,7 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Welcome</a></li>
 <li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
 <li><a class="" href="preface.html">Preface</a></li>
 <li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li class="book-part">Foundations</li>
@@ -92,7 +93,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/Robinlovelace/geocompr">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -127,7 +128,7 @@ However, if you know the CRS of your data and the consequences for geometry oper
 Having a clearly defined project CRS that all project data is in, plus understanding how and why to use different CRSs, can ensure that things don’t go wrong.
 Furthermore, learning about coordinate systems will deepen your knowledge of geographic datasets and how to use them effectively.</p>
 <p>This chapter teaches the fundamentals of CRSs, demonstrates the consequences of using different CRSs (including what can go wrong), and how to ‘reproject’ datasets from one coordinate system to another.
-In the next section we introduce CRSs in R, followed by Section <a href="reproj-geo-data.html#crs-in-r">7.2</a> which shows how to get and set CRSs associated with spatial objects.
+In the next section we introduce CRSs in R, followed by Section <a href="reproj-geo-data.html#crs-setting">7.3</a> which shows how to get and set CRSs associated with spatial objects.
 Section <a href="reproj-geo-data.html#geom-proj">7.4</a> demonstrates the importance of knowing what CRS your data is in with reference to a worked example of creating buffers.
 We tackle questions of when to reproject and which CRS to use in Section <a href="reproj-geo-data.html#whenproject">7.5</a> and Section <a href="reproj-geo-data.html#which-crs">7.6</a>, respectively.
 We cover reprojecting vector and raster objects in sections <a href="reproj-geo-data.html#reproj-vec-geom">7.7</a> and <a href="reproj-geo-data.html#reproj-ras">7.8</a> and modifying map projections in Section <a href="reproj-geo-data.html#mapproj">7.9</a>.</p>
@@ -226,7 +227,7 @@ Before the emergence of WKT CRS definitions, proj-string was the standard way to
 These string representations, built on a key=value form (e.g, &lt;code&gt;+proj=longlat +datum=WGS84 +no_defs&lt;/code&gt;), have already been, or should in the future be, superseded by WKT representations in most cases.&lt;/p&gt;"><sup>27</sup></a></p>
 <p>Recent PROJ versions (6+) still allow use of proj-strings to define coordinate operations, but some proj-string keys (<code>+nadgrids</code>, <code>+towgs84</code>, <code>+k</code>, <code>+init=epsg:</code>) are either no longer supported or are discouraged.
 Additionally, only three datums (i.e., WGS84, NAD83, and NAD27) can be directly set in proj-string.
-Longer explanations of the evolution of CRS definitions and the PROJ library can be found in <span class="citation">Bivand (<a href="references.html#ref-bivand_progress_2021" role="doc-biblioref">2021</a>)</span>, Chapter 2 of <span class="citation">Pebesma and Bivand (<a href="references.html#ref-pebesma_spatial_2022" role="doc-biblioref">2022</a>)</span>, and <a href="https://inbo.github.io/tutorials/tutorials/spatial_crs_coding/">blog post by Floris Vanderhaeghe</a>.
+Longer explanations of the evolution of CRS definitions and the PROJ library can be found in <span class="citation">Bivand (<a href="references.html#ref-bivand_progress_2021" role="doc-biblioref">2021</a>)</span>, Chapter 2 of <span class="citation">Pebesma and Bivand (<a href="references.html#ref-pebesma_spatial_2022" role="doc-biblioref">2022</a>)</span>, and a <a href="https://inbo.github.io/tutorials/tutorials/spatial_crs_coding/">blog post by Floris Vanderhaeghe</a>.
 As outlined in the <a href="https://proj.org/development/reference/cpp/cpp_general.html">PROJ documentation</a> there are different versions of the WKT CRS format including WKT1 and two variants of WKT2, the latter of which (WKT2, 2018 specification) corresponds to the ISO 19111:2019 <span class="citation">(<a href="references.html#ref-opengeospatialconsortium_wellknown_2019" role="doc-biblioref">Open Geospatial Consortium 2019</a>)</span>.</p>
 </div>
 <div id="crs-setting" class="section level2" number="7.3">
@@ -416,7 +417,7 @@ Both buffer boundaries in Figure <a href="reproj-geo-data.html#fig:crs-buf">7.2<
 <!--jn: you mention S2 a lot in this section, but not GEOS...-->
 The lesson is that results obtained from lon/lat data via S2 will be different from results obtained from using projected data.
 The difference between S2 derived buffers and GEOS derived buffers on projected data reduce as the value of <code>max_cells</code> increases: the ‘right’ value for this argument may depend on many factors and the default value 1000 is a reasonable default.
-When choosing <code>max_cells</code> values, speed of computation should be balanced against resolution of results, in many.
+When choosing <code>max_cells</code> values, speed of computation should be balanced against resolution of results.
 In situations where curved boundaries are advantageous, transforming to a projected CRS before buffering (or performing other geometry operations) may be appropriate.</p>
 <p>The importance of CRSs (primarily whether they are projected or geographic) and the impacts of <strong>sf</strong>’s default setting to use S2 for buffers on lon/lat data is clear from the example above.
 The subsequent sections go into more depth, exploring which CRS to use when projected CRSs <em>are</em> needed and the details of reprojecting vector and raster objects.</p>
@@ -478,7 +479,7 @@ UTM EPSG codes run sequentially from 32601 to 32660 for northern hemisphere loca
 <div class="sourceCode" id="cb239"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lonlat2UTM</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">lonlat</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">utm</span> <span class="op">=</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="op">(</span><span class="va">lonlat</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fl">180</span><span class="op">)</span> <span class="op">/</span> <span class="fl">6</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html">%%</a></span> <span class="fl">60</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span>
-<span>  <span class="kw">if</span><span class="op">(</span><span class="va">lonlat</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">lonlat</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">utm</span> <span class="op">+</span> <span class="fl">32600</span></span>
 <span>  <span class="op">}</span> <span class="kw">else</span><span class="op">{</span></span>
 <span>    <span class="va">utm</span> <span class="op">+</span> <span class="fl">32700</span></span>
@@ -877,10 +878,10 @@ How does it influence the results?</p>
     <h2>Note: Second Edition is under construction 🏗</h2>
     <!--<p>Now is a great time to provide feedback</p>-->
         <ul class="list-unstyled">
-<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
-          <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://r.geocompx.org/#reproducibility">Install updated packages</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -903,8 +904,8 @@ How does it influence the results?</p>
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/Robinlovelace/geocompr/blob/main/07-reproj.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/Robinlovelace/geocompr/edit/main/07-reproj.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/07-reproj.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/07-reproj.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -916,7 +917,7 @@ How does it influence the results?</p>
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2023-02-24.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

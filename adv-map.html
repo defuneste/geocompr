@@ -7,29 +7,29 @@
 <title>Chapter 9 Making maps with R | Geocomputation with R</title>
 <meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
 <meta name="description" content="Prerequisites This chapter requires the following packages that we have already been using: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge) In addition, it uses the...">
-<meta name="generator" content="bookdown 0.30 with bs4_book()">
+<meta name="generator" content="bookdown 0.32 with bs4_book()">
 <meta property="og:title" content="Chapter 9 Making maps with R | Geocomputation with R">
 <meta property="og:type" content="book">
-<meta property="og:url" content="https://geocompr.robinlovelace.net/adv-map.html">
-<meta property="og:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta property="og:url" content="https://r.geocompx.org/adv-map.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover.png">
 <meta property="og:description" content="Prerequisites This chapter requires the following packages that we have already been using: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge) In addition, it uses the...">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Chapter 9 Making maps with R | Geocomputation with R">
 <meta name="twitter:description" content="Prerequisites This chapter requires the following packages that we have already been using: library(sf) library(terra) library(dplyr) library(spData) library(spDataLarge) In addition, it uses the...">
-<meta name="twitter:image" content="https://geocompr.robinlovelace.net/images/cover.png">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover.png">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
-<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Roboto_Mono-0.4.4/font.css" rel="stylesheet">
-<link href="libs/Montserrat-0.4.4/font.css" rel="stylesheet">
-<script src="libs/bs3compat-0.4.1/transition.js"></script><script src="libs/bs3compat-0.4.1/tabs.js"></script><script src="libs/bs3compat-0.4.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.5/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.5/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.4.2/transition.js"></script><script src="libs/bs3compat-0.4.2/tabs.js"></script><script src="libs/bs3compat-0.4.2/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
 <script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 9 Making maps with R | Geocomputation with R">
 <meta name="citation_author" content="Robin Lovelace">
 <meta name="citation_author" content="Jakub Nowosad">
 <meta name="citation_author" content="Jannes Muenchow">
 <meta name="citation_publication_date" content="2019">
 <meta name="citation_isbn" content="9780203730058">
-<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.1/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
 <script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
 <script src="libs/leaflet-binding-2.1.1/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
@@ -68,6 +68,7 @@
         <ul class="book-toc list-unstyled">
 <li><a class="" href="index.html">Welcome</a></li>
 <li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
 <li><a class="" href="preface.html">Preface</a></li>
 <li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
 <li class="book-part">Foundations</li>
@@ -92,7 +93,7 @@
 </ul>
 
         <div class="book-extra">
-          <p><a id="book-repo" href="https://github.com/Robinlovelace/geocompr">View book source <i class="fab fa-github"></i></a></p>
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
         </div>
       </nav>
 </div>
@@ -611,8 +612,8 @@ This section focuses on creating animated maps with <strong>tmap</strong> becaus
 Unlike the faceted plot, it does not squeeze multiple maps into a single screen and allows the reader to see how the spatial distribution of the world’s most populous agglomerations evolve over time (see the book’s website for the animated version).</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:urban-animated"></span>
-<img src="figures/urban-animated.gif" alt="Animated map showing the top 30 largest urban agglomerations from 1950 to 2030 based on population projects by the United Nations. Animated version available online at: geocompr.robinlovelace.net." width="100%"><p class="caption">
-FIGURE 9.16: Animated map showing the top 30 largest urban agglomerations from 1950 to 2030 based on population projects by the United Nations. Animated version available online at: geocompr.robinlovelace.net.
+<img src="figures/urban-animated.gif" alt="Animated map showing the top 30 largest urban agglomerations from 1950 to 2030 based on population projects by the United Nations. Animated version available online at: r.geocompx.org." width="100%"><p class="caption">
+FIGURE 9.16: Animated map showing the top 30 largest urban agglomerations from 1950 to 2030 based on population projects by the United Nations. Animated version available online at: r.geocompx.org.
 </p>
 </div>
 <p>The animated map illustrated in Figure <a href="adv-map.html#fig:urban-animated">9.16</a> can be created using the same <strong>tmap</strong> techniques that generate faceted maps, demonstrated in Section <a href="adv-map.html#faceted-maps">9.2.6</a>.
@@ -638,8 +639,8 @@ This shows the development of states in the United States, which first formed in
 Code to reproduce this map can be found in the script <code>08-usboundaries.R</code>.</p>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:animus"></span>
-<img src="https://user-images.githubusercontent.com/1825120/38543030-5794b6f0-3c9b-11e8-9da9-10ec1f3ea726.gif" alt="Animated map showing population growth, state formation and boundary changes in the United States, 1790-2010. Animated version available online at geocompr.robinlovelace.net." width="100%"><p class="caption">
-FIGURE 9.17: Animated map showing population growth, state formation and boundary changes in the United States, 1790-2010. Animated version available online at geocompr.robinlovelace.net.
+<img src="https://user-images.githubusercontent.com/1825120/38543030-5794b6f0-3c9b-11e8-9da9-10ec1f3ea726.gif" alt="Animated map showing population growth, state formation and boundary changes in the United States, 1790-2010. Animated version available online at r.geocompx.org." width="100%"><p class="caption">
+FIGURE 9.17: Animated map showing population growth, state formation and boundary changes in the United States, 1790-2010. Animated version available online at r.geocompx.org.
 </p>
 </div>
 </div>
@@ -664,10 +665,10 @@ This is demonstrated in the code below, which creates an interactive map of New 
 <span><span class="va">map_nz</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
 <span style="display:block;" id="fig:tmview"></span>
-<iframe src="https://geocompr.github.io/img/tmview-1.html" width="100%" height="400px" data-external="1">
+<iframe src="https://geocompx.org/static/img/tmview-1.html" width="100%" height="400px" data-external="1">
 </iframe>
 <p class="caption">
-FIGURE 9.18: Interactive map of New Zealand created with tmap in view mode. Interactive version available online at: geocompr.robinlovelace.net.
+FIGURE 9.18: Interactive map of New Zealand created with tmap in view mode. Interactive version available online at: r.geocompx.org.
 </p>
 </div>
 <p>Now that the interactive mode has been ‘turned on’, all maps produced with <strong>tmap</strong> will launch (another way to create interactive maps is with the <code>tmap_leaflet</code> function).
@@ -811,7 +812,7 @@ This section gives some context, teaches the basics of <strong>shiny</strong> fr
 <p>The way <strong>shiny</strong> works is well documented at <a href="https://shiny.rstudio.com/">shiny.rstudio.com</a>.
 The two key elements of a <strong>shiny</strong> app reflect the duality common to most web application development: ‘front end’ (the bit the user sees) and ‘back end’ code.
 In <strong>shiny</strong> apps, these elements are typically created in objects named <code>ui</code> and <code>server</code> within an R script named <code>app.R</code>, which lives in an ‘app folder’.
-This allows web mapping applications to be represented in a single file, such as the <a href="https://github.com/Robinlovelace/geocompr/blob/main/apps/CycleHireApp/app.R"><code>CycleHireApp/app.R</code></a> file in the book’s GitHub repo.</p>
+This allows web mapping applications to be represented in a single file, such as the <a href="https://github.com/geocompx/geocompr/blob/main/apps/CycleHireApp/app.R"><code>CycleHireApp/app.R</code></a> file in the book’s GitHub repo.</p>
 
 <div class="rmdnote">
 In <strong>shiny</strong> apps these are often split into <code>ui.R</code> (short for user interface) and <code>server.R</code> files, naming conventions used by <code>shiny-server</code>, a server-side Linux application for serving shiny apps on public-facing websites.
@@ -851,7 +852,7 @@ Input elements such as <code>input$life</code> referred to in the server must re
 The function <code><a href="https://shiny.rstudio.com/reference/shiny/latest/shinyApp.html">shinyApp()</a></code> combines both the <code>ui</code> and <code>server</code> elements and serves the results interactively via a new R process.
 When you move the slider in the map shown in Figure <a href="adv-map.html#fig:lifeApp">9.24</a>, you are actually causing R code to re-run, although this is hidden from view in the user interface.</p>
 <p>Building on this basic example and knowing where to find help (see <code><a href="https://shiny.rstudio.com/reference/shiny/latest/shiny-package.html">?shiny</a></code>), the best way forward now may be to stop reading and start programming!
-The recommended next step is to open the previously mentioned <a href="https://github.com/Robinlovelace/geocompr/blob/main/apps/CycleHireApp/app.R"><code>CycleHireApp/app.R</code></a> script in an IDE of choice, modify it and re-run it repeatedly.
+The recommended next step is to open the previously mentioned <a href="https://github.com/geocompx/geocompr/blob/main/apps/CycleHireApp/app.R"><code>CycleHireApp/app.R</code></a> script in an IDE of choice, modify it and re-run it repeatedly.
 The example contains some of the components of a web mapping application implemented in <strong>shiny</strong> and should ‘shine’ a light on how they behave.</p>
 <p>The <code>CycleHireApp/app.R</code> script contains <strong>shiny</strong> functions that go beyond those demonstrated in the simple ‘lifeApp’ example.
 These include <code><a href="https://shiny.rstudio.com/reference/shiny/latest/reactive.html">reactive()</a></code> and <code><a href="https://shiny.rstudio.com/reference/shiny/latest/observe.html">observe()</a></code> (for creating outputs that respond to the user interface — see <code><a href="https://shiny.rstudio.com/reference/shiny/latest/reactive.html">?reactive</a></code>) and <code><a href="https://rdrr.io/pkg/leaflet/man/leafletProxy.html">leafletProxy()</a></code> (for modifying a <code>leaflet</code> object that has already been created).
@@ -883,7 +884,7 @@ This way your prototype web applications should be limited not by technical cons
 <iframe src="https://shiny.robinlovelace.net/CycleHireApp/?showcase=0" width="690" height="400px" data-external="1">
 </iframe>
 <p class="caption">
-FIGURE 9.25: Hire a cycle App, a simple web mapping application for finding the closest cycle hiring station based on your location and requirement of cycles. Interactive version available online at geocompr.robinlovelace.net.
+FIGURE 9.25: Hire a cycle App, a simple web mapping application for finding the closest cycle hiring station based on your location and requirement of cycles. Interactive version available online at r.geocompx.org.
 </p>
 </div>
 <!--toDo:rl-->
@@ -1188,10 +1189,10 @@ Next, compare it with the maps of a hexagonal and regular grid created using the
     <h2>Note: Second Edition is under construction 🏗</h2>
     <!--<p>Now is a great time to provide feedback</p>-->
         <ul class="list-unstyled">
-<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompr.robinlovelace.net/#reproducibility">Install updated packages</a></li>
-          <li><a href="https://github.com/Robinlovelace/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://r.geocompx.org/#reproducibility">Install updated packages</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
           <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
-          <li><a href="https://geocompr.github.io/solutions/">Check solutions to the exercises <i class="fa fa-check"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
           <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦
 </a></li>
         </ul>
@@ -1221,8 +1222,8 @@ Next, compare it with the maps of a hexagonal and regular grid created using the
 
       <div class="book-extra">
         <ul class="list-unstyled">
-<li><a id="book-source" href="https://github.com/Robinlovelace/geocompr/blob/main/09-mapping.Rmd">View source <i class="fab fa-github"></i></a></li>
-          <li><a id="book-edit" href="https://github.com/Robinlovelace/geocompr/edit/main/09-mapping.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/09-mapping.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/09-mapping.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
         </ul>
 </div>
     </nav>
@@ -1234,7 +1235,7 @@ Next, compare it with the maps of a hexagonal and regular grid created using the
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2022-12-14.</p>
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2023-02-24.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

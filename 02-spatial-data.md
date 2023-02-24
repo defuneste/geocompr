@@ -3,13 +3,16 @@
 # Geographic data in R {#spatial-class}
 
 ## Prerequisites {-}
+<!--rl-->
 
 This is the first practical chapter of the book, and therefore it comes with some software requirements.
+<!-- toDo: rl-->
+<!-- should we be that specific regarding the r version?-->
 You need access to a computer with a recent version of R installed (R [4.2.0](https://stat.ethz.ch/pipermail/r-announce/2022/000683.html) or a later version).
 We recommend not only reading the prose but also *running the code* in each chapter to build your geocomputational skills.
 
 To keep track of your learning journey, it may be worth starting by creating a new folder on your computer to save your R scripts, outputs and other things related to Geocomputation with R as you go.
-You can also [download](https://github.com/Robinlovelace/geocompr/archive/refs/heads/main.zip) or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the [source code](https://github.com/Robinlovelace/geocompr) underlying the book to support your learning.
+You can also [download](https://github.com/geocompx/geocompr/archive/refs/heads/main.zip) or [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) the [source code](https://github.com/geocompx/geocompr) underlying the book to support your learning.
 We strongly recommend installing an integrated development environment (IDE) such as [RStudio](https://www.rstudio.com/products/rstudio/download/#download) (recommended for most people) or [VS Code](https://github.com/REditorSupport/vscode-R) when writing/running/testing R code.^[
 We recommend using [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html), [VS Code workspaces](https://code.visualstudio.com/docs/editor/workspaces) or similar system to manage your projects.
 A quick way to do this with RStudio is via the **rstudioapi** package.
@@ -128,7 +131,7 @@ There is more to CRSs, as described in Sections \@ref(crs-intro) and \@ref(repro
 - [S2](https://s2geometry.io/), a spherical geometry engine written in C++ developed by Google, via the [**s2**](https://r-spatial.github.io/s2/) package, covered in Section \@ref(s2) below and in Chapter \@ref(reproj-geo-data)
 <!-- - [liblwgeom](https://github.com/postgis/postgis/tree/master/liblwgeom), a geometry engine used by PostGIS, via the [**lwgeom**](https://r-spatial.github.io/lwgeom/) package -->
 
-Information about these interfaces is printed by **sf** the first time the package is loaded: the message `Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE` that appears below the `library(sf)` command at the beginning of this chapter tells us the versions of linked GEOS, GDAL and PROJ libraries (these vary between computers and over time) and whether or not the S2 interface is turned on.
+Information about these interfaces is printed by **sf** the first time the package is loaded: the message  that appears below the `library(sf)` command at the beginning of this chapter tells us the versions of linked GEOS, GDAL and PROJ libraries (these vary between computers and over time) and whether or not the S2 interface is turned on.
 Nowadays, we take it for granted, however, only the tight integration with different geographic libraries makes reproducible geocomputation possible in the first place.
 
 A neat feature of **sf** is that you can change the default geometry engine used on unprojected data: 'switching off' S2 can be done with the command `sf::sf_use_s2(FALSE)`, meaning that the planar geometry engine GEOS will be used by default for all geometry operations, including geometry operations on unprojected data.
@@ -160,7 +163,7 @@ All 18 types can be represented with the **sf** package, although at the time of
 **sf** provides the same functionality (and more) previously provided in three packages --- **sp** for data classes [@R-sp], **rgdal** for data read/write via an interface to GDAL and PROJ [@R-rgdal] and **rgeos** for spatial operations via an interface to GEOS [@R-rgeos].
 
 
-To re-iterate the message from Chapter 1, geographic R packages have a long history of interfacing with lower level libraries, and **sf** continues this tradition with a unified interface to recent versions GEOS for geometry operations, the GDAL library for reading and writing geographic data files, and the PROJ library for representing and transforming projected coordinate reference systems.
+To re-iterate the message from Chapter 1, geographic R packages have a long history of interfacing with lower level libraries, and **sf** continues this tradition with a unified interface to recent versions of GEOS for geometry operations, the GDAL library for reading and writing geographic data files, and the PROJ library for representing and transforming projected coordinate reference systems.
 Through **s2**,
 <!-- **s2** functions have replaced **lwgeom** ones (Bivand 2021). -->
 <!-- and **lwgeom**, **sf** also has an inter to PostGIS's [`liblwgeom`](https://github.com/postgis/postgis/tree/master/liblwgeom) library  -->
@@ -183,7 +186,7 @@ vignette("sf1")          # an introduction to the package
 
 
 As the first vignette explains, simple feature objects in R are stored in a data frame, with geographic data occupying a special column, usually named 'geom' or 'geometry'.
-We will use the `world` dataset provided by **spData**, loaded at the beginning of this chapter, to show what `sf` objects and how they work.
+We will use the `world` dataset provided by **spData**, loaded at the beginning of this chapter, to show what `sf` objects are and how they work.
 `world` is an '`sf` data frame' containing spatial and attribute columns, the names of which are returned by the function `names()` (the last column in this example contains the geographic information):
 
 
@@ -389,7 +392,7 @@ Note: many plot arguments are ignored in facet maps, when more than one `sf` col
 \index{map making!base plotting}
 
 Figure \@ref(fig:contpop) illustrates this flexibility by overlaying circles, whose diameters (set with `cex =`) represent country populations, on a map of the world.
-An unprojected version of this figure can be created with the following commands (see exercises at the end of this chapter and the script [`02-contplot.R`](https://github.com/Robinlovelace/geocompr/blob/main/code/02-contpop.R) to reproduce Figure \@ref(fig:contpop)):
+An unprojected version of this figure can be created with the following commands (see exercises at the end of this chapter and the script [`02-contplot.R`](https://github.com/geocompx/geocompr/blob/main/code/02-contpop.R) to reproduce Figure \@ref(fig:contpop)):
 
 
 ```r
@@ -1050,19 +1053,21 @@ Rasters from files are usually not read entirely into RAM, with an exception of 
 Rasters can also be created from scratch using the same `rast()` function.
 This is illustrated in the subsequent code chunk, which results in a new `SpatRaster` object.
 The resulting raster consists of 36 cells (6 columns and 6 rows specified by `nrows` and `ncols`) centered around the Prime Meridian and the Equator (see `xmin`, `xmax`, `ymin` and `ymax` parameters).
-The default CRS of raster objects is WGS84, but can be changed with the `crs` argument.
-This means the unit of the resolution is in degrees which we set to 0.5 (`resolution`). 
 Values (`vals`) are assigned to each cell: 1 to cell 1, 2 to cell 2, and so on.
 Remember: `rast()` fills cells row-wise (unlike `matrix()`) starting at the upper left corner, meaning the top row contains the values 1 to 6, the second 7 to 12, etc.
+For other ways of creating raster objects, see `?rast`.
 
 
 ```r
-new_raster = rast(nrows = 6, ncols = 6, resolution = 0.5, 
+new_raster = rast(nrows = 6, ncols = 6, 
                   xmin = -1.5, xmax = 1.5, ymin = -1.5, ymax = 1.5,
                   vals = 1:36)
 ```
 
-For other ways of creating raster objects, see `?rast`.
+Given the number of rows and columns as well as the extent (`xmin`, `xmax`, `ymin`, `ymax`), the resolution has to be 0.5.
+The unit of the resolution is that of the underlying CRS. 
+Here, it is degrees, because the default CRS of raster objects is WGS84.
+However, one can specify any other CRS with the `crs` argument.
 
 The `SpatRaster` class also handles multiple layers, which typically correspond to a single multispectral satellite file or a time-series of rasters.
 

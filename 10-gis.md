@@ -40,7 +40,7 @@ This means many GIS\index{GIS} users miss out on the advantages of the command-l
 
 > With the advent of 'modern' GIS software, most people want to point and click their way through life. That’s good, but there is a tremendous amount of flexibility and power waiting for you with the command line. Many times you can do something on the command line in a fraction of the time you can do it with a GUI.
 
-The 'CLI vs GUI'\index{graphical user interface} debate can be adversial but it does not have to be; both options can be used interchangeably, depending on the task at hand and the user's skillset.^[GRASS GIS and PostGIS are popular in academia and industry and can be seen as products which buck this trend as they are built around the command-line.]
+The 'CLI vs GUI'\index{graphical user interface} debate can be adversarial but it does not have to be; both options can be used interchangeably, depending on the task at hand and the user's skillset.^[GRASS GIS and PostGIS are popular in academia and industry and can be seen as products which buck this trend as they are built around the command-line.]
 The advantages of a good CLI\index{command-line interface} such as that provided by R (and enhanced by IDEs\index{IDE} such as RStudio\index{RStudio}) are numerous.
 A good CLI:
 
@@ -59,7 +59,6 @@ The **mapedit** package allows the quick editing of a few spatial features but n
 ]
 - Enables georeferencing (matching raster images to existing maps) with ground control points and orthorectification
 - Supports stereoscopic mapping (e.g., LiDAR and structure from motion)
-- Provides access to spatial database management systems with object-oriented relational data models, topology and fast (spatial) querying
 
 Another advantage of dedicated GISs is that they provide access to hundreds of 'geoalgorithms' (computational recipes to solve geographic problems --- see Chapter \@ref(algorithms)).
 Many of these are unavailable from the R command line, except via 'GIS bridges', the topic of (and motivation for) this chapter.^[
@@ -78,8 +77,9 @@ However, its ability to interface with dedicated GISs gives it astonishing geosp
 R is well known as a statistical programming language, but many people are unaware of its ability to replicate GIS workflows, with the additional benefits of a (relatively) consistent CLI.
 Furthermore, R outperforms GISs in some areas of geocomputation\index{geocomputation}, including interactive/animated map making (see Chapter \@ref(adv-map)) and spatial statistical modeling (see Chapter \@ref(spatial-cv)).
 This chapter focuses on 'bridges' to three mature open source GIS products (see Table \@ref(tab:gis-comp)): QGIS\index{QGIS} (via the package **qgisprocess**\index{qgisprocess (package)}; Section \@ref(rqgis)), SAGA\index{SAGA} (via **Rsagacmd**\index{Rsagacmd (package)}; Section \@ref(saga)) and GRASS\index{GRASS} (via **rgrass**\index{rgrass (package)}; Section \@ref(grass)).^[
-Though not covered here, it is worth being aware of so-called R-ArcGIS bridge (see https://github.com/R-ArcGIS/r-bridge) that allows R to be used from within ArcGIS\index{ArcGIS}
-One can also use R scripts from within QGIS\index{QGIS} (see https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html).
+The now now longer maintained R package **RPyGeo** established an interface to the geoprocessing tools of ArcGIS from with R.
+And though not covered here, it is worth being aware of the so-called R-ArcGIS bridge (see https://github.com/R-ArcGIS/r-bridge) that allows R to be used from within ArcGIS\index{ArcGIS}.
+Please note further that one can also use R scripts from within QGIS\index{QGIS} (see https://docs.qgis.org/3.22/en/docs/training_manual/processing/r_intro.html).
 Finally, it is also possible to use R from the GRASS GIS\index{GRASS} command line (see https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#R_within_GRASS).
 ]
 
@@ -194,7 +194,7 @@ qgis_arguments(alg) |>
   dplyr::select(name, description, acceptable_values)
 ```
 
-Apparently, these are `INPUT`, `OVERLAY`, `OVERLAY_FIELDS_PREFIX`, and `OUTPUT`.
+These arguments are `INPUT`, `OVERLAY`, `OVERLAY_FIELDS_PREFIX`, and `OUTPUT`.
 It seems that some of the above arguments expect a "path to a vector layer" (column: `acceptaple_values`).
 However, the **qgisprocess** package also allows to provide `sf` objects as well in these cases.^[Objects from the **terra** and **stars** package can be used when a "path to a raster layer" is expected.]
 Though this is really convenient, if your spatial data is already available in your R session, we recommend to provide the path to your spatial data on disk when you only read it in to submit it to a **qgisprocess** algorithm because the first thing **qgisprocess** does when executing a geoalgorithm is to export the spatial data living in your R session back to disk in a format known to QGIS such as .gpkg or .tif files.
@@ -434,8 +434,7 @@ In the above example, we first opened the `imagery_segmentation` library and the
 We also assigned it to the `sg` object, not to retype the whole tool code in our next steps.^[You can read more about the tool at https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_2.html.]
 If we just type `sg`, we will get a quick summary of the tool and a data frame with its parameters, descriptions, and defaults.
 You may also use `tidy(sg)` to extract just the parameters' table.
-The `seed_generation` tool requires at least one input (`features`): a raster data.
-We are able to provide a set of additional parameters, including `band_width` that specifies the size of initial polygons.
+The `seed_generation` tool takes a raster dataset as its first argument (`features`); optional arguments include `band_width` that specifies the size of initial polygons.
 
 
 ```r
@@ -504,6 +503,8 @@ So, to sum it all up -- the GRASS GIS database may contain many locations (all d
 Please refer to @neteler_open_2008 and the [GRASS GIS quick start](https://grass.osgeo.org/grass-stable/manuals/helptext.html) for more information on the GRASS spatial database\index{spatial database} system.
 To quickly use GRASS from within R, we will use the **link2GI** package, however, one can also set up the GRASS GIS database step-by-step.
 See [GRASS within R](https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#GRASS_within_R) for how to do so.
+Please note that the code instructions in the following paragraphs might be hard to follow when using GRASS for the first time but by running through the code line-by-line and by examining the intermediate results, the reasoning behind it should become even clearer.
+
 
 Here, we introduce **rgrass**\index{rgrass (package)} with one of the most interesting problems in GIScience - the traveling salesman problem\index{traveling salesman}.
 Suppose a traveling salesman would like to visit 24 customers.
@@ -863,7 +864,7 @@ But the same is true for the lightweight SQLite/SpatiaLite database engine and G
 
 If your datasets are too big for PostgreSQL/PostGIS and you require massive spatial data management and query performance, it may be worth exploring large-scale geographic querying on distributed computing systems.
 Such systems are outside the scope of this book but it worth mentioning that open source software providing this functionality exists.
-Prominent projects in this space include [GeoMesa](http://www.geomesa.org/) and [Apache Sedona](https://sedona.apache.org/), formerly known as GeoSpark [@huang_geospark_2017], which has and R interface provided by the [**apache.sedona**](https://cran.r-project.org/package=apache.sedona) package.
+Prominent projects in this space include [GeoMesa](http://www.geomesa.org/) and [Apache Sedona](https://sedona.apache.org/). The [**apache.sedona**](https://cran.r-project.org/package=apache.sedona) package provides an interface to the latter.
 
 ## Bridges to cloud technologies and services {#cloud}
 

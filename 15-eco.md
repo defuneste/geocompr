@@ -29,8 +29,7 @@ library(vegan)             # community ecology package
 In this chapter we will model the floristic gradient of fog oases to reveal distinctive vegetation belts that are clearly controlled by water availability.
 To do so, we will bring together concepts presented in previous chapters and even extend them (Chapters \@ref(spatial-class) to \@ref(geometry-operations) and  Chapters \@ref(gis) and \@ref(spatial-cv)).
 
-Fog oases are one of the most fascinating vegetation formations we have ever encountered.
-These formations, locally termed *lomas*, develop on mountains along the coastal deserts of Peru and Chile.^[Similar vegetation formations develop also in other parts of the world, e.g., in Namibia and along the coasts of Yemen and Oman [@galletti_land_2016].]
+Fog oases are fascinating vegetation formations, locally termed *lomas*, which develop on mountains along the coastal deserts of Peru and Chile.^[Similar vegetation formations develop also in other parts of the world, e.g., in Namibia and along the coasts of Yemen and Oman [@galletti_land_2016].]
 The deserts' extreme conditions and remoteness provide the habitat for a unique ecosystem, including species endemic to the fog oases.
 Despite the arid conditions and low levels of precipitation of around 30-50 mm per year on average, fog deposition increases the amount of water available to plants during austral winter.
 This results in green southern-facing mountain slopes along the coastal strip of Peru (Figure \@ref(fig:study-area-mongon)). 
@@ -476,8 +475,9 @@ To do so, we only need to run the `predict` method of our fitted `AutoTuner` obj
 ```r
 # predicting using the best hyperparameter combination
 autotuner_rf$predict(task)
-#> Warning: Detected version mismatch: Learner 'regr.ranger.tuned' has been trained
-#> with mlr3 version '0.13.3', not matching currently installed version '0.14.1'
+#> Warning: Detected version mismatch: Learner 'regr.ranger.tuned' has been
+#> trained with mlr3 version '0.13.3', not matching currently installed version
+#> '0.14.1'
 #> Warning: Detected version mismatch: Learner 'regr.ranger' has been trained with
 #> mlr3 version '0.13.3', not matching currently installed version '0.14.1'
 #> <PredictionRegr> for 84 observations:
@@ -583,7 +583,7 @@ To complete the response-predictor matrix, extract the values of the environment
 
 
 E3. Retrieve the bias-reduced RMSE of a random forest\index{random forest} and a linear model using spatial cross-validation\index{cross-validation!spatial CV}.
-The random forest modeling should include the estimation of optimal hyperparameter\index{hyperparameter} combinations (random search with 50 iterations) in an inner tuning loop (see Section \@ref(svm)).
-Parallelize\index{parallelization} the tuning level (see Section \@ref(svm)).
+The random forest modeling should include the estimation of optimal hyperparameter\index{hyperparameter} combinations (random search with 50 iterations) in an inner tuning loop.
+Parallelize\index{parallelization} the tuning level.
 Report the mean RMSE\index{RMSE} and use a boxplot to visualize all retrieved RMSEs.
 Please not that this exercise is best solved using the mlr3 functions `benchmark_grid()` and `benchmark()` (see https://mlr3book.mlr-org.com/perf-eval-cmp.html#benchmarking for more information).

@@ -141,7 +141,7 @@ leaflet() |>
 
 <div class="figure" style="text-align: center">
 <iframe src="https://geocompr.github.io/img/interactive.html" width="100%" height="400px" data-external="1"></iframe>
-<p class="caption">(\#fig:interactive)The blue markers indicate where the authors are from. The basemap is a tiled image of the Earth at night provided by NASA. Interact with the online version at geocompr.robinlovelace.net, for example by zooming in and clicking on the popups.</p>
+<p class="caption">(\#fig:interactive)The blue markers indicate where the authors are from. The basemap is a tiled image of the Earth at night provided by NASA. Interact with the online version at r.geocompx.org, for example by zooming in and clicking on the popups.</p>
 </div>
 
 \index{map making!interactive}
@@ -199,9 +199,10 @@ For spatial statistics\index{spatial!statistics} and predictive modeling, howeve
 This does not mean you must choose either R or Python: Python\index{Python} supports most common statistical techniques (though R tends to support new developments in spatial statistics earlier) and many concepts learned from Python can be applied to the R\index{R} world.
 <!--rl:toDo-->
 <!--to update! -->
-Like R, Python also supports geographic data analysis and manipulation with packages such as **osgeo**, **Shapely**, **NumPy** and **PyGeoProcessing** [@garrard_geoprocessing_2016].
+Like R, Python also supports geographic data analysis and manipulation with packages such as **shapely**, **geopandas**, **rasterio** and **xarray**.
 
 ## R's spatial ecosystem {#r-ecosystem}
+<!--rl-->
 
 There are many ways to handle geographic data in R, with dozens of packages\index{R-spatial} in the area.^[
 An overview of R's spatial ecosystem can be found in the CRAN\index{CRAN} Task View on the Analysis of Spatial Data
@@ -249,6 +250,7 @@ Parallel group of developments relates to the [rspatial](https://github.com/rspa
 Its main member is the **terra** package for spatial raster handling (see Section \@ref(an-introduction-to-terra)).
 
 ## The history of R-spatial
+<!-- jn -->
 
 There are many benefits of using recent spatial packages such as **sf**, but it also important to be aware of the history of R's spatial capabilities: many functions, use-cases and teaching material are contained in older packages.
 These can still be useful today, provided you know where to look.
@@ -304,7 +306,7 @@ Functions such as `gIntersection()` enabled users to find spatial relationships 
 
 A limitation of the **sp** ecosystem was its limited support for raster data.
 This was overcome by **raster**\index{raster}, first released in 2010 [@R-raster].
-**raster**'s class system and functions enabled a range of raster operations, capabilities now implemented in the **terra** package, which superscedes **raster**, as outlined in Section \@ref(raster-data).
+**raster**'s class system and functions enabled a range of raster operations, capabilities now implemented in the **terra** package, which supersedes **raster**, as outlined in Section \@ref(raster-data).
 An important capability of **raster** and **terra** is their ability to work with datasets that are too large to fit into RAM (R's interface to PostGIS\index{PostGIS} also supports off-disk operations, on geographic vector datasets).
 **raster** and **terra** also supports map algebra, as described in Section \@ref(map-algebra).
 
@@ -371,7 +373,7 @@ E1. Think about the terms 'GIS'\index{GIS}, 'GDS' and 'geocomputation' described
 
 E2. Provide three reasons for using a scriptable language such as R for geocomputation instead of using a graphical user interface (GUI) based GIS such as QGIS\index{QGIS}.
 
-E3. In the year 2000 Stan Openshaw wrote that geocomputation involved "practical work that is beneficial or useful" to others. Think about a practical problem and possible solutions that could be informed with new evidence derived from the analysis, visualisation or modelling of geographic data. With a pen and paper (or computational equivalent) sketch inputs and possible outputs illustrating how geocomputation could help.
+E3. In the year 2000 Stan Openshaw wrote that geocomputation involved "practical work that is beneficial or useful" to others. Think about a practical problem and possible solutions that could be informed with new evidence derived from the analysis, visualization or modelling of geographic data. With a pen and paper (or computational equivalent) sketch inputs and possible outputs illustrating how geocomputation could help.
 
 <!--toDo: rl -->
 <!--add solutions!-->
