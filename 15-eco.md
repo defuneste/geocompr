@@ -1,9 +1,11 @@
 # Ecology {#eco}
 
+
+
 ## Prerequisites {-}
 
-This chapter assumes you have a strong grasp of geographic data analysis\index{geographic data analysis} and processing, covered in Chapters \@ref(spatial-class) to \@ref(geometry-operations).
-In it you will also make use of R's\index{R} interfaces to dedicated GIS\index{GIS} software, and spatial cross-validation\index{cross-validation!spatial CV}, topics covered in Chapters \@ref(gis) and \@ref(spatial-cv), respectively.
+This chapter assumes you have a strong grasp of geographic data analysis and processing, covered in Chapters \@ref(spatial-class) to \@ref(geometry-operations).
+The chapter makes use of bridges to GIS software, and spatial cross-validation, covered in Chapters \@ref(gis) and \@ref(spatial-cv) respectively.
 
 The chapter uses the following packages:
 
@@ -12,7 +14,7 @@ The chapter uses the following packages:
 library(sf)
 library(terra)
 library(dplyr)
-library(data.table)        # fast data.frame manipulation (used by mlr3)
+library(data.table)        # fast data frame manipulation (used by mlr3)
 library(mlr3)              # machine learning (see Chapter 12)
 library(mlr3spatiotempcv)  # spatio-temporal resampling 
 library(mlr3tuning)        # hyperparameter tuning package
@@ -26,44 +28,36 @@ library(vegan)             # community ecology package
 
 ## Introduction
 
-In this chapter we will model the floristic gradient of fog oases to reveal distinctive vegetation belts that are clearly controlled by water availability.
-To do so, we will bring together concepts presented in previous chapters and even extend them (Chapters \@ref(spatial-class) to \@ref(geometry-operations) and  Chapters \@ref(gis) and \@ref(spatial-cv)).
+This chapter models the floristic gradient of fog oases to reveal distinctive vegetation belts that are clearly controlled by water availability.
+The case study provides an opportunity to bring together and extend concepts presented in previous chapters to further enhance your skills at using R for geocomputation.
 
-Fog oases are fascinating vegetation formations, locally termed *lomas*, which develop on mountains along the coastal deserts of Peru and Chile.^[Similar vegetation formations develop also in other parts of the world, e.g., in Namibia and along the coasts of Yemen and Oman [@galletti_land_2016].]
-The deserts' extreme conditions and remoteness provide the habitat for a unique ecosystem, including species endemic to the fog oases.
-Despite the arid conditions and low levels of precipitation of around 30-50 mm per year on average, fog deposition increases the amount of water available to plants during austral winter.
-This results in green southern-facing mountain slopes along the coastal strip of Peru (Figure \@ref(fig:study-area-mongon)). 
+Fog oases, locally called *lomas*, are vegetation formations found on mountains along the coastal deserts of Peru and Chile.
+Similar ecosystems can be found elsewhere, including in the deserts of Namibia and along the coasts of Yemen and Oman [@galletti_land_2016].
+Despite the arid conditions and low levels of precipitation of around 30-50 mm per year on average, fog deposition increases the amount of water available to plants during austral winter, resulting in green southern-facing mountain slopes along the coastal strip of Peru. 
 The fog, which develops below the temperature inversion caused by the cold Humboldt current in austral winter, provides the name for this habitat.
-Every few years, the El Niño phenomenon brings torrential rainfall to this sun-baked environment [@dillon_lomas_2003].
-This causes the desert to bloom, and provides tree seedlings a chance to develop roots long enough to survive the following arid conditions.
+Every few years, the El Niño phenomenon brings torrential rainfall to this sun-baked environment, providing tree seedlings a chance to develop roots long enough to survive the following arid conditions [@dillon_lomas_2003].
 
-Unfortunately, fog oases are heavily endangered, primarily due to human activity (agriculture and climate change).
-To effectively protect the last remnants of this unique vegetation ecosystem, evidence is needed on the composition and spatial distribution of the native flora [@muenchow_predictive_2013; @muenchow_soil_2013].
-*Lomas* mountains also have economic value as a tourist destination, and can contribute to the well-being of local people via recreation.
-For example, most Peruvians live in the coastal desert, and *lomas* mountains are frequently the closest "green" destination.
+Unfortunately, fog oases are heavily endangered, primarily due to agriculture and anthropogenic climate change.
+Evidence on the composition and spatial distribution of the native flora can support efforts to protect remaining fragments of fog oases [@muenchow_predictive_2013; @muenchow_soil_2013].
 
-In this chapter we will demonstrate ecological applications of some of the techniques learned in the previous chapters.
-This case study will involve analyzing the composition and the spatial distribution of the vascular plants on the southern slope of Mt. Mongón, a *lomas* mountain near Casma on the central northern coast of Peru (Figure \@ref(fig:study-area-mongon)).
+In this chapter you will analyze the composition and the spatial distribution of vascular plants (here referring mostly to flowering plants) on the southern slope of Mt. Mongón, a *lomas* mountain near Casma on the central northern coast of Peru (Figure \@ref(fig:study-area-mongon)).
+During a field study to Mt. Mongón, all vascular plants living in 100 randomly sampled 4x4 m^2^ plots in the austral winter of 2011  were recorded [@muenchow_predictive_2013].
+The sampling coincided with a strong La Niña event that year, as shown in data published by the National Oceanic and Atmospheric Administration ([NOAA](https://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php)).
+This led to even higher levels of aridity than usual in the coastal desert and increased fog activity on the southern slopes of Peruvian *lomas* mountains.
 
 <div class="figure" style="text-align: center">
 <img src="figures/15_study_area_mongon.png" alt="The Mt. Mongón study area, from Muenchow, Schratz, and Brenning (2017)." width="60%" />
 <p class="caption">(\#fig:study-area-mongon)The Mt. Mongón study area, from Muenchow, Schratz, and Brenning (2017).</p>
 </div>
 
-During a field study to Mt. Mongón, we recorded all vascular plants living in 100 randomly sampled 4x4 m^2^ plots in the austral winter of 2011 [@muenchow_predictive_2013].
-The sampling coincided with a strong La Niña event that year (see ENSO monitoring of the [NOASS Climate Prediction Center](http://origin.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php)).
-This led to even higher levels of aridity than usual in the coastal desert.
-On the other hand, it also increased fog activity on the southern slopes of Peruvian *lomas* mountains.
+This chapter also demonstrates how to apply techniques covered in previous chapters to an important applied field: ecology.
+Specifically, we will:
 
-<!--
-The first hypothesis is that four plant belts will be found along the altitudinal gradient: a low-elevation *Tillandsia* belt, a herbaceous belt, a bromeliad belt, and an uppermost succulent belt [@muenchow_soil_2013].
--->
-
-Ordinations\index{ordination} are dimension-reducing techniques that allow the extraction of the main gradients from a (noisy) dataset, in our case the floristic gradient developing along the southern mountain slope (see next section).
-In this chapter, we will model the first ordination axis, i.e., the floristic gradient, as a function of environmental predictors such as altitude, slope, catchment area\index{catchment area} and NDVI\index{NDVI}.
-For this, we will make use of a random forest model\index{random forest} - a very popular machine learning\index{machine learning} algorithm [@breiman_random_2001].
-The model will allow us to make spatial predictions of the floristic composition anywhere in the study area.
-To guarantee an optimal prediction, it is advisable to tune beforehand the hyperparameters\index{hyperparameter} with the help of spatial cross-validation\index{cross-validation!spatial CV} (see Section \@ref(svm)).
+- Load in needed data and compute environmental predictors (Section \@ref(data-and-data-preparation))
+- Extract the main floristic gradient from our species composition matrix with the help of a dimension-reducing technique (ordinations\index{ordination}; Section \@ref(nmds))
+- Model the first ordination axis, i.e., the floristic gradient, as a function of environmental predictors such as altitude, slope, catchment area\index{catchment area} and NDVI\index{NDVI} (Section \@ref(modeling-the-floristic-gradient)).
+For this, we will make use of a random forest model\index{random forest} --- a very popular machine learning\index{machine learning} algorithm [@breiman_random_2001]. To guarantee an optimal prediction, it is advisable to tune beforehand the hyperparameters\index{hyperparameter} with the help of spatial cross-validation\index{cross-validation!spatial CV} (see Section \@ref(svm))
+- Make a spatial distribution map of the floristic composition anywhere in the study area (Section \@ref(predictive-mapping))
 
 ## Data and data preparation
 
@@ -105,19 +99,22 @@ Visualizing the data helps to get more familiar with it, as shown in Figure \@re
 <p class="caption">(\#fig:sa-mongon)Study mask (polygon), location of the sampling sites (black points) and DEM in the background.</p>
 </div>
 
-The next step is to compute variables which are not only needed for the modeling and predictive mapping (see Section \@ref(predictive-mapping)) but also for aligning the Non-metric multidimensional scaling (NMDS)\index{NMDS} axes with the main gradient in the study area, altitude and humidity, respectively (see Section \@ref(nmds)).
+The next step is to compute variables which are not only needed for the modeling and predictive mapping (see Section \@ref(predictive-mapping)) but also for aligning the non-metric multidimensional scaling (NMDS)\index{NMDS} axes with the main gradient in the study area, altitude and humidity, respectively (see Section \@ref(nmds)).
 
 Specifically, we compute catchment slope and catchment area\index{catchment area} from a digital elevation model\index{digital elevation model} using R-GIS bridges (see Chapter \@ref(gis)).
-Curvatures might also represent valuable predictors, and in the Exercise section you can find out how they would impact the modeling result.
+Curvatures might also represent valuable predictors, and in the exercise section you can find out how they would impact the modeling result.
 
-To compute catchment area\index{catchment area} and catchment slope, we can make use of the `saga:sagawetnessindex` function.^[Admittedly, it is a bit unsatisfying that the only way of knowing that `sagawetnessindex` computes the desired terrain attributes is to be familiar with SAGA\index{SAGA}.]
+To compute catchment area\index{catchment area} and catchment slope, we can make use of the `sagang:sagawetnessindex` function.^[Admittedly, it is a bit unsatisfying that the only way of knowing that `sagawetnessindex` computes the desired terrain attributes is to be familiar with SAGA\index{SAGA}.]
 `qgis_show_help()` returns all function\index{function} parameters and default values of a specific geoalgorithm\index{geoalgorithm}.
 Here, we present only a selection of the complete output.
 
 
 ```r
-qgisprocess::qgis_show_help("saga:sagawetnessindex")
-#> Saga wetness index (saga:sagawetnessindex)
+# if not already done, enable the saga next generation plugin
+qgisprocess::qgis_enable_plugins("processing_saga_nextgen")
+# show help
+qgisprocess::qgis_show_help("sagang:sagawetnessindex")
+#> Saga wetness index (sagang:sagawetnessindex)
 #> ...
 #> ----------------
 #> Arguments
@@ -151,15 +148,15 @@ qgisprocess::qgis_show_help("saga:sagawetnessindex")
 ```
 
 Subsequently, we can specify the needed parameters using R named arguments (see Section \@ref(rqgis)).
-Remember that we can use a `SpatRaster` living in R's\index{R} global environment to specify the input raster `DEM` (see Section \@ref(rqgis)).
+Remember that we can use a path to a file on disk or a `SpatRaster` living in R's\index{R} global environment to specify the input raster `DEM` (see Section \@ref(rqgis)).
 Specifying 1 as the `SLOPE_TYPE` makes sure that the algorithm will return the catchment slope.
-The resulting rasters\index{raster} are saved to temporary files with an `.sdat` extension which is a SAGA\index{SAGA} raster format.
+The resulting rasters\index{raster} are saved to temporary files with an `.sdat` extension which is the native SAGA\index{SAGA} raster format.
 
 
 ```r
 # environmental predictors: catchment slope and catchment area
 ep = qgisprocess::qgis_run_algorithm(
-  alg = "saga:sagawetnessindex",
+  alg = "sagang:sagawetnessindex",
   DEM = dem,
   SLOPE_TYPE = 1, 
   SLOPE = tempfile(fileext = ".sdat"),
@@ -176,9 +173,9 @@ Additionally, we will add two more raster objects to it, namely `dem` and `ndvi`
 # read in catchment area and catchment slope
 ep = ep[c("AREA", "SLOPE")] |>
   unlist() |>
-  terra::rast()
-names(ep) = c("carea", "cslope") # assign proper names 
-terra::origin(ep) = terra::origin(dem) # make sure rasters have the same origin
+  rast()
+names(ep) = c("carea", "cslope") # assign better names 
+origin(ep) = origin(dem) # make sure rasters have the same origin
 ep = c(dem, ndvi, ep) # add dem and ndvi to the multilayer SpatRaster object
 ```
 
@@ -194,7 +191,7 @@ As a convenience to the reader, we have added `ep` to **spDataLarge**:
 
 
 ```r
-ep = terra::rast(system.file("raster/ep.tif", package = "spDataLarge"))
+ep = rast(system.file("raster/ep.tif", package = "spDataLarge"))
 ```
 
 Finally, we can extract the terrain attributes to our field observations (see also Section \@ref(raster-extraction)).
@@ -202,8 +199,7 @@ Finally, we can extract the terrain attributes to our field observations (see al
 
 ```r
 # terra::extract adds automatically a for our purposes unnecessary ID column
-ep_rp = terra::extract(ep, random_points) |>
-  dplyr::select(-ID)
+ep_rp = terra::extract(ep, random_points, ID = FALSE)
 random_points = cbind(random_points, ep_rp)
 ```
 
@@ -211,7 +207,7 @@ random_points = cbind(random_points, ep_rp)
 
 Ordinations\index{ordination} are a popular tool in vegetation science to extract the main information, frequently corresponding to ecological gradients, from large species-plot matrices mostly filled with 0s. 
 However, they are also used in remote sensing\index{remote sensing}, the soil sciences, geomarketing\index{geomarketing} and many other fields.
-If you are unfamiliar with ordination\index{ordination} techniques or in need of a refresher, have a look at Michael W. Palmer's [web page](http://ordination.okstate.edu/overview.htm) for a short introduction to popular ordination techniques in ecology and at @borcard_numerical_2011 for a deeper look on how to apply these techniques in R. 
+If you are unfamiliar with ordination\index{ordination} techniques or in need of a refresher, have a look at Michael W. Palmer's [web page](https://ordination.okstate.edu/overview.htm) for a short introduction to popular ordination techniques in ecology and at @borcard_numerical_2011 for a deeper look on how to apply these techniques in R. 
 **vegan**'s\index{vegan (package)} package documentation is also a very helpful resource (`vignette(package = "vegan")`).
 
 Principal component analysis (PCA\index{PCA}) is probably the most famous ordination\index{ordination} technique. 
@@ -249,7 +245,7 @@ The resulting matrix serves as input for the NMDS\index{NMDS}.
 One way of choosing `k` is to try `k` values between 1 and 6 and then using the result which yields the best stress value [@mccune_analysis_2002].
 ]
 NMDS\index{NMDS} is an iterative procedure trying to make the ordinated space more similar to the input matrix in each step.
-To make sure that the algorithm converges, we set the number of steps to 500 (`try` parameter).
+To make sure that the algorithm converges, we set the number of steps to 500 using the `try` parameter.
 
 
 ```r
@@ -303,8 +299,8 @@ To spatially visualize them, we can model the NMDS\index{NMDS} scores with the p
 
 ## Modeling the floristic gradient
 
-To predict the floristic gradient spatially, we use a random forest\index{random forest} model [@hengl_random_2018].
-Random forest\index{random forest} models are frequently applied in environmental and ecological modeling, and often provide the best results in terms of predictive performance [@schratz_hyperparameter_2019]. 
+To predict the floristic gradient spatially, we use a random forest\index{random forest} model.
+Random forest\index{random forest} models are frequently applied in environmental and ecological modeling, and often provide the best results in terms of predictive performance [@hengl_random_2018;@schratz_hyperparameter_2019]. 
 Here, we shortly introduce decision trees and bagging, since they form the basis of random forests\index{random forest}.
 We refer the reader to @james_introduction_2013 for a more detailed description of random forests\index{random forest} and related techniques.
 
@@ -344,7 +340,7 @@ The observations falling into the left branch have a mean NMDS\index{NMDS} score
 Overall, we can interpret the tree as follows: the higher the elevation, the higher the NMDS\index{NMDS} score becomes.
 This means that the simple decision tree has already revealed four distinct floristic assemblages.
 For a more in-depth interpretation please refer to the \@ref(predictive-mapping) section.
-Decision trees have a tendency to overfit\index{overfitting}, that is they mirror too closely the input data including its noise which in turn leads to bad predictive performances [Section \@ref(intro-cv); @james_introduction_2013].
+Decision trees have a tendency to overfit\index{overfitting}, that is they mirror too closely the input data including its noise which in turn leads to bad predictive performances (Section \@ref(intro-cv); @james_introduction_2013).
 Bootstrap aggregation (bagging) is an ensemble technique that can help to overcome this problem.
 Ensemble techniques simply combine the predictions of multiple models.
 Thus, bagging takes repeated samples from the same input data and averages the predictions.
@@ -370,10 +366,10 @@ The only differences are the following:
 1. We are leaving the assessment of a bias-reduced performance measure as an exercise to the reader (see Exercises).
 Instead we show how to tune hyperparameters\index{hyperparameter} for (spatial) predictions
 
-Remember that 125,500 models were necessary to retrieve bias-reduced performance estimates when using 100-repeated 5-fold spatial cross-validation\index{cross-validation!spatial CV} and a random search of 50 iterations (see Section \@ref(svm)).
+Remember that 125,500 models were necessary to retrieve bias-reduced performance estimates when using 100-repeated 5-fold spatial cross-validation\index{cross-validation!spatial CV} and a random search of 50 iterations in Section \@ref(svm).
 In the hyperparameter\index{hyperparameter} tuning level, we found the best hyperparameter combination which in turn was used in the outer performance level for predicting the test data of a specific spatial partition (see also Figure \@ref(fig:inner-outer)). 
 This was done for five spatial partitions, and repeated a 100 times yielding in total 500 optimal hyperparameter combinations.
-Which one should we use for making spatial predictions?
+Which one should we use for making spatial distribution maps?
 The answer is simple: none at all. 
 Remember, the tuning was done to retrieve a bias-reduced performance estimate, not to do the best possible spatial prediction.
 For the latter, one estimates the best hyperparameter\index{hyperparameter} combination from the complete dataset.
@@ -387,7 +383,7 @@ For specifying a spatial task, we use again the **mlr3spatiotempcv** package [@s
 
 ```r
 # create task
-task = mlr3spatiotempcv::as_task_regr_st(dplyr::select(rp, -id, -spri),
+task = mlr3spatiotempcv::as_task_regr_st(select(rp, -id, -spri),
   id = "mongon", target = "sc")
 ```
 
@@ -426,7 +422,7 @@ search_space = paradox::ps(
 Having defined the search space, we are all set for specifying our tuning via the `AutoTuner()` function.
 Since we deal with geographic data, we will again make use of spatial cross-validation to tune the hyperparameters\index{hyperparameter} (see Sections \@ref(intro-cv) and \@ref(spatial-cv-with-mlr3)).
 Specifically, we will use a five-fold spatial partitioning with only one repetition (`rsmp()`). 
-In each of these spatial partitions, we run 50 models (`trm()`) while using randomly selected hyperparameter configurations (`tnr()`) within predefined limits (`seach_space`) to find the optimal hyperparameter\index{hyperparameter} combination [see also Section \@ref(svm) and https://mlr3book.mlr-org.com/optimization.html#autotuner, @becker_mlr3_2022].
+In each of these spatial partitions, we run 50 models (`trm()`) while using randomly selected hyperparameter configurations (`tnr()`) within predefined limits (`seach_space`) to find the optimal hyperparameter\index{hyperparameter} combination [see also Section \@ref(svm) and https://mlr3book.mlr-org.com/chapters/chapter4/hyperparameter_optimization.html#sec-autotuner, @becker_mlr3_2022].
 The performance measure is the root mean squared error (RMSE\index{RMSE}).
 
 
@@ -457,8 +453,9 @@ autotuner_rf$train(task)
 
 ```r
 autotuner_rf$tuning_result
-#>    mtry sample.fraction min.node.size learner_param_vals  x_domain regr.rmse
-#> 1:    4             0.9             7          <list[4]> <list[3]>     0.375
+#>     mtry sample.fraction min.node.size learner_param_vals  x_domain regr.rmse
+#>    <int>           <num>         <int>             <list>    <list>     <num>
+#> 1:     4             0.9             7          <list[4]> <list[3]>     0.375
 ```
 
 <!--
@@ -466,6 +463,7 @@ An `mtry` of , a `sample.fraction` of , and a `min.node.size` of  represent the 
 An RMSE\index{RMSE} of 
 is relatively good when considering the range of the response variable which is  (`diff(range(rp$sc))`).
 -->
+
 ### Predictive mapping
 
 The tuned hyperparameters\index{hyperparameter} can now be used for the prediction.
@@ -475,11 +473,6 @@ To do so, we only need to run the `predict` method of our fitted `AutoTuner` obj
 ```r
 # predicting using the best hyperparameter combination
 autotuner_rf$predict(task)
-#> Warning: Detected version mismatch: Learner 'regr.ranger.tuned' has been
-#> trained with mlr3 version '0.13.3', not matching currently installed version
-#> '0.14.1'
-#> Warning: Detected version mismatch: Learner 'regr.ranger' has been trained with
-#> mlr3 version '0.13.3', not matching currently installed version '0.14.1'
 #> <PredictionRegr> for 84 observations:
 #>     row_ids  truth response
 #>           1 -1.084   -1.073
@@ -492,7 +485,7 @@ autotuner_rf$predict(task)
 ```
 
 The `predict` method will apply the model to all observations used in the modeling.
-Given a multilayer `SpatRaster` containing rasters named as the predictors used in the modeling, `terra::predict()` will also make spatial predictions, i.e., predict to new data.
+Given a multilayer `SpatRaster` containing rasters named as the predictors used in the modeling, `terra::predict()` will also make spatial distribution maps, i.e., predict to new data.
 
 
 ```r
@@ -500,7 +493,7 @@ pred = terra::predict(ep, model = autotuner_rf, fun = predict)
 ```
 
 <div class="figure" style="text-align: center">
-<img src="figures/15_rf_pred.png" alt="Predictive mapping of the floristic gradient clearly revealing distinct vegetation belts." width="60%" />
+<img src="figures/15_rf_pred.png" alt="Predictive mapping of the floristic gradient clearly revealing distinct vegetation belts." width="100%" />
 <p class="caption">(\#fig:rf-pred)Predictive mapping of the floristic gradient clearly revealing distinct vegetation belts.</p>
 </div>
 
@@ -543,8 +536,8 @@ Since *lomas* mountains are heavily endangered, the prediction map can serve as 
 In terms of methodology, a few additional points could be addressed:
 
 - It would be interesting to also model the second ordination\index{ordination} axis, and to subsequently find an innovative way of visualizing jointly the modeled scores of the two axes in one prediction map
-- If we were interested in interpreting the model in an ecologically meaningful way, we should probably use (semi-)parametric models [@muenchow_predictive_2013;@zuur_mixed_2009;@zuur_beginners_2017]
-However, there are at least approaches that help to interpret machine learning models such as random forests\index{random forest} (see, e.g., [https://mlr-org.github.io/interpretable-machine-learning-iml-and-mlr/](https://mlr-org.github.io/interpretable-machine-learning-iml-and-mlr/))
+- If we were interested in interpreting the model in an ecologically meaningful way, we should probably use (semi-)parametric models [@muenchow_predictive_2013;@zuur_mixed_2009;@zuur_beginners_2017]/
+However, there are at least approaches that help to interpret machine learning models such as random forests\index{random forest} (see, e.g., [https://mlr-org.com/posts/2018-04-30-interpretable-machine-learning-iml-and-mlr/](https://mlr-org.com/posts/2018-04-30-interpretable-machine-learning-iml-and-mlr/))
 - A sequential model-based optimization (SMBO) might be preferable to the random search for hyperparameter\index{hyperparameter} optimization used in this chapter [@probst_hyperparameters_2018]
 
 Finally, please note that random forest\index{random forest} and other machine learning\index{machine learning} models are frequently used in a setting with lots of observations and many predictors, much more than used in this chapter, and where it is unclear which variables and variable interactions contribute to explaining the response.
@@ -554,9 +547,9 @@ Hence, it might be worth trying a linear model\index{regression!linear}.
 A linear model is much easier to explain and understand than a random forest\index{random forest} model, and therefore to be preferred (law of parsimony), additionally it is computationally less demanding (see Exercises).
 If the linear model cannot cope with the degree of non-linearity present in the data, one could also try a generalized additive model\index{generalized additive model} (GAM).
 The point here is that the toolbox of a data scientist consists of more than one tool, and it is your responsibility to select the tool best suited for the task or purpose at hand.
-Here, we wanted to introduce the reader to random forest\index{random forest} modeling and how to use the corresponding results for spatial predictions.
+Here, we wanted to introduce the reader to random forest\index{random forest} modeling and how to use the corresponding results for predictive mapping purposes.
 For this purpose, a well-studied dataset with known relationships between response and predictors, is appropriate.
-However, this does not imply that the random forest\index{random forest} model has returned the best result in terms of predictive performance (see Exercises).
+However, this does not imply that the random forest\index{random forest} model has returned the best result in terms of predictive performance.
 
 ## Exercises
 

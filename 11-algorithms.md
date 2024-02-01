@@ -1,9 +1,11 @@
 # Scripts, algorithms and functions {#algorithms}
 
+
+
 ## Prerequisites {-}
 
 This chapter has minimal software prerequisites as it primarily uses base R.
-The **sf**\index{sf} package is used to check the results of an algorithm we will develop to calculate the area of polygons.
+Only, the **sf**\index{sf} package is used to check the results of an algorithm we will develop to calculate the area of polygons.
 In terms of prior knowledge, this chapter assumes you have an understanding of the geographic classes introduced in Chapter \@ref(spatial-class) and how they can be used to represent a wide range of input file formats (see Chapter \@ref(read-write)).
 
 ## Introduction {#intro-algorithms}
@@ -42,7 +44,7 @@ Scripts should be stored and executed in a logical order to create reproducible 
 If you are new to programming scripts may seem intimidating when you first encounter them, but they are simply plain text files.
 Scripts are usually saved as a file with an extension representing the language they contain, such as `.py` for scripts written in Python or `.rs` for scripts written in Rust.
 R scripts should be saved with a `.R` extension and named to reflect what they do.
-An example is [`11-hello.R`](https://github.com/geocompx/geocompr/blob/main/code/11-hello.R), a script file stored in the [`code`](https://github.com/geocompx/geocompr/blob/main/code/) folder of the book's repository.
+An example is [`11-hello.R`](https://github.com/geocompx/geocompr/blob/main/code/11-hello.R), a script file stored in the [`code`](https://github.com/geocompx/geocompr/tree/main/code/) folder of the book's repository.
 `11-hello.R` is a simple script containing only two lines of code, one of which is a comment:
 
 ```r
@@ -71,11 +73,11 @@ Lines of code that do not contain valid R should be commented out, by adding a `
 There are, however, some conventions worth following:
 
 - Write the script in order: just like the script of a film, scripts should have a clear order such as 'setup', 'data processing' and 'save results' (roughly equivalent to 'beginning', 'middle' and 'end' in a film).
-- Add comments to the script so other people (and your future self) can understand it. 
+- Add comments to the script so other people (and your future self) can understand it
 At a minimum, a comment should state the purpose of the script (see Figure \@ref(fig:codecheck)) and (for long scripts) divide it into sections.
-This can be done in RStudio\index{RStudio}, for example, with the shortcut `Ctrl+Shift+R`, which creates 'foldable' code section headings.
+This can be done in RStudio\index{RStudio}, for example, with the shortcut `Ctrl+Shift+R`, which creates 'foldable' code section headings
 - Above all, scripts should be reproducible: self-contained scripts that will work on any computer are more useful than scripts that only run on your computer, on a good day. 
-This involves attaching required packages at the beginning, reading-in data from persistent sources (such as a reliable website) and ensuring that previous steps have been taken.^[
+This involves attaching required packages at the beginning, reading-in data from persistent sources (such as a reliable website) and ensuring that previous steps have been taken^[
 Prior steps can be referred to with a comment or with an if statement such as `if (!exists("x")) source("x.R")` (which would run the script file `x.R` if the object `x` is missing).
 ]
 
@@ -96,7 +98,8 @@ The contents of this section apply to any type of R script.
 A particular consideration with scripts for geocomputation is that they tend to have external dependencies, such as the GDAL dependency needed for core R packages for working with geographic data, which we made heavy use of in Chapter \@ref(read-write) for data import and export.
 GIS software dependencies may be needed to run more specialist geoalgorithms, as outlined in Chapter \@ref(gis).
 Scripts for working with geographic data also often require input datasets to be available specific formats.
-Such dependencies should be mentioned as comments in the script or elsewhere in the project of which it is a part, as illustrated in the script [`11-centroid-alg.R`](https://github.com/geocompx/geocompr/blob/main/code/11-centroid-alg.R).
+Such dependencies should be mentioned as comments or suitable place in the project of which it is a part, or described as dependencies with tools such as the **renv** package or Docker.
+
 'Defensive' programming techniques and good error messages can save time by checking for dependencies and communicating with users if certain requirements are not met.
 If statements, implemented with `if ()` in R, can be used to send messages or run lines of code if, and only if, certain conditions are met.
 The following lines of code, for example, send a message to users if a certain file is missing:
@@ -116,10 +119,11 @@ If you do not, the same script can be called with `source("code/11-centroid-alg.
 
 ```r
 poly_mat = cbind(
-  x = c(0, 0, 9, 9, 0),
-  y = c(0, 9, 9, 0, 0)
+  x = c(0, 9, 9, 0, 0),
+  y = c(0, 0, 9, 9, 0)
 )
-source("https://raw.githubusercontent.com/geocompx/geocompr/main/code/11-centroid-alg.R")
+# Short URL to code/11-centroid-alg.R in the geocompr repo
+source("https://t.ly/0nzj")
 ```
 
 
@@ -152,13 +156,13 @@ There are many approaches to centroid\index{centroid} calculation, some of which
 For the purposes of this section, we choose an approach that is easy to visualize: breaking the polygon into many triangles and finding the centroid\index{centroid} of each of these, an approach discussed by @kaiser_algorithms_1993 alongside other centroid algorithms [and mentioned briefly in @orourke_computational_1998].
 It helps to further break down this approach into discrete tasks before writing any code (subsequently referred to as step 1 to step 4, these could also be presented as a schematic diagram or pseudocode\index{pseudocode}):
 
-1. Divide the polygon into contiguous triangles.
-2. Find the centroid\index{centroid} of each triangle.
-3. Find the area of each triangle.
-4. Find the area-weighted mean of triangle centroids\index{centroid}.
+1. Divide the polygon into contiguous triangles
+2. Find the centroid\index{centroid} of each triangle
+3. Find the area of each triangle
+4. Find the area-weighted mean of triangle centroids\index{centroid}
 
 These steps may sound straightforward, but converting words into working code requires some work and plenty of trial-and-error, even when the inputs are constrained:
-The algorithm will only work for *convex polygons*, which contain no internal angles greater than 180°, no star shapes allowed (packages **decido** and **sfdct** can triangulate non-convex polygons using external libraries, as shown in the [algorithm](https://geocompx.github.io/geocompkg/articles/algorithm.html) vignette hosted at [geocompx.org](https://geocompx.org/). 
+The algorithm will only work for *convex polygons*, which contain no internal angles greater than 180°, no star shapes allowed (packages **decido** and **sfdct** can triangulate non-convex polygons using external libraries, as shown in the [algorithm](https://geocompx.github.io/geocompkg/articles/algorithm.html) vignette hosted at [geocompx.org](https://geocompx.org/)). 
 
 The simplest data structure representing a polygon is a matrix of x and y coordinates in which each row represents a vertex tracing the polygon's border in order where the first and last rows are identical [@wise_gis_2001].
 In this case, we will create a polygon with five vertices in base R, building on an example from *GIS Algorithms* [@xiao_gis_2016 see [github.com/gisalgs](https://github.com/gisalgs/geom) for Python code], as illustrated in Figure \@ref(fig:polymat):
@@ -168,8 +172,8 @@ In this case, we will create a polygon with five vertices in base R, building on
 
 ```r
 # generate a simple matrix representation of a polygon:
-x_coords = c(10, 0, 0, 12, 20, 10)
-y_coords = c(0, 0, 10, 20, 15, 0)
+x_coords = c(10, 20, 12, 0, 0, 10)
+y_coords = c(0, 15, 20, 10, 0, 0)
 poly_mat = cbind(x_coords, y_coords)
 ```
 
@@ -189,7 +193,7 @@ C1 = (T1[1,] + T1[2,] + T1[3,]) / 3
 
 
 <div class="figure" style="text-align: center">
-<img src="11-algorithms_files/figure-html/polymat-1.png" alt="Illustration of polygon centroid calculation problem." width="100%" />
+<img src="figures/polymat-1.png" alt="Illustration of polygon centroid calculation problem." width="100%" />
 <p class="caption">(\#fig:polymat)Illustration of polygon centroid calculation problem.</p>
 </div>
 
@@ -209,7 +213,7 @@ A translation of this formula into R code that works with the data in the matrix
 abs(T1[1, 1] * (T1[2, 2] - T1[3, 2]) +
     T1[2, 1] * (T1[3, 2] - T1[1, 2]) +
     T1[3, 1] * (T1[1, 2] - T1[2, 2])) / 2
-#> [1] 50
+#> [1] 85
 ```
 
 This code chunk outputs the correct result.^[
@@ -244,7 +248,7 @@ A = vapply(T_all, function(x) {
 ```
 
 <div class="figure" style="text-align: center">
-<img src="11-algorithms_files/figure-html/polycent-1.png" alt="Illustration of iterative centroid algorithm with triangles. The X represents the area-weighted centroid in iterations 2 and 3." width="100%" />
+<img src="figures/polycent-1.png" alt="Illustration of iterative centroid algorithm with triangles. The X represents the area-weighted centroid in iterations 2 and 3." width="100%" />
 <p class="caption">(\#fig:polycent)Illustration of iterative centroid algorithm with triangles. The X represents the area-weighted centroid in iterations 2 and 3.</p>
 </div>
 
@@ -270,7 +274,7 @@ This is captured in the saying "premature optimization is the root of all evil (
 
 Algorithm\index{algorithm} development is hard.
 This should be apparent from the amount of work that has gone into developing a centroid\index{centroid} algorithm\index{algorithm} in base R\index{R} that is just one, rather inefficient, approach to the problem with limited real-world applications (convex polygons are uncommon in practice).
-The experience should lead to an appreciation of low-level geographic libraries such as GEOS\index{GEOS} (which underlies `sf::st_centroid()`) and CGAL\index{CGAL} (the Computational Geometry Algorithms Library) which not only run fast but work on a wide range of input geometry types.
+The experience should lead to an appreciation of low-level geographic libraries such as GEOS\index{GEOS} and CGAL\index{CGAL} (the Computational Geometry Algorithms Library) which not only run fast but work on a wide range of input geometry types.
 A great advantage of the open source nature of such libraries is that their source code\index{source code} is readily available for study, comprehension and (for those with the skills and confidence) modification.^[
 The CGAL\index{CGAL} function `CGAL::centroid()` is in fact composed of 7 sub-functions as described at https://doc.cgal.org/latest/Kernel_23/group__centroid__grp.html allowing it to work on a wide range of input data types, whereas the solution we created works only on a very specific input data type.
 The source code underlying GEOS\index{GEOS} function `Centroid::getCentroid()` can be found at https://github.com/libgeos/geos/search?q=getCentroid.
@@ -298,13 +302,13 @@ You can also explicitly set the output of a function by adding `return(output)` 
 
 
 
-The function now works on any inputs you pass it, as illustrated in the below command which calculates the area of the 1^st^ triangle from the example polygon in the previous section (see Figure \@ref(fig:polycent)):
+The function now works on any inputs you pass it, as illustrated in the below command which calculates the area of the 1^st^ triangle from the example polygon in the previous section (see Figure \@ref(fig:polycent)).
 
 
 ```r
 t_centroid(T1)
 #> x_coords y_coords 
-#>     3.33     3.33
+#>     14.0     11.7
 ```
 
 We can also create a function\index{function} to calculate a triangle's area, which we will name `t_area()`:
@@ -327,7 +331,7 @@ The newly created function\index{function} `t_area()` takes any object `x`, assu
 
 ```r
 t_area(T1)
-#> [1] 50
+#> [1] 85
 ```
 
 We can test the generalizability of the function\index{function} by using it to find the area of a new triangle matrix, which has a height of 1 and a base of 3:
@@ -344,7 +348,7 @@ t_area(t_new)
 A useful feature of functions is that they are modular.
 Provided that you know what the output will be, one function can be used as the building block of another.
 Thus, the functions `t_centroid()` and `t_area()` can be used as sub-components of a larger function\index{function} to do the work of the script `11-centroid-alg.R`: calculate the area of any convex polygon.
-The code chunk below creates the function `poly_centroid()` to mimic the behavior of `sf::st_centroid()` for convex polygons:^[
+The code chunk below creates the function `poly_centroid()` to mimic the behavior of `sf::st_centroid()` for convex polygons.^[
 Note that the functions we created are called iteratively in `lapply()`\index{loop!lapply} and `vapply()`\index{loop!vapply} function calls.
 ]
 
@@ -437,40 +441,33 @@ First steps towards programming can be slow (the exercises below should not be r
 ## Exercises {#ex-algorithms}
 
 
-E1. Read the script `11-centroid-alg.R` in the `code` folder of the book's GitHub repo.
+E1. Read the script [`11-centroid-alg.R`](https://github.com/geocompx/geocompr/blob/main/code/11-centroid-alg.R) in the `code` folder of the book's GitHub repo.
 
   - Which of the best practices covered in Section \@ref(scripts) does it follow?
-  - Create a version of the script on your computer in an IDE\index{IDE} such as RStudio\index{RStudio} (preferably by typing-out the script line-by-line, in your own coding style and with your own comments, rather than copy-pasting --- this will help you learn how to type scripts). Using the example of a square polygon (e.g., created with `poly_mat = cbind(x = c(0, 0, 9, 9, 0), y = c(0, 9, 9, 0, 0))`) execute the script line-by-line.
+  - Create a version of the script on your computer in an IDE\index{IDE} such as RStudio\index{RStudio} (preferably by typing-out the script line-by-line, in your own coding style and with your own comments, rather than copy-pasting --- this will help you learn how to type scripts). Using the example of a square polygon (e.g., created with `poly_mat = cbind(x = c(0, 9, 9, 0, 0), y = c(0, 0, 9, 9, 0))`) execute the script line-by-line.
   - What changes could be made to the script to make it more reproducible?
   - How could the documentation be improved?
 
-    <!-- - Answer: The script could state that it needs an object called `poly_mat` to be present and, if none is present, create an example dataset at the outset for testing. -->
-<!-- 1. Check-out the script `11-earthquakes.R` in the `code` folder of the book's GitHub [repo](https://github.com/geocompx/geocompr/blob/main/code/11-earthquakes.R). -->
-<!--     - Try to reproduce the results: how many significant earthquakes were there last month? -->
-<!--     - Modify the script so that it provides a map with all earthquakes that happened in the past hour. -->
-<!-- change line 10 to: -->
-<!-- u = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson" -->
-  <!-- It could document the source of the data better - e.g. with `data from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php` -->
 
-E2. In the geometric algorithms section  we calculated that the area and geographic centroid\index{centroid} of the polygon represented by `poly_mat` was 245 and 8.8, 9.2, respectively.
 
-<!-- Todo: add link to that script file (RL) -->
 
-  - Reproduce the results on your own computer with reference to the script `11-centroid-alg.R`, an implementation of this algorithm (bonus: type out the commands - try to avoid copy-pasting).
+E2. In the geometric algorithms section we calculated that the area and geographic centroid of the polygon represented by `poly_mat` was 245 and 8.8, 9.2, respectively.
+
+  - Reproduce the results on your own computer with reference to the script [`11-centroid-alg.R`](https://github.com/geocompx/geocompr/blob/main/code/11-centroid-alg.R), an implementation of this algorithm (bonus: type out the commands - try to avoid copy-pasting).
   - Are the results correct? Verify them by converting `poly_mat` into an `sfc` object (named `poly_sfc`) with `st_polygon()` (hint: this function takes objects of class `list()`) and then using `st_area()` and `st_centroid()`.
-
-<!-- We can verify the answer by converting `poly_mat` into a simple feature collection as follows, which shows the calculations match: -->
 
 
 
 E3. It was stated that the algorithm\index{algorithm} we created only works for *convex hulls*. Define convex hulls\index{convex hull} (see the geometry operations chapter) and test the algorithm on a polygon that is *not* a convex hull.
 
-<!-- The algorithm would need to be able to have negative as well as positive area values. -->
+
 
   - Bonus 1: Think about why the method only works for convex hulls and note changes that would need to be made to the algorithm to make it work for other types of polygon.
-  - Bonus 2: Building on the contents of `11-centroid-alg.R`, write an algorithm\index{algorithm} only using base R functions that can find the total length of linestrings represented in matrix form.
+  - Bonus 2: Building on the contents of `11-centroid-alg.R`, write an algorithm only using base R functions that can find the total length of linestrings represented in matrix form.
   
 <!-- Todo: add example of matrix representing a linestring, demonstrate code to verify the answer, suggest alternative functions to decompose as a bonus. -->
+
+
 
 E4. In the functions section we created different versions of the `poly_centroid()` function that generated outputs of class `sfg` (`poly_centroid_sfg()`) and type-stable `matrix` outputs (`poly_centroid_type_stable()`). 
 Further extend the function by creating a version (e.g., called `poly_centroid_sf()`) that is type stable (only accepts inputs of class `sf`) *and* returns `sf` objects (hint: you may need to convert the object `x` into a matrix with the command `sf::st_coordinates(x)`).

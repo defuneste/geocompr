@@ -1,5 +1,7 @@
 # Geomarketing {#location}
 
+
+
 ## Prerequisites {-}
 
 - This chapter requires the following packages (**tmaptools** must also be installed):
@@ -28,7 +30,7 @@ There are also many non-commercial applications that can use the technique for p
 
 People are fundamental to location analysis\index{location analysis}, in particular where they are likely to spend their time and other resources.
 Interestingly, ecological concepts and models are quite similar to those used for store location analysis.
-Animals and plants can best meet their needs in certain 'optimal' locations, based on variables that change over space (@muenchow_review_2018; see also chapter \@ref(eco)).
+Animals and plants can best meet their needs in certain 'optimal' locations, based on variables that change over space (@muenchow_review_2018; see also Chapter \@ref(eco)).
 This is one of the great strengths of geocomputation and GIScience in general: concepts and methods are transferable to other fields.
 Polar bears, for example, prefer northern latitudes where temperatures are lower and food (seals and sea lions) is plentiful.
 Similarly, humans tend to congregate in certain places, creating economic niches (and high land prices) analogous to the ecological niche of the Arctic.
@@ -90,13 +92,13 @@ Further, `mutate()` is used to convert values -1 and -9 (meaning "unknown") to `
 
 ```r
 # pop = population, hh_size = household size
-input = dplyr::select(census_de, x = x_mp_1km, y = y_mp_1km, pop = Einwohner,
+input = select(census_de, x = x_mp_1km, y = y_mp_1km, pop = Einwohner,
                       women = Frauen_A, mean_age = Alter_D, hh_size = HHGroesse_D)
 # set -1 and -9 to NA
-input_tidy = dplyr::mutate(input,
-  dplyr::across(.cols = c(pop, women, mean_age, hh_size), 
-                .fns =  ~ifelse(.x %in% c(-1, -9), NA, .x)))
+input_tidy = mutate(input, across(.cols = c(pop, women, mean_age, hh_size), 
+                                  .fns =  ~ifelse(.x %in% c(-1, -9), NA, .x)))
 ```
+
 
 
 Table: (\#tab:census-desc)Categories for each variable in census data from Datensatzbeschreibung...xlsx located in the downloaded file census.zip (see Figure \@ref(fig:census-stack) for their spatial distribution).
@@ -110,15 +112,17 @@ Table: (\#tab:census-desc)Categories for each variable in census data from Daten
 |   5   | 4000-8000  |   >60    |   >47    |      >3.5      |
 |   6   |   >8000    |          |          |                |
 
+
+
 ## Create census rasters
  
 After the preprocessing, the data can be converted into a `SpatRaster` object (see Sections \@ref(raster-classes) and \@ref(raster-subsetting)) with the help of the `rast()` function.
 When setting its `type` argument to `xyz`, the `x` and `y` columns of the input data frame should correspond to coordinates on a regular grid.
-All the remaining columns (here: `pop`, `women`, `mean_age`, `hh_size`) will serve as values of the raster layers (Figure \@ref(fig:census-stack); see also `code/14-location-figures.R` in our github repository).
+All the remaining columns (here: `pop`, `women`, `mean_age`, `hh_size`) will serve as values of the raster layers (Figure \@ref(fig:census-stack); see also `code/14-location-figures.R` in our GitHub repository).
 
 
 ```r
-input_ras = terra::rast(input_tidy, type = "xyz", crs = "EPSG:3035")
+input_ras = rast(input_tidy, type = "xyz", crs = "EPSG:3035")
 ```
 
 
@@ -179,16 +183,16 @@ Finally, the code chunk below ensures the `reclass` layers have the same name as
 
 ```r
 reclass = input_ras
-for (i in seq_len(terra::nlyr(reclass))) {
-  reclass[[i]] = terra::classify(x = reclass[[i]], rcl = rcl[[i]], right = NA)
+for (i in seq_len(nlyr(reclass))) {
+  reclass[[i]] = classify(x = reclass[[i]], rcl = rcl[[i]], right = NA)
 }
 names(reclass) = names(input_ras)
 ```
 
 
 ```r
-reclass
-#> ... (full output not shown)
+reclass # full output not shown
+#> ... 
 #> names       :  pop, women, mean_age, hh_size 
 #> min values  :  127,     0,        0,       0 
 #> max values  : 8000,     3,        3,       3
@@ -199,11 +203,11 @@ reclass
 
 We deliberately define metropolitan areas as pixels of 20 km^2^ inhabited by more than 500,000 people.
 Pixels at this coarse resolution can rapidly be created using `aggregate()`\index{aggregation}, as introduced in Section \@ref(aggregation-and-disaggregation).
-The command below uses the argument `fact = 20` to reduce the resolution of the result twenty-fold (recall the original raster resolution was 1 km^2^):
+The command below uses the argument `fact = 20` to reduce the resolution of the result twenty-fold (recall the original raster resolution was 1 km^2^).
 
 
 ```r
-pop_agg = terra::aggregate(reclass$pop, fact = 20, fun = sum, na.rm = TRUE)
+pop_agg = aggregate(reclass$pop, fact = 20, fun = sum, na.rm = TRUE)
 summary(pop_agg)
 #>       pop         
 #>  Min.   :    127  
@@ -231,9 +235,9 @@ Subsequently, `as.polygons()` converts the raster object into spatial polygons, 
 
 ```r
 metros = pop_agg |> 
-  terra::patches(directions = 8) |>
-  terra::as.polygons() |>
-  sf::st_as_sf()
+  patches(directions = 8) |>
+  as.polygons() |>
+  st_as_sf()
 ```
 
 <div class="figure" style="text-align: center">
@@ -252,13 +256,14 @@ However, here, we are only interested in the name of the city.
 ```r
 metro_names = sf::st_centroid(metros, of_largest_polygon = TRUE) |>
   tmaptools::rev_geocode_OSM(as.data.frame = TRUE) |>
-  dplyr::select(city, town, state)
+  select(city, town, state)
 # smaller cities are returned in column town. To have all names in one column,
 # we move the town name to the city column in case it is NA
 metro_names = dplyr::mutate(metro_names, city = ifelse(is.na(city), town, city))
 ```
 
 To make sure that the reader uses the exact same results, we have put them into **spDataLarge** as the object `metro_names`.
+
 
 
 Table: (\#tab:metro-names)Result of the reverse geocoding.
@@ -273,6 +278,8 @@ Table: (\#tab:metro-names)Result of the reverse geocoding.
 |Nürnberg          |Bayern              |
 |Stuttgart         |Baden-Württemberg   |
 |München           |Bayern              |
+
+
 
 Overall, we are satisfied with the `city` column serving as metropolitan names (Table \@ref(tab:metro-names)) apart from one exception, namely Velbert which belongs to the greater region of Düsseldorf.
 Hence, we replace Velbert with Düsseldorf (Figure \@ref(fig:metro-areas)).
@@ -293,10 +300,10 @@ The **osmdata**\index{osmdata (package)} package provides easy-to-use access to 
 Instead of downloading shops for the whole of Germany, we restrict the query to the defined metropolitan areas, reducing computational load and providing shop locations only in areas of interest.
 The subsequent code chunk does this using a number of functions including:
 
-- `map()`\index{loop!map} (the **tidyverse** equivalent of `lapply()`\index{loop!lapply}), which iterates through all eight metropolitan names which subsequently define the bounding box\index{bounding box} in the OSM\index{OpenStreetMap} query function `opq()` (see Section \@ref(retrieving-data)).
-- `add_osm_feature()` to specify OSM\index{OpenStreetMap} elements with a key value of `shop` (see [wiki.openstreetmap.org](http://wiki.openstreetmap.org/wiki/Map_Features) for a list of common key:value pairs).
-- `osmdata_sf()`, which converts the OSM\index{OpenStreetMap} data into spatial objects (of class `sf`).
-- `while()`\index{loop!while}, which tries repeatedly (three times in this case) to download the data if it fails the first time.^[The OSM-download will sometimes fail at the first attempt.
+- `map()`\index{loop!map} (the **tidyverse** equivalent of `lapply()`\index{loop!lapply}), which iterates through all eight metropolitan names which subsequently define the bounding box\index{bounding box} in the OSM\index{OpenStreetMap} query function `opq()` (see Section \@ref(retrieving-data))
+- `add_osm_feature()` to specify OSM\index{OpenStreetMap} elements with a key value of `shop` (see [wiki.openstreetmap.org](https://wiki.openstreetmap.org/wiki/Map_Features) for a list of common key:value pairs)
+- `osmdata_sf()`, which converts the OSM\index{OpenStreetMap} data into spatial objects (of class `sf`)
+- `while()`\index{loop!while}, which tries two more times to download the data if the download failed the first time^[The OSM-download will sometimes fail at the first attempt.
 ]
 
 Before running this code: please consider it will download almost 2GB of data.
@@ -342,7 +349,7 @@ To make sure that each list element (an `sf`\index{sf} data frame) comes with th
 
 ```r
 # select only specific columns
-shops = purrr::map_dfr(shops, dplyr::select, osm_id, shop)
+shops = purrr::map_dfr(shops, select, osm_id, shop)
 ```
 
 Note: `shops` is provided in the `spDataLarge` and can be accessed as follows:
@@ -360,10 +367,12 @@ The result of the subsequent code chunk is therefore an estimate of shop density
 `st_transform()`\index{sf!st\_transform} is used before `rasterize()`\index{raster!rasterize} to ensure the CRS\index{CRS} of both inputs match.
 
 
+
+
 ```r
 shops = sf::st_transform(shops, st_crs(reclass))
 # create poi raster
-poi = terra::rasterize(x = shops, y = reclass, field = "osm_id", fun = "length")
+poi = rasterize(x = shops, y = reclass, field = "osm_id", fun = "length")
 ```
 
 As with the other raster layers (population, women, mean age, household size) the `poi` raster is reclassified into four classes (see Section \@ref(create-census-rasters)). 
@@ -374,13 +383,13 @@ Here, we choose the Fisher-Jenks natural breaks approach which minimizes within-
 
 ```r
 # construct reclassification matrix
-int = classInt::classIntervals(terra::values(poi), n = 4, style = "fisher")
+int = classInt::classIntervals(values(poi), n = 4, style = "fisher")
 int = round(int$brks)
 rcl_poi = matrix(c(int[1], rep(int[-c(1, length(int))], each = 2), 
                    int[length(int)] + 1), ncol = 2, byrow = TRUE)
 rcl_poi = cbind(rcl_poi, 0:3)  
 # reclassify
-poi = terra::classify(poi, rcl = rcl_poi, right = NA) 
+poi = classify(poi, rcl = rcl_poi, right = NA) 
 names(poi) = "poi"
 ```
 
@@ -413,8 +422,8 @@ For instance, a score greater than 9 might be a suitable threshold indicating ra
 <div class="figure" style="text-align: center">
 
 ```{=html}
-<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-841de324d41155df19a0" style="width:100%;height:415.296px;"></div>
-<script type="application/json" data-for="htmlwidget-841de324d41155df19a0">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAM0lEQVRYhe3SMQ0AMAwEsQcb/hTSuQSaVLIR3HAJAADfqfR0wm1dEC9VevcCq+MAAIBhB20vBvBK3JZrAAAAAElFTkSuQmCC",[[52.696600857292,13.0820026147986],[52.3210740886184,13.6981591380976]],0.8,null,null,null]},{"method":"addLegend","args":[{"colors":["darkgreen"],"labels":["potential locations"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"bottomright","type":"unknown","title":"Legend","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[52.3210740886184,52.696600857292],"lng":[13.0820026147986,13.6981591380976]}},"evals":[],"jsHooks":[]}</script>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-841de324d41155df19a0" style="width:100%;height:389.34px;"></div>
+<script type="application/json" data-for="htmlwidget-841de324d41155df19a0">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org/copyright/\">OpenStreetMap<\/a>,  <a href=\"https://opendatacommons.org/licenses/odbl/\">ODbL<\/a>"}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAM0lEQVRYhe3SMQ0AMAwEsQcb/hTSuQSaVLIR3HAJAADfqfR0wm1dEC9VevcCq+MAAIBhB20vBvBK3JZrAAAAAElFTkSuQmCC",[[52.69660085729197,13.08200261479863],[52.32107408861835,13.69815913809763]],0.8,null,null,null]},{"method":"addLegend","args":[{"colors":["darkgreen"],"labels":["potential locations"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"bottomright","type":"unknown","title":"Legend","extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[52.32107408861835,52.69660085729197],"lng":[13.08200261479863,13.69815913809763]}},"evals":[],"jsHooks":[]}</script>
 ```
 
 <p class="caption">(\#fig:bikeshop-berlin)Suitable areas (i.e., raster cells with a score > 9) in accordance with our hypothetical survey for bike stores in Berlin.</p>
@@ -428,9 +437,9 @@ This approach is less suitable for scientific research than applied analysis tha
 A number of changes to the approach could improve the analysis:
 
 - We used equal weights when calculating the final scores but other factors, such as the household size, could be as important as the portion of women or the mean age
-- We used all points of interest\index{point of interest} but only those related to bike shops, such as do-it-yourself, hardware, bicycle, fishing, hunting, motorcycles, outdoor and sports shops (see the range of shop values available on the  [OSM Wiki](http://wiki.openstreetmap.org/wiki/Map_Features#Shop)) may have yielded more refined results
+- We used all points of interest\index{point of interest} but only those related to bike shops, such as do-it-yourself, hardware, bicycle, fishing, hunting, motorcycles, outdoor and sports shops (see the range of shop values available on the  [OSM Wiki](https://wiki.openstreetmap.org/wiki/Map_Features#Shop)) may have yielded more refined results
 - Data at a higher resolution may improve the output (see exercises)
-- We have used only a limited set of variables and data from other sources, such as the [INSPIRE geoportal](http://inspire-geoportal.ec.europa.eu/discovery/) or data on cycle paths from OpenStreetMap, may enrich the analysis (see also Section \@ref(retrieving-data))
+- We have used only a limited set of variables and data from other sources, such as the [INSPIRE geoportal](https://inspire-geoportal.ec.europa.eu/) or data on cycle paths from OpenStreetMap, may enrich the analysis (see also Section \@ref(retrieving-data))
 - Interactions remained unconsidered, such as a possible relationships between the portion of men and single households
 
 In short, the analysis could be extended in multiple directions.
